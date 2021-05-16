@@ -15,24 +15,25 @@
 import rclpy
 from rclpy.node import Node
 
-from std_msgs.msg import String
+from jvr_interfaces.msg import TalkMsg
 
 NODE_NAME = 'listener'
 TOPIC_NAME = 'talk'
 
+
 class Listener(Node):
 
-    def __init__(self, namespace:str):
+    def __init__(self, namespace: str):
         super().__init__(NODE_NAME, namespace=namespace)
         self.subscription = self.create_subscription(
-            String,
+            TalkMsg,
             TOPIC_NAME,
             self.listener_callback,
             10)
         self.subscription  # prevent unused variable warning
 
     def listener_callback(self, msg):
-        self.get_logger().info('I heard: "%s"' % msg.data)
+        self.get_logger().info('[{0}]: msg "{1}"'.format(msg.id, msg.content))
 
 
 def main(args=None):
