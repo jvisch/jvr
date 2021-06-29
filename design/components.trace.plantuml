@@ -1,0 +1,16 @@
+@startuml Component Trace
+
+
+participant sensor as "DistanceSweepSensor"
+participant emergency as "Emergency:IDistanceDetected"
+
+sensor ->> emergency : ObjectDetected(ObjectDetectionMsg)
+activate emergency
+
+alt distance < 5cm
+    emergency -> emergency : stop()
+    
+end
+
+
+@enduml

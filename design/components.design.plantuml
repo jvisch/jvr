@@ -1,0 +1,20 @@
+@startuml Component Design
+
+' interfaces
+interface IObjectDetection
+interface IDistanceSweep
+interface IEmergency
+
+' components
+component Emergency
+component DistanceSweepSensor
+
+' Component Emergency
+Emergency -left- IObjectDetection
+Emergency -right- IEmergency
+
+' Component DistanceSweepSensor
+DistanceSweepSensor -up-( IObjectDetection
+DistanceSweepSensor -right- IDistanceSweep
+
+@enduml
