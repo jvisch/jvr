@@ -15,6 +15,6 @@ Emergency -right- IEmergency
 
 ' Component DistanceSweepSensor
 DistanceSweepSensor -up-( IObjectDetection
-DistanceSweepSensor -right- IDistanceSweep
+DistanceSweepSensor -right- IObjectDetectionSweep
 
 @enduml
