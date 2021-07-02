@@ -5,11 +5,11 @@ participant sensor as "DistanceSweepSensor"
 participant emergency as "Emergency:IDistanceDetected"
 participant system as "System"
 
-sensor ->> emergency : ObjectDetected(ObjectDetectionMsg msg)
+sensor ->> emergency : object_detected(ObjectDetectionMsg msg)
 activate emergency
 
 alt msg.distance in danger_zone
-    emergency ->> emergency : panic()
+    emergency -> emergency : panic()
     
     note right
     object is in danger 
@@ -18,13 +18,14 @@ alt msg.distance in danger_zone
     end note
 
     activate emergency
-    emergency ->> system : shutdown()
+    emergency -> system : shutdown()
     activate system
+    emergency <-- system
     deactivate system
     deactivate emergency
 else msg.distance in alert_zone
     ' object is in alert zone (motors must be deactivated)
-    emergency -> emergency : deactivate_engines()
+    emergency -> emergency : deactivate_motors()
     
     note right
     object is in alert 
@@ -33,14 +34,14 @@ else msg.distance in alert_zone
     end note
 
     activate emergency
-    emergency -> system : deactivate_engines()
+    emergency -> system : deactivate_motors()
     activate system
     ' the system must response withing 500ms, otherwise
     ' the total system will be shutdown
     loop wait for result
         alt time elapsed 500ms
         
-            emergency ->> system : shutdown()
+            emergency -> system : shutdown()
         
             note right
             If the system doesn't response
@@ -50,6 +51,7 @@ else msg.distance in alert_zone
             end note
 
             activate system
+            emergency <-- system
             deactivate system 
         end
     end

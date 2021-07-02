@@ -17,22 +17,27 @@ shuts down the system.
 #### IEmergency
 
     IEmergency
-        deactivate_engines() : void
-        activate_engines() : void
+        deactivate_motors() : void
+        activate_motors() : void
         panic() : void
 
--   `deactivate_engines()`
+-   `deactivate_motors()`
 
     Deactivates the motors so the robot will stop moving. The motors
-    will be kept deactivated until `activate_engines()` is called.
+    will be kept deactivated until `activate_motors()` is called.
 
--   `activate_engines()`
+-   `activate_motors()`
 
     Activates the motores again, so the robot is able to move again.
 
 -   `panic()`
 
     Shutsdown the complete system, used in panic situations.
+
+#### IObjectDetection
+
+    IObjectDetection
+        object_detected(ObjectDetectionMsg)
 
 ## DistanceSweepSensor
 

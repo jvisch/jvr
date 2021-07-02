@@ -2,7 +2,7 @@
 
 ' interfaces
 interface IObjectDetection
-interface IDistanceSweep
+interface IObjectDetectionSweep
 interface IEmergency
 
 ' components
