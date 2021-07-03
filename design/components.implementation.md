@@ -39,14 +39,12 @@
 
 ## IObjectDetection
 
-- object_detected(ObjectDetectionMsg) : void
+-   object_detected(ObjectDetectionMsg) : void
 
-      -------- ----------------------------------------------------------------------------------------------------------------------
-      topic:   /Emergency/IObjectDetection/object_detected
+        ----------------- ----------------------------------------------------------------------------------------------------------------------
+        topic:            /Emergency/IObjectDetection/object_detected
 
-      msg /    jvr_interfaces::ObjectDetectionMsg.msg
-      srv:     
+        msg / srv:        jvr_interfaces::ObjectDetection.msg
 
-      type:    listener
-      -------- ----------------------------------------------------------------------------------------------------------------------
-
+        type:             listener
+        ----------------- ----------------------------------------------------------------------------------------------------------------------
