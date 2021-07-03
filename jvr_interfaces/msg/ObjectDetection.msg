@@ -1,0 +1,3 @@
+uint16 sensor_id
+builtin_interfaces/Time time_stamp
+sensor_msgs/Range object

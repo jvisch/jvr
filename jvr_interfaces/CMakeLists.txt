@@ -18,10 +18,12 @@ endif()
 # find dependencies
 find_package(ament_cmake REQUIRED)
 find_package(rosidl_default_generators REQUIRED)
+find_package(sensor_msgs REQUIRED)
 
 set(msg_files
   "msg/TalkMsg.msg"
   "msg/RobotInfo.msg"
+  "msg/ObjectDetection.msg"
 )
 
 rosidl_generate_interfaces(${PROJECT_NAME}
