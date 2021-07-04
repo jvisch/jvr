@@ -1,0 +1,10 @@
+@startuml JVR package Diagram
+
+package jvr_interfaces
+package jvr_basic
+package jvr_robot
+
+jvr_basic -up->> jvr_interfaces
+jvr_robot -up->> jvr_interfaces
+
+@enduml
