@@ -9,8 +9,7 @@
 
   <exec_depend>rclpy</exec_depend>
 
-  <build_depend>jvr_interfaces</build_depend>
-  <exec_depend>jvr_interfaces</exec_depend>
+  <depend>jvr_interfaces</depend>
 
   <test_depend>ament_copyright</test_depend>
   <test_depend>ament_flake8</test_depend>
