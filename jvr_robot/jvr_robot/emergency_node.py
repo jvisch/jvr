@@ -10,10 +10,11 @@ class EmergencyNode(Node):
         self.srv = self.create_service(
             Empty,
             'knutsel',
-            self.add_two_ints_callback)
+            self.knutsel)
 
     def knutsel(self, request, response):
         self.get_logger().info('HALLOOOOOTJES')
+        return response
 
 
 def main(args=None):
