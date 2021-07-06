@@ -8,14 +8,12 @@ class EmergencyNode(Node):
     def __init__(self):
         super().__init__('emergency', namespace='NAMESPACEJV')
         self.srv = self.create_service(
-            Empty, 
-            'knutsel', 
+            Empty,
+            'knutsel',
             self.add_two_ints_callback)
 
     def knutsel(self, request, response):
         self.get_logger().info('HALLOOOOOTJES')
-
-
 
 
 def main(args=None):
