@@ -1,4 +1,4 @@
-from IEmergency import IEmergency
+from jvr_robot.IEmergency import IEmergency
 
 
 class Emergency(IEmergency):
