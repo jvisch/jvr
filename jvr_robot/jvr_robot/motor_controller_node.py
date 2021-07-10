@@ -27,17 +27,17 @@ class IMotorControllerNode(Node):
 
     def panic_callback(self, request, response):
         self.get_logger().info("panic_callback")
-        # instance.panic()
+        instance.panic()
         return response
 
     def deactivate_motors_callback(self, request, response):
         self.get_logger().info("deactivate_motors_callback")
-        # instance.deactivate_motors()
+        instance.deactivate_motors()
         return response
         
     def activate_motors_callback(self, request, response):
         self.get_logger().info("activate_motors_callback")
-        # instance.activate_motors()
+        instance.activate_motors()
         return response
 
 
