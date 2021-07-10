@@ -2,14 +2,14 @@
 
 
 participant sensor as "DistanceSweepSensor"
-participant emergency as "Emergency:IDistanceDetected"
+participant MotorController as "MotorController:IObjectDetector"
 participant system as "System"
 
-sensor ->> emergency : object_detected(ObjectDetectionMsg msg)
-activate emergency
+sensor ->> MotorController : object_detected(ObjectDetectionMsg msg)
+activate MotorController
 
 alt msg.distance in danger_zone
-    emergency -> emergency : panic()
+    MotorController -> MotorController : panic()
     
     note right
     object is in danger 
@@ -17,15 +17,15 @@ alt msg.distance in danger_zone
     halted totally)
     end note
 
-    activate emergency
-    emergency -> system : shutdown()
+    activate MotorController
+    MotorController -> system : shutdown()
     activate system
-    emergency <-- system
+    MotorController <-- system
     deactivate system
-    deactivate emergency
+    deactivate MotorController
 else msg.distance in alert_zone
     ' object is in alert zone (motors must be deactivated)
-    emergency -> emergency : deactivate_motors()
+    MotorController -> MotorController : deactivate_motors()
     
     note right
     object is in alert 
@@ -33,15 +33,15 @@ else msg.distance in alert_zone
     be deactivated).
     end note
 
-    activate emergency
-    emergency -> system : deactivate_motors()
+    activate MotorController
+    MotorController -> system : deactivate_motors()
     activate system
     ' the system must response withing 500ms, otherwise
     ' the total system will be shutdown
     loop wait for result
         alt time elapsed 500ms
         
-            emergency -> system : shutdown()
+            MotorController -> system : shutdown()
         
             note right
             If the system doesn't response
@@ -51,13 +51,13 @@ else msg.distance in alert_zone
             end note
 
             activate system
-            emergency <-- system
+            MotorController <-- system
             deactivate system 
         end
     end
-    system ---> emergency
+    system ---> MotorController
     deactivate system
-    deactivate emergency
+    deactivate MotorController
 end
 
 

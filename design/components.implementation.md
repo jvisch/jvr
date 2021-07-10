@@ -1,13 +1,13 @@
 # Implementation of interfaces
 
-## Emergency component
+## MotorController component
 
-### IEmergency
+### IMotorController
 
 -   deactivate_engines() : void
 
       -------- ----------------------------------------------------------------------------------------------------------------------
-      topic:   /Emergency/IEmergency/deactivate_engines
+      topic:   /MotorController/IMotorController/deactivate_engines
 
       msg /    [common_interfaces::std_srvs::Empty.srv](https://github.com/ros2/common_interfaces/blob/foxy/std_srvs/srv/Empty.srv)
       srv:     
@@ -18,7 +18,7 @@
 -   activate_engines() : void
 
       -------- ----------------------------------------------------------------------------------------------------------------------
-      topic:   /Emergency/IEmergency/activactivate_engines
+      topic:   /MotorController/IMotorController/activactivate_engines
 
       msg /    [common_interfaces::std_srvs::Empty.srv](https://github.com/ros2/common_interfaces/blob/foxy/std_srvs/srv/Empty.srv)
       srv:     
@@ -29,7 +29,7 @@
 -   panic() : void --> std_msg::Empty
 
       -------- ----------------------------------------------------------------------------------------------------------------------
-      topic:   /Emergency/IEmergency/panic
+      topic:   /MotorController/IMotorController/panic
 
       msg /    [common_interfaces::std_srvs::Empty.srv](https://github.com/ros2/common_interfaces/blob/foxy/std_srvs/srv/Empty.srv)
       srv:     
@@ -37,12 +37,12 @@
       type:    service
       -------- ----------------------------------------------------------------------------------------------------------------------
 
-## IObjectDetection
+## IObjectDetector
 
 -   object_detected(ObjectDetectionMsg) : void
 
         ----------------- ------------------------------------------------
-        topic:            /Emergency/IObjectDetection/object_detected
+        topic:            /MotorController/IObjectDetector/object_detected
 
         msg / srv:        jvr_interfaces::ObjectDetection.msg
 

@@ -1,11 +1,11 @@
 # Components
 
-## Emergency component
+## MotorController component
 
 ### Description
 
-Responsible for emergency situations like collision, emergency breaks
-etc. If an emergency occurs it will halt the robot and if necessary
+Responsible for MotorController situations like collision, MotorController breaks
+etc. If an MotorController occurs it will halt the robot and if necessary
 shuts down the system.
 
 ### Messages
@@ -14,9 +14,9 @@ shuts down the system.
 
 ### Interfaces
 
-#### IEmergency
+#### IMotorController
 
-    IEmergency
+    IMotorController
         deactivate_motors() : void
         activate_motors() : void
         panic() : void
@@ -34,9 +34,9 @@ shuts down the system.
 
     Shutsdown the complete system, used in panic situations.
 
-#### IObjectDetection
+#### IObjectDetector
 
-    IObjectDetection
+    IObjectDetector
         object_detected(ObjectDetectionMsg)
 
 ## DistanceSweepSensor
@@ -76,6 +76,6 @@ Message containing information about a object detection.
 
 ### Interfaces
 
-#### IObjectDetectionSweep
+#### IObjectDetectorSweep
 
 Get a range of detections --todo--

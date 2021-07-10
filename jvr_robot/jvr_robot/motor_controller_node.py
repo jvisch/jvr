@@ -1,28 +1,28 @@
 import rclpy
 from rclpy.node import Node
 from std_srvs.srv import Empty
-from jvr_robot.Emergency import Emergency, IEmergency
+from jvr_robot.MotorController import MotorController, IMotorController
 
 
-instance = Emergency()
+instance = MotorController()
 
 
-class IEmergencyNode(Node):
+class IMotorControllerNode(Node):
 
     def __init__(self):
         # node
         node_name = instance.__class__.__qualname__.lower()
         super().__init__(node_name)
 
-        # IEmergency
+        # IMotorController
         #  panic
-        panic_topic = "{node}/" + IEmergency.panic.__qualname__.replace('.', '/').lower()
+        panic_topic = "{node}/" + IMotorController.panic.__qualname__.replace('.', '/').lower()
         self.panic = self.create_service(Empty, panic_topic, self.panic_callback)
         # deactivate_motors
-        deactivate_motors_topic = "{node}/" + IEmergency.deactivate_motors.__qualname__.replace('.', '/').lower()
+        deactivate_motors_topic = "{node}/" + IMotorController.deactivate_motors.__qualname__.replace('.', '/').lower()
         self.deactivate_motors = self.create_service(Empty, deactivate_motors_topic, self.deactivate_motors_callback)
         # def activate_motors
-        activate_motors_topic = "{node}/" + IEmergency.activate_motors.__qualname__.replace('.', '/').lower()
+        activate_motors_topic = "{node}/" + IMotorController.activate_motors.__qualname__.replace('.', '/').lower()
         self.deactivate_motors = self.create_service(Empty, activate_motors_topic, self.activate_motors_callback)
 
     def panic_callback(self, request, response):
@@ -46,9 +46,9 @@ def main(args=None):
     print('Hi from jvr_robot.')
     rclpy.init(args=args)
 
-    emergency = IEmergencyNode()
+    motor_controller = IMotorControllerNode()
 
-    rclpy.spin(emergency)
+    rclpy.spin(motor_controller)
 
     rclpy.shutdown()
 

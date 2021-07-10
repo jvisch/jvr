@@ -20,7 +20,7 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
-            'emergency_node = jvr_robot.emergency_node:main'
+            'motor_controller_node = jvr_robot.motor_controller_node:main'
         ],
     },
 )

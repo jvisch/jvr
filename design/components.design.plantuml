@@ -1,20 +1,20 @@
 @startuml Component Design
 
 ' interfaces
-interface IObjectDetection
-interface IObjectDetectionSweep
-interface IEmergency
+interface IObjectDetector
+interface IObjectDetectorSweep
+interface IMotorController
 
 ' components
-component Emergency
+component MotorController
 component DistanceSweepSensor
 
-' Component Emergency
-Emergency -left- IObjectDetection
-Emergency -right- IEmergency
+' Component MotorController
+MotorController -left- IObjectDetector
+MotorController -right- IMotorController
 
 ' Component DistanceSweepSensor
-DistanceSweepSensor -up-( IObjectDetection
-DistanceSweepSensor -right- IObjectDetectionSweep
+DistanceSweepSensor -up-( IObjectDetector
+DistanceSweepSensor -right- IObjectDetectorSweep
 
 @enduml

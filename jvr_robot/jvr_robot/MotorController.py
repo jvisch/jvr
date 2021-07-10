@@ -1,11 +1,11 @@
-from jvr_robot.IEmergency import IEmergency
+from jvr_robot.IMotorController import IMotorController
 
 
-class Emergency(IEmergency):
+class MotorController(IMotorController):
     def __init__(self) -> None:
         super().__init__()
 
-    ## IEmergency
+    ## IMotorController
     def deactivate_motors() -> None:
         raise NotImplemented
 
@@ -15,5 +15,5 @@ class Emergency(IEmergency):
     def panic() -> None:
         raise NotImplemented
 
-    ## IObjectDetection
+    ## IObjectDetector
     ## TODO object_detected(ObjectDetectionMsg)
