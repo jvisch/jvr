@@ -76,6 +76,6 @@ Message containing information about a object detection.
 
 ### Interfaces
 
-#### IObjectDetectorSweep
+#### IObjectRangeDetector
 
 Get a range of detections --todo--

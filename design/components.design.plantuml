@@ -2,7 +2,7 @@
 
 ' interfaces
 interface IObjectDetector
-interface IObjectDetectorSweep
+interface IObjectRangeDetector
 interface IMotorController
 
 ' components
@@ -15,6 +15,6 @@ MotorController -right- IMotorController
 
 ' Component DistanceSweepSensor
 DistanceSweepSensor -up-( IObjectDetector
-DistanceSweepSensor -right- IObjectDetectorSweep
+DistanceSweepSensor -right- IObjectRangeDetector
 
 @enduml
