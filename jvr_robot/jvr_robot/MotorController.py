@@ -1,11 +1,13 @@
 from jvr_robot.IMotorController import IMotorController
+from jvr_robot.IObjectDetector import IObjectDetector
 
 
-class MotorController(IMotorController):
+class MotorController(IMotorController, IObjectDetector):
     def __init__(self) -> None:
         super().__init__()
 
-    ## IMotorController
+    # IMotorController
+
     def deactivate_motors(self) -> None:
         raise NotImplementedError
 
@@ -15,5 +17,7 @@ class MotorController(IMotorController):
     def panic(self) -> None:
         raise NotImplementedError
 
-    ## IObjectDetector
-    ## TODO object_detected(ObjectDetectionMsg)
+    # IObjectDetector
+
+    def object_detected(ObjectDetectionMsg) -> None:
+        raise NotImplementedError

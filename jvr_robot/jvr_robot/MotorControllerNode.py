@@ -1,13 +1,13 @@
 import rclpy
 from rclpy.node import Node
 from std_srvs.srv import Empty
-from jvr_robot.MotorController import MotorController, IMotorController
+from jvr_robot.MotorController import MotorController, IMotorController, IObjectDetector
 
 
 instance = MotorController()
 
 
-class IMotorControllerNode(Node):
+class MotorControllerNode(Node):
 
     def __init__(self):
         # node
@@ -25,6 +25,11 @@ class IMotorControllerNode(Node):
         activate_motors_topic = "{node}/" + IMotorController.activate_motors.__qualname__.replace('.', '/').lower()
         self.deactivate_motors = self.create_service(Empty, activate_motors_topic, self.activate_motors_callback)
 
+        # IObjectDetector
+        # object_detected
+        object_detected_topic = "{node}/" + IObjectDetector.object_detected.__qualname__.replace('.', '/').lower()
+        self.object_detected = self.create_service(Empty, object_detected_topic, self.object_detected_callback)
+
     def panic_callback(self, request, response):
         self.get_logger().info("panic_callback")
         instance.panic()
@@ -34,19 +39,23 @@ class IMotorControllerNode(Node):
         self.get_logger().info("deactivate_motors_callback")
         instance.deactivate_motors()
         return response
-        
+
     def activate_motors_callback(self, request, response):
         self.get_logger().info("activate_motors_callback")
         instance.activate_motors()
         return response
 
+    def object_detected_callback(self, request, response):
+        self.get_logger().info("object_detected_callback")
+        instance.object_detected(request)
+        return response
 
 
 def main(args=None):
-    print('Hi from jvr_robot.')
+    print('Hi from .MotorControllerNode')
     rclpy.init(args=args)
 
-    motor_controller = IMotorControllerNode()
+    motor_controller = MotorControllerNode()
 
     rclpy.spin(motor_controller)
 

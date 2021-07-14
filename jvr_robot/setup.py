@@ -20,7 +20,8 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
-            'motor_controller_node = jvr_robot.motor_controller_node:main'
+            'MotorControllerNode = jvr_robot.MotorControllerNode:main',
+            'DistanceSweepSensorNode = jvr_robot.DistanceSweepSensorNode:main'
         ],
     },
 )
