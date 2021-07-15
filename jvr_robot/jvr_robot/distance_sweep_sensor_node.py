@@ -20,7 +20,6 @@ def main(args=None):
     rclpy.init(args=args)
 
     node = node_type()
-
     rclpy.spin(node)
 
     rclpy.shutdown()
