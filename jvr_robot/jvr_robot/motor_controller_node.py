@@ -7,27 +7,28 @@ from jvr_robot.MotorController import MotorController, IMotorController, IObject
 instance = MotorController()
 
 
-class MotorControllerNode(Node):
+class motor_controller_node(Node):
 
     def __init__(self):
         # node
-        node_name = instance.__class__.__qualname__.lower()
+        node_name = 'motor_controller_node'
+        component_name = instance.__class__.__qualname__.lower()
         super().__init__(node_name)
 
         # IMotorController
         #  panic
-        panic_topic = "{node}/" + IMotorController.panic.__qualname__.replace('.', '/').lower()
+        panic_topic = component_name + '/' + IMotorController.panic.__qualname__.replace('.', '/').lower()
         self.panic = self.create_service(Empty, panic_topic, self.panic_callback)
         # deactivate_motors
-        deactivate_motors_topic = "{node}/" + IMotorController.deactivate_motors.__qualname__.replace('.', '/').lower()
+        deactivate_motors_topic = component_name + '/' + IMotorController.deactivate_motors.__qualname__.replace('.', '/').lower()
         self.deactivate_motors = self.create_service(Empty, deactivate_motors_topic, self.deactivate_motors_callback)
         # def activate_motors
-        activate_motors_topic = "{node}/" + IMotorController.activate_motors.__qualname__.replace('.', '/').lower()
+        activate_motors_topic = component_name + '/' + IMotorController.activate_motors.__qualname__.replace('.', '/').lower()
         self.deactivate_motors = self.create_service(Empty, activate_motors_topic, self.activate_motors_callback)
 
         # IObjectDetector
         # object_detected
-        object_detected_topic = "{node}/" + IObjectDetector.object_detected.__qualname__.replace('.', '/').lower()
+        object_detected_topic = component_name + '/' + IObjectDetector.object_detected.__qualname__.replace('.', '/').lower()
         self.object_detected = self.create_service(Empty, object_detected_topic, self.object_detected_callback)
 
     def panic_callback(self, request, response):
@@ -52,10 +53,11 @@ class MotorControllerNode(Node):
 
 
 def main(args=None):
-    print('Hi from .MotorControllerNode')
+    t = motor_controller_node
+    print('Hi from ' + t.__qualname__)
     rclpy.init(args=args)
 
-    motor_controller = MotorControllerNode()
+    motor_controller = t()
 
     rclpy.spin(motor_controller)
 

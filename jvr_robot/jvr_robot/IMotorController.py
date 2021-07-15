@@ -1,4 +1,4 @@
 class IMotorController:
-    def deactivate_motors() -> None: pass
-    def activate_motors() -> None: pass
-    def panic() -> None: pass
+    def deactivate_motors(self) -> None: raise NotImplementedError
+    def activate_motors() -> None: raise NotImplementedError
+    def panic() -> None: raise NotImplementedError
