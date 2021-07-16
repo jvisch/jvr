@@ -10,23 +10,22 @@ class motor_controller_node(Node):
         self.instance = MotorController()
         # node
         node_name = __class__.__qualname__.lower()
-        component_name = self.instance.__class__.__qualname__.lower()
         super().__init__(node_name)
 
         # IMotorController
         #  panic
-        panic_topic = component_name + '/' + IMotorController.panic.__qualname__.replace('.', '/').lower()
+        panic_topic = IMotorController.panic.__qualname__.replace('.', '/').lower()
         self.panic = self.create_service(Empty, panic_topic, self.panic_callback)
         # deactivate_motors
-        deactivate_motors_topic = component_name + '/' + IMotorController.deactivate_motors.__qualname__.replace('.', '/').lower()
+        deactivate_motors_topic = IMotorController.deactivate_motors.__qualname__.replace('.', '/').lower()
         self.deactivate_motors = self.create_service(Empty, deactivate_motors_topic, self.deactivate_motors_callback)
         # def activate_motors
-        activate_motors_topic = component_name + '/' + IMotorController.activate_motors.__qualname__.replace('.', '/').lower()
+        activate_motors_topic = IMotorController.activate_motors.__qualname__.replace('.', '/').lower()
         self.deactivate_motors = self.create_service(Empty, activate_motors_topic, self.activate_motors_callback)
 
         # IObjectDetector
         # object_detected
-        object_detected_topic = component_name + '/' + IObjectDetector.object_detected.__qualname__.replace('.', '/').lower()
+        object_detected_topic = IObjectDetector.object_detected.__qualname__.replace('.', '/').lower()
         # self.object_detected = self.create_service(Empty, object_detected_topic, self.object_detected_callback)
         self.object_detected = self.create_subscription(
             ObjectDetection,
@@ -49,10 +48,9 @@ class motor_controller_node(Node):
         self.instance.activate_motors()
         return response
 
-    def object_detected_callback(self, request, response):
+    def object_detected_callback(self, msg):
         self.get_logger().info("object_detected_callback")
-        self.instance.object_detected(request)
-        return response
+        self.instance.object_detected(msg)
 
 
 def main(args=None):
