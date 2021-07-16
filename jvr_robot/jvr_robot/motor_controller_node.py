@@ -1,13 +1,14 @@
 import rclpy
 from rclpy.node import Node
 from std_srvs.srv import Empty
-from jvr_robot.MotorController import MotorController, IMotorController, IObjectDetector
+
+from jvr_robot.IMotorController import IMotorController
+from jvr_robot.IObjectDetector import IObjectDetector
 from jvr_interfaces.msg import ObjectDetection
 
 class motor_controller_node(Node):
 
     def __init__(self):
-        self.instance = MotorController()
         # node
         node_name = __class__.__qualname__.lower()
         super().__init__(node_name)
@@ -35,22 +36,22 @@ class motor_controller_node(Node):
 
     def panic_callback(self, request, response):
         self.get_logger().info("panic_callback")
-        self.instance.panic()
+        raise NotImplementedError
         return response
 
     def deactivate_motors_callback(self, request, response):
         self.get_logger().info("deactivate_motors_callback")
-        self.instance.deactivate_motors()
+        raise NotImplementedError
         return response
 
     def activate_motors_callback(self, request, response):
         self.get_logger().info("activate_motors_callback")
-        self.instance.activate_motors()
+        raise NotImplementedError
         return response
 
     def object_detected_callback(self, msg):
         self.get_logger().info("object_detected_callback")
-        self.instance.object_detected(msg)
+        self.get_logger().debug(str(msg))
 
 
 def main(args=None):
