@@ -19,5 +19,5 @@ class MotorController(IMotorController, IObjectDetector):
 
     # IObjectDetector
 
-    def object_detected(ObjectDetectionMsg) -> None:
+    def object_detected(self, ObjectDetectionMsg) -> None:
         raise NotImplementedError
