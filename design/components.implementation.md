@@ -39,7 +39,7 @@
 
 ## IObjectDetector
 
--   object_detected(ObjectDetectionMsg) : void
+-   object_detected(ObjectDetection) : void
 
         ----------------- ------------------------------------------------
         topic:            /IObjectDetector/object_detected

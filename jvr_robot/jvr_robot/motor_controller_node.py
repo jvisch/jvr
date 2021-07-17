@@ -5,6 +5,7 @@ from std_srvs.srv import Empty
 from jvr_robot.IMotorController import IMotorController
 from jvr_robot.IObjectDetector import IObjectDetector
 from jvr_interfaces.msg import ObjectDetection
+import jvr_robot.utils
 
 class motor_controller_node(Node):
 
@@ -15,18 +16,18 @@ class motor_controller_node(Node):
 
         # IMotorController
         #  panic
-        panic_topic = IMotorController.panic.__qualname__.replace('.', '/').lower()
+        panic_topic = jvr_robot.utils.topic_name( IMotorController.panic)
         self.panic = self.create_service(Empty, panic_topic, self.panic_callback)
         # deactivate_motors
-        deactivate_motors_topic = IMotorController.deactivate_motors.__qualname__.replace('.', '/').lower()
+        deactivate_motors_topic = jvr_robot.utils.topic_name(IMotorController.deactivate_motors)
         self.deactivate_motors = self.create_service(Empty, deactivate_motors_topic, self.deactivate_motors_callback)
         # def activate_motors
-        activate_motors_topic = IMotorController.activate_motors.__qualname__.replace('.', '/').lower()
+        activate_motors_topic = jvr_robot.utils.topic_name(IMotorController.activate_motors)
         self.deactivate_motors = self.create_service(Empty, activate_motors_topic, self.activate_motors_callback)
 
         # IObjectDetector
         # object_detected
-        object_detected_topic = IObjectDetector.object_detected.__qualname__.replace('.', '/').lower()
+        object_detected_topic = jvr_robot.utils.topic_name(IObjectDetector.object_detected)
         # self.object_detected = self.create_service(Empty, object_detected_topic, self.object_detected_callback)
         self.object_detected = self.create_subscription(
             ObjectDetection,

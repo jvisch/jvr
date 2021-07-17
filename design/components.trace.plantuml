@@ -5,7 +5,7 @@ participant sensor as "DistanceSweepSensor"
 participant MotorController as "MotorController:IObjectDetector"
 participant system as "System"
 
-sensor ->> MotorController : object_detected(ObjectDetectionMsg msg)
+sensor ->> MotorController : object_detected(ObjectDetection msg)
 activate MotorController
 
 alt msg.distance in danger_zone

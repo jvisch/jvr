@@ -37,14 +37,14 @@ shuts down the system.
 #### IObjectDetector
 
     IObjectDetector
-        object_detected(ObjectDetectionMsg)
+        object_detected(ObjectDetection)
 
 ## DistanceSweepSensor
 
 ### Description
 
 Distance sensor that constantly checks it surrounding for obstacles.
-Keeps publishing its data `ObjectDetectionMsg` to the system. It also
+Keeps publishing its data `ObjectDetection` to the system. It also
 provides functions for clients to ask current data.
 
 When the component is initialized it starts detecting objects and starts
@@ -52,13 +52,12 @@ broadcasting them.
 
 ### Messages
 
-#### ObjectDetectionMsg
+#### ObjectDetection
 
 Message containing information about a object detection.
 
-    ObjectDetectionMsg
+    ObjectDetection
         SensorID   : uint16
-        TimeStamp  : builtin_interfaces::Time
         Object     : sensor_msgs::Range
 
 -   `SensorId`
