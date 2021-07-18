@@ -45,16 +45,20 @@ class SweepSensorServo:
         def map(value, in_min, in_max, out_min, out_max):
             return (value - in_min) * (out_max - out_min) / (in_max - in_min) + out_min
         # move servo
-        pwm = map(new_position, SERVO_LEFT_ANGLE, SERVO_RIGHT_ANGLE,
-                  SERVO_LEFT_PWM, SERVO_RIGHT_PWM)
+        pwm = map(new_position, SERVO_LEFT_ANGLE, SERVO_RIGHT_ANGLE, SERVO_LEFT_PWM, SERVO_RIGHT_PWM)
         pwm = math.trunc(pwm) # make float to integer
+
+        print(pwm)
+
         self.servo.set_pwm(self.pin, 0, pwm)
         # calculate wait time (servo has no feedback capability)
         wait_time = abs(self.current_position - new_position) * SERVO_ROTATION_SPEED_PER_SEC
         wait_time = wait_time + .1  # add a small amount to be sure the servo is stopped
+        print(wait_time)
         time.sleep(wait_time)
         # calculate current position on pwm, because the real pwm was trunctated
         self.current_position = map(pwm, SERVO_LEFT_PWM, SERVO_RIGHT_PWM, SERVO_LEFT_ANGLE, SERVO_RIGHT_ANGLE)
+        print('done')
 
     def move_to_degrees(self, new_position):
         pos = math.degrees(new_position)
@@ -75,8 +79,7 @@ class distance_sweep_sensor_node(Node):
         super().__init__(node_name)
         object_detected_topic = jvr_robot.utils.topic_name(IObjectDetector.object_detected)
         self.pub = self.create_publisher(ObjectDetection, object_detected_topic, 10) # TODO find out what 10 means.
-
-    
+   
 
     def measure(self):
         msg = ObjectDetection()
@@ -84,6 +87,26 @@ class distance_sweep_sensor_node(Node):
         msg.time_stamp = self.get_clock().now().to_msg()
         self.get_logger().info(str(msg))
         self.pub.publish(msg)
+
+
+def measuring_thread():
+    def constrain(value, min, max):
+        if value < min:
+            return min
+        if value > max:
+            return max
+        return value
+    servo = SweepSensorServo()
+    a = min(SERVO_LEFT_ANGLE, SERVO_RIGHT_ANGLE)
+    b = max(SERVO_LEFT_ANGLE, SERVO_RIGHT_ANGLE)
+    v = a
+    while v < b:
+        print('a')
+        print(v)
+        servo.move_to_radians(v)
+        v += math.degrees(11)
+        print('b')
+    print('finished')
 
 
 def main(args=None):
@@ -94,9 +117,19 @@ def main(args=None):
     rclpy.init(args=args)
 
     node = node_type()
+    measuring_thread()
     rclpy.spin(node)
     rclpy.shutdown()
 
 
 if __name__ == '__main__':
     main()
+
+# let op, 
+# /dev/i2c/ is niet te benaderen voor ander gebruikers, doe:
+#     1. sudo apt install i2c-tools
+#     2. sudo groupadd i2c (group may exist already)
+#     3. sudo chown :i2c /dev/i2c-1 (or i2c-0)
+#     4. sudo chmod g+rw /dev/i2c-1
+#     5. sudo usermod -aG i2c ubuntu
+#     6. sudo reboot now
