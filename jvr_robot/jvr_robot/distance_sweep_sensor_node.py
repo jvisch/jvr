@@ -9,7 +9,7 @@ from jvr_interfaces.msg import ObjectDetection
 # https://github.com/adafruit/Adafruit_Python_PCA9685/
 # sudo pip install adafruit-pca9685
 import Adafruit_PCA9685
-# import RPi.GPIO as GPIO
+import RPi.GPIO as GPIO
 import math
 import time
 
@@ -20,6 +20,8 @@ SERVO_LEFT_ANGLE = math.radians(-45)
 SERVO_RIGHT_ANGLE = math.radians(45)
 SERVO_ROTATION_SPEED_PER_SEC = 0.3 / math.radians(60)  # see datasheet of servo
 
+ULTRASONE_GPIO_TRIGGER = 20
+ULTRASONE_GPIO_ECHO = 21
 
 # Implementation based on tutorial https://osoyoo.com/2020/08/01/osoyoo-raspberry-pi-v2-0-car-lesson-3-obstacle-avoidance/
 
@@ -42,23 +44,23 @@ class SweepSensorServo:
         if new_position > max(SERVO_LEFT_ANGLE, SERVO_RIGHT_ANGLE):
             raise ValueError('new_position greater then maximum angle')
         # map function
+
         def map(value, in_min, in_max, out_min, out_max):
             return (value - in_min) * (out_max - out_min) / (in_max - in_min) + out_min
         # move servo
-        pwm = map(new_position, SERVO_LEFT_ANGLE, SERVO_RIGHT_ANGLE, SERVO_LEFT_PWM, SERVO_RIGHT_PWM)
-        pwm = math.trunc(pwm) # make float to integer
-
-        print(pwm)
+        pwm = map(new_position, SERVO_LEFT_ANGLE, SERVO_RIGHT_ANGLE,
+                  SERVO_LEFT_PWM, SERVO_RIGHT_PWM)
+        pwm = math.trunc(pwm)  # make float to integer
 
         self.servo.set_pwm(self.pin, 0, pwm)
         # calculate wait time (servo has no feedback capability)
-        wait_time = abs(self.current_position - new_position) * SERVO_ROTATION_SPEED_PER_SEC
+        wait_time = abs(self.current_position - new_position) * \
+            SERVO_ROTATION_SPEED_PER_SEC
         wait_time = wait_time + .1  # add a small amount to be sure the servo is stopped
-        print(wait_time)
         time.sleep(wait_time)
         # calculate current position on pwm, because the real pwm was trunctated
-        self.current_position = map(pwm, SERVO_LEFT_PWM, SERVO_RIGHT_PWM, SERVO_LEFT_ANGLE, SERVO_RIGHT_ANGLE)
-        print('done')
+        self.current_position = map(
+            pwm, SERVO_LEFT_PWM, SERVO_RIGHT_PWM, SERVO_LEFT_ANGLE, SERVO_RIGHT_ANGLE)
 
     def move_to_degrees(self, new_position):
         pos = math.degrees(new_position)
@@ -70,16 +72,41 @@ class SweepSensorServo:
     def get_current_position_degrees(self):
         return math.degrees(self.current_position)
 
-        
+
+class SweepSensorUltrasone:
+
+    def __init__(self):
+        GPIO.setmode(GPIO.BCM)
+        GPIO.setwarnings(False)
+        GPIO.setup(ULTRASONE_GPIO_TRIGGER,GPIO.OUT)  # Trigger
+        GPIO.setup(ULTRASONE_GPIO_ECHO,GPIO.IN)      # Echo
+
+    def measure(self):
+        # This function measures a distance
+        GPIO.output(ULTRASONE_GPIO_TRIGGER, True)
+        time.sleep(0.00001)
+        GPIO.output(ULTRASONE_GPIO_TRIGGER, False)
+        start = time.time()
+        while GPIO.input(ULTRASONE_GPIO_ECHO) == 0:
+            start = time.time()
+        while GPIO.input(ULTRASONE_GPIO_ECHO) == 1:
+            stop = time.time()
+        elapsed = stop-start
+        distance = (elapsed * 34300)/2
+        return distance
+
+
 class distance_sweep_sensor_node(Node):
 
     def __init__(self):
         # node
         node_name = __class__.__qualname__.lower()
         super().__init__(node_name)
-        object_detected_topic = jvr_robot.utils.topic_name(IObjectDetector.object_detected)
-        self.pub = self.create_publisher(ObjectDetection, object_detected_topic, 10) # TODO find out what 10 means.
-   
+        object_detected_topic = jvr_robot.utils.topic_name(
+            IObjectDetector.object_detected)
+        # TODO find out what 10 means.
+        self.pub = self.create_publisher(
+            ObjectDetection, object_detected_topic, 10)
 
     def measure(self):
         msg = ObjectDetection()
@@ -97,21 +124,27 @@ def measuring_thread():
             return max
         return value
     servo = SweepSensorServo()
+    sensor = SweepSensorUltrasone()
     a = min(SERVO_LEFT_ANGLE, SERVO_RIGHT_ANGLE)
     b = max(SERVO_LEFT_ANGLE, SERVO_RIGHT_ANGLE)
     v = a
     while v < b:
-        print('a')
-        print(v)
+        # print('a')
+        # print(v, end=' - ')
         servo.move_to_radians(v)
-        v += math.degrees(11)
-        print('b')
+        # print(servo.get_current_position_radians(), end=' - ')
+        v = v + math.radians(5)
+        # print(v, end=' - ')
+        # print(servo.get_current_position_degrees())
+        print("distance: " + str(sensor.measure()))
+        # print('b')
     print('finished')
+    print('qwet')
 
 
 def main(args=None):
     node_type = distance_sweep_sensor_node
-    
+
     print('Hi from ' + node_type.__qualname__)
 
     rclpy.init(args=args)
@@ -125,7 +158,7 @@ def main(args=None):
 if __name__ == '__main__':
     main()
 
-# let op, 
+# let op,
 # /dev/i2c/ is niet te benaderen voor ander gebruikers, doe:
 #     1. sudo apt install i2c-tools
 #     2. sudo groupadd i2c (group may exist already)
