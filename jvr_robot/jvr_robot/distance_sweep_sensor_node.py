@@ -123,6 +123,9 @@ class distance_sweep_sensor_node(Node):
         # measured values
         msg.object.header.stamp = self.get_clock().now().to_msg()
         msg.object.range = self.sensor.measure()
+        ##
+        # TODO: HOEK VAN DE METING!!
+        ##
 
         self.get_logger().info(str(msg))
         self.pub.publish(msg)
