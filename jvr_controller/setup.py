@@ -1,8 +1,9 @@
-from setuptools import setup
 import os
 from glob import glob
+from setuptools import setup
+from setuptools import find_packages
 
-package_name = 'jvr_basic'
+package_name = 'jvr_controller'
 
 setup(
     name=package_name,
@@ -12,7 +13,8 @@ setup(
         ('share/ament_index/resource_index/packages',
             ['resource/' + package_name]),
         ('share/' + package_name, ['package.xml']),
-        (os.path.join('share', package_name), glob('launch/*.launch.py')),
+        (os.path.join('share', package_name), glob('launch/*.py')),
+        (os.path.join('share', package_name), glob('urdf/*'))
     ],
     install_requires=['setuptools'],
     zip_safe=True,
@@ -23,8 +25,8 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
-            'listener = jvr_basic.listener:main',
-            'talker = jvr_basic.talker:main'
+            'robot_position_publisher = jvr_controller.robot_position_publisher:main'
         ],
     },
 )
+ 
