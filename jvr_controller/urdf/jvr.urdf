@@ -21,10 +21,10 @@
         </visual>
     </link>
     <link name="ultrasone_sensor">
-        <visual name="backplate">
-            <origin xyz="0.0 0.0 0.0" rpy="1.0 0.0 0.0"/>
+        <visual name="">
+            <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
             <geometry>
-                <box size="0.043 0.02 0.005"/>
+                <box size="0.005 0.043 0.02"/>
             </geometry>
             <material name="blue">
                 <color rgba="0.0 1.0 0.0 1.0"/>
@@ -34,10 +34,10 @@
     </link>
 
 	<joint name="joint_name" type="revolute">
-        <origin xyz="0.1 0.1 0.1" rpy="0.0 0.0 0.0"/>
+        <origin xyz="0.1 0.0 0.1" rpy="0.0 0.0 0.0"/>
         <parent link="chassis"/>
         <child link="ultrasone_sensor"/>
-        <axis xyz="0.0 1.0 0.0"/>
+        <axis xyz="0.0 0.0 1.0"/>
         <limit lower="-1.0" upper="1.0" effort="0.0" velocity="0.0"/>
     </joint>
 
