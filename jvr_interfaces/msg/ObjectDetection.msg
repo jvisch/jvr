@@ -1,2 +1,2 @@
-uint16 sensor_id
+float32 angle
 sensor_msgs/Range object

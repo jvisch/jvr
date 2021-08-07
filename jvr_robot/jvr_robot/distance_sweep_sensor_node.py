@@ -124,7 +124,7 @@ class distance_sweep_sensor_node(Node):
         msg.object.header.stamp = self.get_clock().now().to_msg()
         msg.object.range = self.sensor.measure()
         ##
-        # TODO: HOEK VAN DE METING!!
+        msg.angle = self.servo.get_current_position_radians()
         ##
 
         self.get_logger().info(str(msg))
