@@ -113,7 +113,6 @@ class distance_sweep_sensor_node(Node):
     def measure(self):
         msg = ObjectDetection()
         # fixed values
-        msg.sensor_id = 1 # on head
         # msg.object.header.frame_id not set (yet)
         msg.object.radiation_type = Range.ULTRASOUND
         # from specs of HC-SR04
