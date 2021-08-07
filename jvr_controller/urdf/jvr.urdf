@@ -2,7 +2,7 @@
 <robot name="jvr">
     <link name="chassis">
         <visual name="bottom_plate">
-            <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+            <origin xyz="0.0 0.0 0.013" rpy="0.0 0.0 0.0"/>
             <geometry>
                 <box size="0.195 0.103 0.005"/>
             </geometry>
@@ -11,7 +11,7 @@
             </material>
         </visual>
         <visual name="top_plate">
-            <origin xyz="0.0 0.0 0.045" rpy="0.0 0.0 0.0"/>
+            <origin xyz="0.0 0.0 0.060" rpy="0.0 0.0 0.0"/>
             <geometry>
                 <box size="0.195 0.103 0.005"/>
             </geometry>
@@ -34,7 +34,7 @@
     </link>
 
 	<joint name="joint_name" type="revolute">
-        <origin xyz="0.1 0.0 0.1" rpy="0.0 0.0 0.0"/>
+        <origin xyz="0.0765 0.0 0.08" rpy="0.0 0.0 0.0"/>
         <parent link="chassis"/>
         <child link="ultrasone_sensor"/>
         <axis xyz="0.0 0.0 1.0"/>
