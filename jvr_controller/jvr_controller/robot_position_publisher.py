@@ -28,7 +28,7 @@ class robot_position_publisher(rclpy.node.Node):
         self.rotation = self.euler_to_quaternion(0, 0, 0)
         self.position = Vector3(x=0.0, y=0.0, z=0.0)
         # create callback
-        self.timer = self.create_timer(1, self.position_callback)
+        # self.timer = self.create_timer(1, self.position_callback)
 
         topic_object_detected = jvr_robot.utils.topic_name(
             jvr_robot.IObjectDetector.IObjectDetector.object_detected)
@@ -43,6 +43,7 @@ class robot_position_publisher(rclpy.node.Node):
         joint_state.header.stamp = self.get_clock().now().to_msg()
         joint_state.position = [msg.angle]
         self.joint_pub.publish(joint_state)
+        self.position_callback()
 
     def position_callback(self):
         now = self.get_clock().now().to_msg()
@@ -56,7 +57,7 @@ class robot_position_publisher(rclpy.node.Node):
 
         self.br.sendTransform(odom_trans)
 
-        time.sleep(1)
+        # time.sleep(1)
 
     def euler_to_quaternion(self, roll, pitch, yaw):  # copied from ros2 tf2 tutorial
         qx = sin(roll/2) * cos(pitch/2) * cos(yaw/2) - \
