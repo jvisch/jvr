@@ -7,8 +7,11 @@
   <maintainer email="owwwt@todo.todo">owwwt</maintainer>
   <license>TODO: License declaration</license>
 
-  <depend>jvr_interfaces</depend>
   <depend>geometry_msgs</depend>
+  <depend>sensor_msgs</depend>
+  <depend>jvr_interfaces</depend>
+  <depend>jvr_robot</depend>
+  
 
   <test_depend>ament_copyright</test_depend>
   <test_depend>ament_flake8</test_depend>

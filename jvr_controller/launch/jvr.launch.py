@@ -30,9 +30,9 @@ def generate_launch_description():
         Node(
             package='jvr_controller',
             executable='robot_position_publisher'),
-        Node(
-            package='joint_state_publisher_gui',
-            executable='joint_state_publisher_gui'),
+        # Node(
+        #     package='joint_state_publisher_gui',
+        #     executable='joint_state_publisher_gui'),
         Node(
             package='rviz2',
             executable='rviz2'

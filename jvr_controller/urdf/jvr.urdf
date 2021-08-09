@@ -33,7 +33,7 @@
         </visual>
     </link>
 
-	<joint name="joint_name" type="revolute">
+	<joint name="SweepSensorServo" type="revolute">
         <origin xyz="0.0765 0.0 0.08" rpy="0.0 0.0 0.0"/>
         <parent link="chassis"/>
         <child link="ultrasone_sensor"/>
