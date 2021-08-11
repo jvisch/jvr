@@ -23,7 +23,7 @@ TOPIC_NAME = 'talk'
 
 class Listener(Node):
 
-    def __init__(self, namespace: str):
+    def __init__(self, namespace = __package__):
         super().__init__(NODE_NAME, namespace=namespace)
         self.subscription = self.create_subscription(
             TalkMsg,
@@ -37,17 +37,16 @@ class Listener(Node):
 
 
 def main(args=None):
+    node_type = Listener
+    print('Hi from ' + node_type.__qualname__)
+    
     rclpy.init(args=args)
 
-    theListener = Listener(__package__)
-
-    rclpy.spin(theListener)
-
-    # Destroy the node explicitly
-    # (optional - otherwise it will be done automatically
-    # when the garbage collector destroys the node object)
-    theListener.destroy_node()
+    node = node_type()
+    rclpy.spin(node)
+    node.destroy_node()
     rclpy.shutdown()
+
 
 
 if __name__ == '__main__':
