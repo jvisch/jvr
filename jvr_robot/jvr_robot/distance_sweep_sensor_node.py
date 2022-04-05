@@ -18,8 +18,8 @@ import time
 SERVO_PIN = 15
 SERVO_LEFT_PWM = 420
 SERVO_RIGHT_PWM = 180
-SERVO_LEFT_ANGLE = math.radians(-45)
-SERVO_RIGHT_ANGLE = math.radians(45)
+SERVO_LEFT_ANGLE = math.radians(45)
+SERVO_RIGHT_ANGLE = math.radians(-45)
 SERVO_ROTATION_SPEED_PER_SEC = 0.3 / math.radians(60)  # see datasheet of servo
 
 ULTRASONE_GPIO_TRIGGER = 20
