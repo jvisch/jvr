@@ -21,15 +21,15 @@ from jvr_interfaces.msg import TalkMsg
 
 NODE_NAME = 'talker'
 TOPIC_NAME = 'talk'
-
+TIMER_PERIOD = 0.5  # seconds
 
 class Talker(Node):
 
     def __init__(self, namespace: str):
         super().__init__(NODE_NAME, namespace=namespace)
         self.publisher_ = self.create_publisher(TalkMsg, TOPIC_NAME, 10)
-        timer_period = 0.5  # seconds
-        self.timer = self.create_timer(timer_period, self.timer_callback)
+        
+        self.timer = self.create_timer(TIMER_PERIOD, self.timer_callback)
         self.i = 0
 
     def timer_callback(self):
