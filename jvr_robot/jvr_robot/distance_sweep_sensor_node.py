@@ -1,11 +1,15 @@
+import threading
+
 import rclpy
 import rclpy.timer
-from rclpy.node import Node
+import rclpy.node
+
+import sensor_msgs.msg 
+
+
 import jvr_robot.utils
-from jvr_robot.IObjectDetector import IObjectDetector
-from jvr_interfaces.msg import ObjectDetection
-from sensor_msgs.msg import Range
-from threading import Thread
+import jvr_robot.IObjectDetector
+import jvr_interfaces.msg
 
 
 # https://github.com/adafruit/Adafruit_Python_PCA9685/
@@ -24,6 +28,7 @@ SERVO_ROTATION_SPEED_PER_SEC = 0.3 / math.radians(60)  # see datasheet of servo
 
 ULTRASONE_GPIO_TRIGGER = 20
 ULTRASONE_GPIO_ECHO = 21
+ULTRASONE_SENSOR_FRAME_ID = 'ultrasone_sensor'
 
 # Implementation based on tutorial https://osoyoo.com/2020/08/01/osoyoo-raspberry-pi-v2-0-car-lesson-3-obstacle-avoidance/
 
@@ -96,35 +101,37 @@ class SweepSensorUltrasone:
         return distance
 
 
-class distance_sweep_sensor_node(Node):
+class distance_sweep_sensor_node(rclpy.node.Node):
 
     def __init__(self):
         # node
         node_name = __class__.__qualname__.lower()
         super().__init__(node_name)
-        object_detected_topic = jvr_robot.utils.topic_name(IObjectDetector.object_detected)
+        object_detected_topic = jvr_robot.utils.topic_name(jvr_robot.IObjectDetector.IObjectDetector.object_detected)
         # Measure distance
         self.servo = SweepSensorServo()
         self.sensor = SweepSensorUltrasone()
-        self.pub = self.create_publisher(ObjectDetection, object_detected_topic, 10) # TODO find out what 10 means.
-        self.measuring_thread = Thread(target=self.measuring, daemon=True)
+        self.pub = self.create_publisher(jvr_interfaces.msg.ObjectDetection, object_detected_topic, 10) # TODO find out what 10 means.
+        self.measuring_thread = threading.Thread(target=self.measuring, daemon=True)
         self.measuring_thread.start()
 
     def measure(self):
-        msg = ObjectDetection()
-        # fixed values
-        # msg.object.header.frame_id not set (yet)
-        msg.object.radiation_type = Range.ULTRASOUND
+        # Create new message
+        msg = jvr_interfaces.msg.ObjectDetection()
+        
+        # Angle of servo
+        msg.angle = self.servo.get_current_position_radians()
+        
+        # Object (Range)
+        msg.object.radiation_type = sensor_msgs.msg.Range.ULTRASOUND
+        msg.object.header.frame_id = ULTRASONE_SENSOR_FRAME_ID
+        msg.object.header.stamp = self.get_clock().now().to_msg()
         # from specs of HC-SR04
         msg.object.min_range = 0.02 # 2cm
         msg.object.max_range = 5.00 # 500cm
         msg.object.field_of_view = math.radians(30)
         # measured values
-        msg.object.header.stamp = self.get_clock().now().to_msg()
         msg.object.range = self.sensor.measure()
-        ##
-        msg.angle = self.servo.get_current_position_radians()
-        ##
 
         self.get_logger().info(str(msg))
         self.pub.publish(msg)
