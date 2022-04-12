@@ -10,7 +10,7 @@ def generate_launch_description():
     use_sim_time = LaunchConfiguration('use_sim_time', default='false')
 
     folder_shared = get_package_share_directory('jvr_controller')
-    
+
     urdf_file_name = 'jvr.urdf'
     urdf = os.path.join(folder_shared, urdf_file_name)
     print(urdf)
@@ -30,9 +30,9 @@ def generate_launch_description():
             executable='robot_state_publisher',
             parameters=[{'use_sim_time': use_sim_time, 'robot_description': robot_desc}],
             arguments=[urdf]),
-        Node(
-            package='jvr_controller',
-            executable='robot_position_publisher'),
+        # Node(
+        #     package='jvr_controller',
+        #     executable='robot_position_publisher'),
         # Node(
         #     package='joint_state_publisher_gui',
         #     executable='joint_state_publisher_gui'),
