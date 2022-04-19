@@ -1,0 +1,10 @@
+SLAM'en met een ultrasone sensor
+
+Dit zou ik wel willen bereiken
+https://www.youtube.com/watch?v=6QgijvWFhFM
+
+
+// Mapping (zoekterm op index.ros.org)
+
+https://index.ros.org/p/cartographer_ros/github-ros2-cartographer_ros/#galactic
+https://wiki.ros.org/hector_mapping
