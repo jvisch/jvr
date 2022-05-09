@@ -175,7 +175,8 @@ if __name__ == '__main__':
     main()
 
 # let op,
-# /dev/i2c/ is niet te benaderen voor ander gebruikers, doe:
+# /dev/i2c/ is niet altijd te benaderen voor andere gebruikers, doe
+#     0. check met 'groups' of de gebruiker in de i2c group zit, zo nee doe de rest.
 #     1. sudo apt install i2c-tools
 #     2. sudo groupadd i2c (group may exist already)
 #     3. sudo chown :i2c /dev/i2c-1 (or i2c-0)

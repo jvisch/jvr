@@ -8,3 +8,14 @@ https://www.youtube.com/watch?v=6QgijvWFhFM
 
 https://index.ros.org/p/cartographer_ros/github-ros2-cartographer_ros/#galactic
 https://wiki.ros.org/hector_mapping
+
+Compass (en meer) module
+GY-86
+https://create.arduino.cc/projecthub/Nicholas_N/how-to-use-the-accelerometer-gyroscope-gy-521-6dfc19
+https://www.instructables.com/Raspberry-Pi-I2C-Python/
+
+
+Small based on the sensor board of Invensense 
+MPU-6050 (3-axis accelerometer and 3-axis gyroscope), 
+digital 3-axis compass HMC5883L Honeywell and 
+the pressure sensor resolution of the MS5611 MEAS. 
