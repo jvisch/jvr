@@ -1,5 +1,9 @@
 import smbus2
 
+# Zet de i2c compass tot direct te benaderen (geen slave meer van de
+# gyroscope, maar eigen adres).
+# Check met i2cdetect of je nu 3 adressen ziet van de sensors
+
 print('Sensors')
 
 # defines (from 'MPU-60X0 Registers Map and Descriptions Specification')
