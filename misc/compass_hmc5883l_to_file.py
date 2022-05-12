@@ -1,6 +1,10 @@
 import smbus2
 import time
 import math
+import os
+
+
+NR_OF_READS = 500
 
 # i2c address of sensor
 ADDRESS = 0x1E
@@ -34,7 +38,7 @@ IDENTIFICATION_REGISTER_C = 12
 
 # Number of samples avaeraged per measurement output
 MEASUREMENT_AVARAGE = {
-    1: 0b00,
+    1: 0b00, # default
     2: 0b01,
     4: 0b10,
     8: 0b11
@@ -92,7 +96,7 @@ GAIN_CONFIGURATION = {
     8.10: (0b111, 4.35)
 }
 
-GN_BITS, GN_SCALE = GAIN_CONFIGURATION[4.70]
+GN_BITS, GN_SCALE = GAIN_CONFIGURATION[5.60]
 
 # Configuration B byte layout
 # 7 6 5 4 3 2 1 0
@@ -128,42 +132,57 @@ with smbus2.SMBus(1) as bus:
     # write configuration
     bus.write_byte_data(ADDRESS, CONFIGURATION_REGISTER_A, CRA_VALUE)
     bus.write_byte_data(ADDRESS, CONFIGURATION_REGISTER_B, CRB_VALUE)
-    # Do one read
 
-    def convert(msb, lsb): return int.from_bytes(
-        [msb, lsb], "big", signed=True) * GN_SCALE
-    while True:
-        bus.write_byte_data(ADDRESS, MODE_REGISTER, MODE_VALUE)
-        time.sleep(0.100)  # at least 6ms sleep
-        x_msb = bus.read_byte_data(ADDRESS, DATA_OUTPUT_X_MSB_REGISTER)
-        x_lsb = bus.read_byte_data(ADDRESS, DATA_OUTPUT_X_LSB_REGISTER)
+    def convert(msb, lsb):
+        return int.from_bytes([msb, lsb], "big", signed=True)
 
-        y_msb = bus.read_byte_data(ADDRESS, DATA_OUTPUT_Y_MSB_REGISTER)
-        y_lsb = bus.read_byte_data(ADDRESS, DATA_OUTPUT_Y_LSB_REGISTER)
+    def convert_scaled(msb, lsb):
+        return convert(msb, lsb) * GN_SCALE
 
-        z_msb = bus.read_byte_data(ADDRESS, DATA_OUTPUT_Z_MSB_REGISTER)
-        z_lsb = bus.read_byte_data(ADDRESS, DATA_OUTPUT_Z_LSB_REGISTER)
+    with open('readings.csv', 'w') as file:
+        file.write('i;x_msb;x_lsb;y_msb;y_lsb;z_msb;z_lsb;scale;x;y;z;x_scaled;y_scaled;z_scaled;rad;deg')
+        file.write(os.linesep)
 
-        print('Converted values')
-        x = convert(x_msb, x_lsb)
-        y = convert(y_msb, y_lsb)
-        z = convert(z_msb, z_lsb)
+        for i in range(0, NR_OF_READS):
+            bus.write_byte_data(ADDRESS, MODE_REGISTER, MODE_VALUE)
+            time.sleep(0.100)  # at least 6ms sleep
+            x_msb = bus.read_byte_data(ADDRESS, DATA_OUTPUT_X_MSB_REGISTER)
+            x_lsb = bus.read_byte_data(ADDRESS, DATA_OUTPUT_X_LSB_REGISTER)
 
-        print(f'x {x}')
-        print(f'y {y}')
-        print(f'x {z}')
-        print('heading')
-        headingRad = math.atan2(y, x)
-        print(f'Rad: {headingRad}')
-        print(f'Rad: {math.atan(y/x)}')
+            y_msb = bus.read_byte_data(ADDRESS, DATA_OUTPUT_Y_MSB_REGISTER)
+            y_lsb = bus.read_byte_data(ADDRESS, DATA_OUTPUT_Y_LSB_REGISTER)
 
-        if headingRad < 0:
-            headingRad += 2 * math.pi
-        # Check for wrap and compensate
-        elif headingRad > 2 * math.pi:
-            headingRad -= 2 * math.pi
-        headingDeg = headingRad * 180 / math.pi
-        print('Deg: ' + str(headingDeg))
+            z_msb = bus.read_byte_data(ADDRESS, DATA_OUTPUT_Z_MSB_REGISTER)
+            z_lsb = bus.read_byte_data(ADDRESS, DATA_OUTPUT_Z_LSB_REGISTER)
 
-        print('-----------')
-        time.sleep(2)
+            print(i)
+            print('Converted values')
+            x_scaled = convert_scaled(x_msb, x_lsb)
+            y_scaled = convert_scaled(y_msb, y_lsb)
+            z_scaled = convert_scaled(z_msb, z_lsb)
+
+            x = convert(x_msb, x_lsb)
+            y = convert(y_msb, y_lsb)
+            z = convert(z_msb, z_lsb)
+
+            print(f'x {x_scaled}')
+            print(f'y {y_scaled}')
+            print(f'x {z_scaled}')
+            print('heading')
+            headingRad = math.atan2(y_scaled, x_scaled)
+            print(f'Rad: {headingRad}')
+            print(f'Rad: {math.atan(y_scaled/x_scaled)}')
+
+            if headingRad < 0:
+                headingRad += 2 * math.pi
+            # Check for wrap and compensate
+            elif headingRad > 2 * math.pi:
+                headingRad -= 2 * math.pi
+            headingDeg = headingRad * 180 / math.pi
+            print('Deg: ' + str(headingDeg))
+            file.write(
+                f'{i};{x_msb};{x_lsb};{y_msb};{y_lsb};{z_msb};{z_lsb};{GN_SCALE};{x};{y};{z};{x_scaled};{y_scaled};{z_scaled};{headingRad};{headingDeg}')
+            file.write(os.linesep)
+
+            time.sleep(0.01)
+            print('-----------')
