@@ -155,7 +155,6 @@ with smbus2.SMBus(1) as bus:
         print('heading')
         headingRad = math.atan2(y, x)
         print(f'Rad: {headingRad}')
-        print(f'Rad: {math.atan(y/x)}')
 
         if headingRad < 0:
             headingRad += 2 * math.pi
