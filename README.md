@@ -18,10 +18,25 @@ Create a ROS-workspace and get the packages:
     -   `mkdir -p ~/jvr_ws/src`
     -   `cd ~/jvr_ws/src`
 
-2.  Clone this repo into `~/jvr_ws/src/`
+2.  Clone this repo into `~/jvr_ws/src/`. The folderstructure will be
+    something like this.
 
-    ````
-    .
-    └── jvr_ws
-        └── src
-    ````
+    ``` plain
+    ~/jvr_ws
+    └── src
+        └── jvr
+            ├── LICENSE
+            ├── README.md
+            ├── design
+            │   └── .....
+            ├── docs
+            │   └── .....
+            ├── jvr_basic
+            │   └── .....
+            ├── jvr_controller
+            │   └── .....
+            ├── jvr_interfaces
+            │   └── ......txt
+            └── jvr_robot
+                └── .....
+    ```
