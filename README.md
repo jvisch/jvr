@@ -19,3 +19,9 @@ Create a ROS-workspace and get the packages:
     -   `cd ~/jvr_ws/src`
 
 2.  Clone this repo into `~/jvr_ws/src/`
+
+    ````
+    .
+    └── jvr_ws
+        └── src
+    ````
