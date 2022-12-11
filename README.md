@@ -6,7 +6,7 @@ jv-robot
 
 # Prepare the robot
 
-See [](./docs/install.md)
+See <>./docs/install.md>
 
 # Install JVR
 
