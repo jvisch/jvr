@@ -1,6 +1,6 @@
 # Install of Raspberry Pi
 
-## Ubuntu server
+## Install OS: Ubuntu server
 
 ROS is only supported on Ubuntu, so we need to install Ubuntu and not
 the Raspberry Pi OS.
@@ -58,42 +58,78 @@ B+](https://www.raspberrypi.com/products/raspberry-pi-3-model-b-plus/)
         -   Password: `******`
         -   Wireless LAN country: `your country`
 
-    - Locale settings
+    -   Locale settings
 
         These will be set during the ROS install and setup.
 
-Hit *Write* to write the image to the SD-card. After the write, put the SD-card in the Raspberry Pi and start it.
+Hit *Write* to write the image to the SD-card. After the write, put the
+SD-card in the Raspberry Pi and start it.
 
-# Notes
+## Configure Robot
 
--   setup rpi without monitor and keyboard
+### login with SSH
 
-    https://www.instructables.com/How-to-Setup-Raspberry-Pi-Without-Monitor-and-Keyb/
+1.  Find the IP of the Raspberry Pi
+    -   On your router (log in and find it)
+    -   using `arp`:
+        -   Windows `arp -a | findstr b8-27-eb`
+        -   Linux: `arp -na | grep -i b8:27:eb`
+2.  log in on the RPi with ssh `ssh <username>@<ip-of-rpi>`
 
-    1.  Maar ik ga ubuntu gebruiken
+### Update RPi
 
-        https://ubuntu.com/download/raspberry-pi (30-4-2021)
+On the RPi:
 
-        https://ubuntu.com/tutorials/how-to-install-ubuntu-on-your-raspberry-pi#3-using-advanced-options
+1.  `sudo apt update`
 
-        Ubuntu Server 20.04.2 LTS 64 bit
+2.  `sudo apt full-upgrade`
 
-        Determining the Pi's IP address
-        <https://ubuntu.com/tutorials/how-to-install-ubuntu-on-your-raspberry-pi#4-boot-ubuntu-server>
+    This will take a while, follow instructions (if given).
 
-        -   Windows
+3.  `sudo reboot now`
 
-            -   connect ethernet card
-            -   share wifi with ethernet card
-            -   `arp -a | findstr b8-27-eb` gives ip
+    Always reboot (just to make sure all updates and configurations are
+    finished).
 
-    2.  connectie met ssh
+### Enable firewall (of course)
 
-        `ssh ubuntu@<ip>`
+!! First add SSH to the firewall rules, otherwise the SSH connection
+will be terminated and you will no longer be able to connect via SSH.
 
-        On first logon change default password `ubuntu` to your own
+1.  `sudo ufw allow ssh`
+2.  `sudo ufw enable`
 
-    3.  firewall
+### Stop unattended upgrades (optional)
+
+The [unattended upgrades
+package](https://packages.ubuntu.com/jammy/unattended-upgrades) upgrades
+the OS with security issues on startup or on time interval. This can be
+very slow in the RPi, especially if the RPi is rebooted frequently. This
+can be disabled (but you have check for updates frequently).
+
+1.  `sudo dpkg-reconfigure unattended-upgrades`
+
+    select *no* for disabling autostart unattended-upgrades on booting.
+
+2.  `sudo systemctl stop unattended-upgrades`
+
+3.  `sudo apt remove unattended-upgrades`
+
+### Make RPi discoverable by hostname on network (optional)
+
+Local networks usually uses DHCP for handing out IP's. With
+[Samba](https://packages.ubuntu.com/jammy/samba) the RPi can be discored
+by hostname. RPi uses default Avahi, on my network this only works
+stable if on the network card IPv6 is *disabled*. With Samba IPv6 seems
+to work consistenly.
+
+1.  `sudo apt install samba`
+2.  `sudo ufw allow samba`
+3.  `sudo service smbd restart`
+
+<!-- ## Notes
+
+    1.  firewall
 
         1.  `sudo ufw allow ssh`
         2.  `sudo ufw allow in proto udp to 224.0.0.0/4`
@@ -104,46 +140,12 @@ Hit *Write* to write the image to the SD-card. After the write, put the SD-card 
 
         stap 2 t/m 5 zijn voor ROS (detectie op netwerk)
 
-    4.  update
-
-        (optioneel)
-
-        -   `sudo dpkg-reconfigure unattended-upgrades` en klik op *no*.
-            Anders wordt de unattended-upgrades steeds opgestart bij
-            opstarten systeem.
-        -   `sudo systemctl stop unattended-upgrades`
-        -   `sudo apt remove unattended-upgrades`
-
-        `sudo apt update`
-
-        After `update` the unattended-upgrade is started. Use `top` to
-        see when it is finished.
-
-        `sudo apt full-upgrade`
-
-    5.  add to (home) wifi
-
-        1.  `sudo apt install network-manager`
-        2.  `sudo nmtui`
-        3.  Activate network, follow instructions
-
 -   GPIO (pinnen gebruiken)
 
     -   installeer `sudo apt install python3-rpi.gpio`
     -   geef de gebruiker rechten op GPIO
         -   groep gpio toevoegen `sudo addgroup gpio`
         -   gebruiker toevoegen `sudo usermod -a -G gpio $USER`
-
--   blink led (not blinking)
-
-    -   <https://raspberrypihq.com/making-a-led-blink-using-the-raspberry-pi-and-python/>
-
-        Verkeerde board layout (veranderd in ledblink.py)
-
-    -   `sudo apt install wiringpi`
-
-        om handmatig gpio te gebruiken
-        (<https://www.teknotut.com/en/first-raspberry-pi-project-blink-led/>)
 
 -   Op windows ook firewall instellen dat Ros er bij kan:
 
@@ -152,15 +154,6 @@ Hit *Write* to write the image to the SD-card. After the write, put the SD-card 
     3.  select `port`
     4.  allow rang `7400-7429` (dat is voor domain id 1)
 
--   ROS 2 installatie op py
-
-    -   <https://docs.ros.org/en/foxy/Installation/Ubuntu-Install-Debians.html>
-
--   Verwijder op Windows de python 3.9 installatie, daar heb je alleen
-    maar last van
-
--   windows 10: `pip install rosdistro`
-
 -   /dev/i2c/ is niet te benaderen voor ander gebruikers, doe:
 
     -   `sudo apt install i2c-tools`
@@ -168,4 +161,4 @@ Hit *Write* to write the image to the SD-card. After the write, put the SD-card 
     -   \~`sudo chown :i2c /dev/i2c-1` (or i2c-0)\~
     -   ~`sudo chmod g+rw /dev/i2c-1`~
     -   `sudo usermod -aG i2c $USER`
-    -   `sudo reboot now` (or logout)
+    -   `sudo reboot now` (or logout) -->

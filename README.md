@@ -3,14 +3,17 @@
 jv-robot
 
 ***TODO: explain what this repo is about***
+- The robot
+- RPI
+- computer/laptop (architecture)
 
-# Prepare the robot
+## Prepare the robot
 
 See [./docs/install.md](./docs/install.md)
 
-# Install JVR
+## Install JVR
 
-Create a ROS-workspace and get the packages:
+Create a ROS-workspace and get the packages. 
 
 1.  ROS 2 Humble [Creating a
     workspace](https://docs.ros.org/en/humble/Tutorials/Beginner-Client-Libraries/Creating-A-Workspace/Creating-A-Workspace.html)
@@ -36,7 +39,13 @@ Create a ROS-workspace and get the packages:
             ├── jvr_controller
             │   └── .....
             ├── jvr_interfaces
-            │   └── ......txt
+            │   └── ......
             └── jvr_robot
                 └── .....
     ```
+
+3. Build the workspace
+    1. make sure ROS is sourced: `source /opt/ros/humble/setup.bash`
+    2. `cd ~/jvr_ws`
+    3. `colcon build`
+
