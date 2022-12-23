@@ -4,12 +4,11 @@ import rclpy
 import rclpy.timer
 import rclpy.node
 
-import sensor_msgs.msg 
+import sensor_msgs.msg
 
-
-import jvr_robot.utils
 import jvr_robot.IObjectDetector
 import jvr_interfaces.msg
+import jvr_interfaces.utils.helpers
 
 
 # https://github.com/adafruit/Adafruit_Python_PCA9685/
@@ -55,16 +54,19 @@ class SweepSensorServo:
         def map(value, in_min, in_max, out_min, out_max):
             return (value - in_min) * (out_max - out_min) / (in_max - in_min) + out_min
         # move servo
-        pwm = map(new_position, SERVO_LEFT_ANGLE, SERVO_RIGHT_ANGLE, SERVO_LEFT_PWM, SERVO_RIGHT_PWM)
+        pwm = map(new_position, SERVO_LEFT_ANGLE, SERVO_RIGHT_ANGLE,
+                  SERVO_LEFT_PWM, SERVO_RIGHT_PWM)
         pwm = math.trunc(pwm)  # make float to integer
 
         self.servo.set_pwm(self.pin, 0, pwm)
         # calculate wait time (servo has no feedback capability)
-        wait_time = abs(self.current_position - new_position) * SERVO_ROTATION_SPEED_PER_SEC
+        wait_time = abs(self.current_position - new_position) * \
+            SERVO_ROTATION_SPEED_PER_SEC
         wait_time = wait_time + .1  # add a small amount to be sure the servo is stopped
         time.sleep(wait_time)
         # calculate current position on pwm, because the real pwm was trunctated
-        self.current_position = map(pwm, SERVO_LEFT_PWM, SERVO_RIGHT_PWM, SERVO_LEFT_ANGLE, SERVO_RIGHT_ANGLE)
+        self.current_position = map(
+            pwm, SERVO_LEFT_PWM, SERVO_RIGHT_PWM, SERVO_LEFT_ANGLE, SERVO_RIGHT_ANGLE)
 
     def move_to_degrees(self, new_position):
         pos = math.degrees(new_position)
@@ -107,28 +109,32 @@ class distance_sweep_sensor_node(rclpy.node.Node):
         # node
         node_name = __class__.__qualname__.lower()
         super().__init__(node_name)
-        object_detected_topic = jvr_robot.utils.topic_name(jvr_robot.IObjectDetector.IObjectDetector.object_detected)
+        object_detected_topic = jvr_interfaces.utils.helpers.topic_name(
+            jvr_robot.IObjectDetector.IObjectDetector.object_detected)
         # Measure distance
         self.servo = SweepSensorServo()
         self.sensor = SweepSensorUltrasone()
-        self.pub = self.create_publisher(jvr_interfaces.msg.ObjectDetection, object_detected_topic, 10) # TODO find out what 10 means.
-        self.measuring_thread = threading.Thread(target=self.measuring, daemon=True)
+        # TODO find out what 10 means.
+        self.pub = self.create_publisher(
+            jvr_interfaces.msg.ObjectDetection, object_detected_topic, 10)
+        self.measuring_thread = threading.Thread(
+            target=self.measuring, daemon=True)
         self.measuring_thread.start()
 
     def measure(self):
         # Create new message
         msg = jvr_interfaces.msg.ObjectDetection()
-        
+
         # Angle of servo
         msg.angle = self.servo.get_current_position_radians()
-        
+
         # Object (Range)
         msg.object.radiation_type = sensor_msgs.msg.Range.ULTRASOUND
         msg.object.header.frame_id = ULTRASONE_SENSOR_FRAME_ID
         msg.object.header.stamp = self.get_clock().now().to_msg()
         # from specs of HC-SR04
-        msg.object.min_range = 0.02 # 2cm
-        msg.object.max_range = 5.00 # 500cm
+        msg.object.min_range = 0.02  # 2cm
+        msg.object.max_range = 5.00  # 500cm
         msg.object.field_of_view = math.radians(30)
         # measured values
         msg.object.range = self.sensor.measure()
@@ -157,6 +163,7 @@ class distance_sweep_sensor_node(rclpy.node.Node):
                 self.servo.move_to_radians(direction)
                 self.measure()
                 direction = direction - math.radians(5)
+
 
 def main(args=None):
     node_type = distance_sweep_sensor_node

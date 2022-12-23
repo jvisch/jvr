@@ -11,7 +11,7 @@ import sensor_msgs.msg
 
 import jvr_interfaces.msg
 import jvr_robot.IObjectDetector
-import jvr_robot.utils
+import jvr_interfaces.utils.helpers
 
 # This script positions the robot somewhere in the world
 # based on WoR-world demo.
@@ -29,7 +29,7 @@ class robot_position_publisher(rclpy.node.Node):
         self.rotation = self.euler_to_quaternion(0, 0, 0)
         self.position = geometry_msgs.msg.Vector3(x=0.0, y=0.0, z=0.0)
 
-        topic_object_detected = jvr_robot.utils.topic_name(
+        topic_object_detected = jvr_interfaces.utils.helpers.topic_name(
             jvr_robot.IObjectDetector.IObjectDetector.object_detected)
 
         self.object_detected = self.create_subscription(
