@@ -125,8 +125,25 @@ to work consistenly.
 
 1.  `sudo apt install samba`
 2.  `sudo ufw allow samba`
-3.  `sudo service smbd restart`
+3.  `sudo service smbd restart` or reboot the RPi
 
+## Install ROS (ROS2 Humble) on Robot
+
+1.  Follow instructions [Installation Ubuntu
+    (Debian)](https://docs.ros.org/en/humble/Installation/Ubuntu-Install-Debians.html).
+
+2.  Install `ros-humble-ros-base` on the RPi (not the *desktop*) on the
+    RPi.
+
+3.  Install also `sudo apt install ros-dev-tools` for building the
+    JVR-packages.
+
+4.  Add ROS source to shell startup script
+
+    `echo "source /opt/ros/humble/setup.bash" >> ~/.bashrc`
+
+
+```{=html}
 <!-- ## Notes
 
     1.  firewall
@@ -162,3 +179,4 @@ to work consistenly.
     -   ~`sudo chmod g+rw /dev/i2c-1`~
     -   `sudo usermod -aG i2c $USER`
     -   `sudo reboot now` (or logout) -->
+```
