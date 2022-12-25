@@ -1,8 +1,9 @@
-#!/usr/bin/env python
+import sys
 from math import sin, cos, pi
 
 import rclpy
 import rclpy.node
+from rclpy.executors import ExternalShutdownException
 
 import tf2_ros
 
@@ -79,10 +80,16 @@ def main(args=None):
 
     rclpy.init(args=args)
 
-    node = node_type()
-    # measuring_thread()
-    rclpy.spin(node)
-    rclpy.shutdown()
+    try:
+        node = node_type()
+        rclpy.spin(node)
+    except KeyboardInterrupt:
+        pass
+    except ExternalShutdownException:
+        sys.exit()
+    finally:
+        rclpy.try_shutdown()
+        node.destroy_node()
 
 
 if __name__ == '__main__':
