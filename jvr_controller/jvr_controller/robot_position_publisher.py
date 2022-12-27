@@ -10,14 +10,16 @@ import tf2_ros
 import geometry_msgs.msg
 import sensor_msgs.msg
 
+import jvr_helpers.utils
 import jvr_interfaces.msg
 import jvr_robot.IObjectDetector
-import jvr_robot.utils
+
 
 # This script positions the robot somewhere in the world
 # based on WoR-world demo.
 
 TOPIC_OBJECTDETECTION_RANGE = 'jvr_objectdection_range'
+
 
 class robot_position_publisher(rclpy.node.Node):
 
@@ -30,7 +32,7 @@ class robot_position_publisher(rclpy.node.Node):
         self.rotation = self.euler_to_quaternion(0, 0, 0)
         self.position = geometry_msgs.msg.Vector3(x=0.0, y=0.0, z=0.0)
 
-        topic_object_detected = jvr_robot.utils.topic_name(
+        topic_object_detected = jvr_helpers.utils.topic_name(
             jvr_robot.IObjectDetector.IObjectDetector.object_detected)
 
         self.object_detected = self.create_subscription(
@@ -38,25 +40,27 @@ class robot_position_publisher(rclpy.node.Node):
             topic_object_detected,
             self.object_detected_callback, 10)
 
-        self.joint_pub = self.create_publisher(sensor_msgs.msg.JointState, 'joint_states', 10)
-        self.range_pub = self.create_publisher(sensor_msgs.msg.Range, TOPIC_OBJECTDETECTION_RANGE, 10)
+        self.joint_pub = self.create_publisher(
+            sensor_msgs.msg.JointState, 'joint_states', 10)
+        self.range_pub = self.create_publisher(
+            sensor_msgs.msg.Range, TOPIC_OBJECTDETECTION_RANGE, 10)
 
     def object_detected_callback(self, msg: jvr_interfaces.msg.ObjectDetection):
         # SweepSensor (servo and ultrasone as joint)
         # position of sensor (angle)
         joint_state = sensor_msgs.msg.JointState()
         joint_state.name = ["SweepSensorServo"]
-        joint_state.header.stamp = msg.object.header.stamp # self.get_clock().now().to_msg()
+        joint_state.header.stamp = msg.object.header.stamp
         joint_state.position = [msg.angle]
         self.joint_pub.publish(joint_state)
         # Detected object (Range)
         self.range_pub.publish(msg.object)
-        
+
         # publish robot position and poses
         odom_trans = geometry_msgs.msg.TransformStamped()
         odom_trans.header.frame_id = 'world'
         odom_trans.child_frame_id = 'chassis'
-        odom_trans.header.stamp = msg.object.header.stamp # self.get_clock().now().to_msg()
+        odom_trans.header.stamp = msg.object.header.stamp
         odom_trans.transform.rotation = self.rotation
         odom_trans.transform.translation = self.position
         self.br.sendTransform(odom_trans)

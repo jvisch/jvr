@@ -4,25 +4,28 @@ import rclpy
 from rclpy.node import Node
 from rclpy.executors import ExternalShutdownException
 
+import jvr_helpers.utils
+
 from jvr_interfaces.msg import TalkMsg
 
-NODE_NAME = 'listener'
-TOPIC_NAME = 'talk'
+import jvr_basic.ITalker
 
 
 class Listener(Node):
 
-    def __init__(self, namespace=__package__):
-        super().__init__(NODE_NAME, namespace=namespace)
+    def __init__(self):
+        node_name = __class__.__qualname__.lower()
+        super().__init__(node_name, namespace=__package__)
+
+        talk_topic_name = jvr_helpers.utils.topic_name(jvr_basic.ITalker.ITalker.talk)
         self.subscription = self.create_subscription(
             TalkMsg,
-            TOPIC_NAME,
+            talk_topic_name,
             self.listener_callback,
             10)
         self.subscription  # prevent unused variable warning
 
     def listener_callback(self, msg):
-        # self.get_logger().info('[{0}]: msg "{1}"'.format(msg.id, msg.content))
         self.get_logger().info(f'{msg.id}: "{msg.content}"')
 
 
