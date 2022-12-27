@@ -4,21 +4,21 @@ import rclpy
 from rclpy.node import Node
 from rclpy.executors import ExternalShutdownException
 
+import jvr_helpers.utils
+
 from jvr_interfaces.msg import TalkMsg
 
 import jvr_basic.ITalker
 
-# todo (to the interface package)
-def topic_name(function):
-    return function.__qualname__.replace('.', '/').lower()
 
 class Talker(Node):
 
     def __init__(self, timer_period=0.5):
         node_name = __class__.__qualname__.lower()
         super().__init__(node_name, namespace=__package__)
-        
-        talk_topic_name = topic_name(jvr_basic.ITalker.ITalker.talk)
+
+        talk_topic_name = jvr_helpers.utils.topic_name(
+            jvr_basic.ITalker.ITalker.talk)
         self.publisher_ = self.create_publisher(TalkMsg, talk_topic_name, 10)
 
         self.timer = self.create_timer(timer_period, self.timer_callback)

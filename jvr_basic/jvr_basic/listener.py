@@ -4,12 +4,12 @@ import rclpy
 from rclpy.node import Node
 from rclpy.executors import ExternalShutdownException
 
+import jvr_helpers.utils
+
 from jvr_interfaces.msg import TalkMsg
 
 import jvr_basic.ITalker
 
-def topic_name(function):
-    return function.__qualname__.replace('.', '/').lower()
 
 class Listener(Node):
 
@@ -17,7 +17,7 @@ class Listener(Node):
         node_name = __class__.__qualname__.lower()
         super().__init__(node_name, namespace=__package__)
 
-        talk_topic_name = topic_name(jvr_basic.ITalker.ITalker.talk)
+        talk_topic_name = jvr_helpers.utils.topic_name(jvr_basic.ITalker.ITalker.talk)
         self.subscription = self.create_subscription(
             TalkMsg,
             talk_topic_name,
