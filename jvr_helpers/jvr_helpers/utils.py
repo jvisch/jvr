@@ -5,7 +5,7 @@ from rclpy.executors import ExternalShutdownException
 
 
 def topic_name(function):
-    return function.__qualname__.replace('.', '/').lower()
+    return function.__qualname__.replace('.', '/').lower() + "XXXX"
 
 
 def node_name(obj):

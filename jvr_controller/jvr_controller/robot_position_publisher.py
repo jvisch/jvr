@@ -25,8 +25,8 @@ class robot_position_publisher(rclpy.node.Node):
 
     def __init__(self):
         # node initialization
-        node_name = __class__.__qualname__.lower()
-        super().__init__(node_name)
+        node_name = jvr_helpers.utils.node_name(self)
+        super().__init__(node_name, namespace=__package__)
         # init members
         self.br = tf2_ros.TransformBroadcaster(self)
         self.rotation = self.euler_to_quaternion(0, 0, 0)
@@ -79,21 +79,7 @@ class robot_position_publisher(rclpy.node.Node):
 
 def main(args=None):
     node_type = robot_position_publisher
-
-    print('Hi from ' + node_type.__qualname__)
-
-    rclpy.init(args=args)
-
-    try:
-        node = node_type()
-        rclpy.spin(node)
-    except KeyboardInterrupt:
-        pass
-    except ExternalShutdownException:
-        sys.exit()
-    finally:
-        rclpy.try_shutdown()
-        node.destroy_node()
+    jvr_helpers.utils.run_node(node_type, args)
 
 
 if __name__ == '__main__':
