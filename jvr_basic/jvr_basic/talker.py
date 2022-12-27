@@ -8,6 +8,7 @@ from jvr_interfaces.msg import TalkMsg
 
 import jvr_basic.ITalker
 
+# todo (to the interface package)
 def topic_name(function):
     return function.__qualname__.replace('.', '/').lower()
 
