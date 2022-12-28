@@ -4,12 +4,17 @@ import rclpy
 from rclpy.executors import ExternalShutdownException
 
 
-def topic_name(function):
-    return function.__qualname__.replace('.', '/').lower()
+NODE_NAME_PREFIX = 'jvr'
+TOPIC_NAME_PREFIX = 'jvr'
+
+def topic_name(fn):
+    name = fn.__qualname__.replace('.', '/').lower()
+    return f'{TOPIC_NAME_PREFIX}/{name}'
 
 
 def node_name(obj):
-    return obj.__class__.__qualname__.lower()
+    name = obj.__class__.__qualname__.lower()
+    return f'{NODE_NAME_PREFIX}_{name}'
 
 
 def run_node(node_type, args):

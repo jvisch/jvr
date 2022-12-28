@@ -111,7 +111,7 @@ class distance_sweep_sensor_node(rclpy.node.Node):
     def __init__(self):
         # node
         node_name = jvr_helpers.utils.node_name(self)
-        super().__init__(node_name, namespace=__package__)
+        super().__init__(node_name)
 
         object_detected_topic = jvr_helpers.utils.topic_name(
             jvr_robot.IObjectDetector.IObjectDetector.object_detected)

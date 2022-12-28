@@ -26,7 +26,7 @@ class robot_position_publisher(rclpy.node.Node):
     def __init__(self):
         # node initialization
         node_name = jvr_helpers.utils.node_name(self)
-        super().__init__(node_name, namespace=__package__)
+        super().__init__(node_name)
         # init members
         self.br = tf2_ros.TransformBroadcaster(self)
         self.rotation = self.euler_to_quaternion(0, 0, 0)

@@ -11,7 +11,7 @@ class Talker(Node):
 
     def __init__(self, timer_period=0.5):
         node_name = jvr_helpers.utils.node_name(self)
-        super().__init__(node_name, namespace=__package__)
+        super().__init__(node_name)
 
         talk_topic_name = jvr_helpers.utils.topic_name(
             jvr_basic.ITalker.ITalker.talk)
