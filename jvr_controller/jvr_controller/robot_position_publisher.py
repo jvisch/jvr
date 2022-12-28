@@ -1,9 +1,7 @@
-import sys
-from math import sin, cos, pi
+from math import sin, cos
 
 import rclpy
 import rclpy.node
-from rclpy.executors import ExternalShutdownException
 
 import tf2_ros
 
@@ -14,13 +12,11 @@ import jvr_helpers.utils
 import jvr_interfaces.msg
 import jvr_robot.IObjectDetector
 
+import jvr_controller.IObjectDetection
+
 
 # This script positions the robot somewhere in the world
 # based on WoR-world demo.
-
-TOPIC_OBJECTDETECTION_RANGE = 'jvr_objectdection_range'
-
-
 class robot_position_publisher(rclpy.node.Node):
 
     def __init__(self):
@@ -32,6 +28,7 @@ class robot_position_publisher(rclpy.node.Node):
         self.rotation = self.euler_to_quaternion(0, 0, 0)
         self.position = geometry_msgs.msg.Vector3(x=0.0, y=0.0, z=0.0)
 
+        # Subscribe to ObjectDetector
         topic_object_detected = jvr_helpers.utils.topic_name(
             jvr_robot.IObjectDetector.IObjectDetector.object_detected)
 
@@ -40,10 +37,16 @@ class robot_position_publisher(rclpy.node.Node):
             topic_object_detected,
             self.object_detected_callback, 10)
 
+        # Publish position of joints
+        TOPIC_JOINT_STATES = 'joint_states'
         self.joint_pub = self.create_publisher(
-            sensor_msgs.msg.JointState, 'joint_states', 10)
+            sensor_msgs.msg.JointState, TOPIC_JOINT_STATES, 10)
+
+        # Publish range of object (range ultrasone sensor)
+        topic_object_range = jvr_helpers.utils.topic_name(
+            jvr_controller.IObjectDetection.IObjectDetection.distance)
         self.range_pub = self.create_publisher(
-            sensor_msgs.msg.Range, TOPIC_OBJECTDETECTION_RANGE, 10)
+            sensor_msgs.msg.Range, topic_object_range, 10)
 
     def object_detected_callback(self, msg: jvr_interfaces.msg.ObjectDetection):
         # SweepSensor (servo and ultrasone as joint)
@@ -53,6 +56,7 @@ class robot_position_publisher(rclpy.node.Node):
         joint_state.header.stamp = msg.object.header.stamp
         joint_state.position = [msg.angle]
         self.joint_pub.publish(joint_state)
+
         # Detected object (Range)
         self.range_pub.publish(msg.object)
 
