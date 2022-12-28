@@ -142,20 +142,19 @@ to work consistenly.
 
     `echo "source /opt/ros/humble/setup.bash" >> ~/.bashrc`
 
+## Configure firewall on Robot
+
+1.  `sudo ufw allow in proto udp to 224.0.0.0/4`
+2.  `sudo ufw allow in proto udp from 224.0.0.0/4`
+3.  `sudo ufw allow 7400:7430/tcp`
+4.  `sudo ufw allow 7400:7430/udp`
+5.  `sudo ufw allow 11811`
+
+-   stap 1 t/m 4 zijn voor ROS (detectie op netwerk)
+-   stap 5 is voor Fast DDS Discory server
 
 ```{=html}
 <!-- ## Notes
-
-    1.  firewall
-
-        1.  `sudo ufw allow ssh`
-        2.  `sudo ufw allow in proto udp to 224.0.0.0/4`
-        3.  `sudo ufw allow in proto udp from 224.0.0.0/4`
-        4.  `sudo ufw allow 7400:7430/tcp`
-        5.  `sudo ufw allow 7400:7430/udp`
-        6.  `sudo ufw enable`
-
-        stap 2 t/m 5 zijn voor ROS (detectie op netwerk)
 
 -   GPIO (pinnen gebruiken)
 
