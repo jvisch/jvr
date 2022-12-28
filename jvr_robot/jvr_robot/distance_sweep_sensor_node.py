@@ -110,10 +110,12 @@ class distance_sweep_sensor_node(rclpy.node.Node):
 
     def __init__(self):
         # node
-        node_name = __class__.__qualname__.lower()
+        node_name = jvr_helpers.utils.node_name(self)
         super().__init__(node_name)
+
         object_detected_topic = jvr_helpers.utils.topic_name(
             jvr_robot.IObjectDetector.IObjectDetector.object_detected)
+        
         # Measure distance
         self.servo = SweepSensorServo()
         self.sensor = SweepSensorUltrasone()
@@ -170,25 +172,12 @@ class distance_sweep_sensor_node(rclpy.node.Node):
 
 def main(args=None):
     node_type = distance_sweep_sensor_node
-
-    print('Hi from ' + node_type.__qualname__)
-
-    rclpy.init(args=args)
-
-    try:
-        node = node_type()
-        rclpy.spin(node)
-    except KeyboardInterrupt:
-        pass
-    except ExternalShutdownException:
-        sys.exit()
-    finally:
-        rclpy.try_shutdown()
-        node.destroy_node()
+    jvr_helpers.utils.run_node(node_type, args)
 
 
 if __name__ == '__main__':
     main()
+
 
 # let op,
 # /dev/i2c/ is niet te benaderen voor ander gebruikers, doe:
