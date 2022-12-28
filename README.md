@@ -36,6 +36,8 @@ Create a ROS-workspace and get the packages.
             │   └── .....
             ├── jvr_controller
             │   └── .....
+            ├── jvr_helpers
+            │   └── .....
             ├── jvr_interfaces
             │   └── ......
             └── jvr_robot
@@ -60,7 +62,7 @@ Create a ROS-workspace and get the packages.
         ros2 run jvr_basic talker
         ```
 
-        Post messages on topic `/jvr_basic/talk`
+        Post messages on topic `/jvr/talk`
 
     3.  Terminal 2:
 
@@ -70,4 +72,34 @@ Create a ROS-workspace and get the packages.
         ros2 run jvr_basic listener
         ```
 
-        Listens to message published on topic `/jvr_basic/talk`.
+        Listens to message published on topic `/jvr/talk`.
+
+## Running on Robot and computer
+
+1.  Terminal 1 (Robot or Computer)
+
+    ``` plain
+    fastdds discovery -i 0
+    ```
+
+    Starts discovery server on port 11811 (default).
+
+2.  Terminal 2 (Robot)
+
+    Don't forget to source ROS2 and JVR-packages.
+
+    ``` plain
+    export ROS_DISCOVERY_SERVER=<ip terminal 1>:11811
+    ros2 run jvr_basic talker
+    ```
+
+3.  Terminal 2 (Computer)
+
+    Don't forget to source ROS2 and JVR-packages.
+
+    Use `export` on Linux/Mac, use `set` on Windows.
+
+    ``` plain
+    export ROS_DISCOVERY_SERVER=<ip terminal 1>:11811
+    ros2 run jvr_basic listener
+    ```
