@@ -21,6 +21,7 @@ setup(
     entry_points={
         'console_scripts': [
             'distance_sweep_sensor_node = jvr_robot.distance_sweep_sensor_node:main',
+            'drive_node = jvr_robot.drive_node:main'
         ],
     },
 )

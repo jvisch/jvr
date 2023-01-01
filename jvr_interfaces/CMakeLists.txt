@@ -24,6 +24,7 @@ find_package(sensor_msgs REQUIRED)
 set(msg_files
   "msg/TalkMsg.msg"
   "msg/ObjectDetection.msg"
+  "msg/Drive.msg"
 )
 
 rosidl_generate_interfaces(${PROJECT_NAME}
