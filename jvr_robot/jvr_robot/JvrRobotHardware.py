@@ -57,7 +57,7 @@ class SweepSensorServo(Channel):
         # move servo
         pwm = map(new_position, SweepSensorServo.LEFT_ANGLE, SweepSensorServo.RIGHT_ANGLE, SweepSensorServo.LEFT_PWM, SweepSensorServo.RIGHT_PWM)
         pwm = math.trunc(pwm)  # make float to integer
-        self.duty_cycle = pwm
+        self.duty_cycle(pwm)
 
         # calculate wait time (servo has no feedback capability)
         wait_time = abs(self.current_position - new_position) * SweepSensorServo.ROTATION_SPEED_PER_SEC
