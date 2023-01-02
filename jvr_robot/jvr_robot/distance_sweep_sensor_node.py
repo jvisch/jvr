@@ -22,34 +22,7 @@ import time
 
 import jvr_robot.JvrRobotHardware
 
-ULTRASONE_GPIO_TRIGGER = 20
-ULTRASONE_GPIO_ECHO = 21
 ULTRASONE_SENSOR_FRAME_ID = 'ultrasone_sensor'
-
-
-
-class SweepSensorUltrasone:
-
-    def __init__(self):
-        RPi.GPIO.setmode(RPi.GPIO.BCM)
-        RPi.GPIO.setwarnings(False)
-        RPi.GPIO.setup(ULTRASONE_GPIO_TRIGGER, RPi.GPIO.OUT)  # Trigger
-        RPi.GPIO.setup(ULTRASONE_GPIO_ECHO, RPi.GPIO.IN)      # Echo
-
-    def measure(self):
-        # This function measures a distance
-        RPi.GPIO.output(ULTRASONE_GPIO_TRIGGER, True)
-        time.sleep(0.00001)
-        RPi.GPIO.output(ULTRASONE_GPIO_TRIGGER, False)
-        start = time.time()
-        while RPi.GPIO.input(ULTRASONE_GPIO_ECHO) == 0:
-            start = time.time()
-        while RPi.GPIO.input(ULTRASONE_GPIO_ECHO) == 1:
-            stop = time.time()
-        elapsed = stop-start
-        # snelheid van het geluid +/- 343m/s
-        distance = (elapsed / 2) * 343
-        return distance
 
 
 class distance_sweep_sensor_node(rclpy.node.Node):
@@ -61,10 +34,15 @@ class distance_sweep_sensor_node(rclpy.node.Node):
 
         object_detected_topic = jvr_helpers.utils.topic_name(
             jvr_robot.IObjectDetector.IObjectDetector.object_detected)
-        
+
         # Measure distance
-        self.servo = jvr_robot.JvrRobotHardware.SweepSensorServo(jvr_robot.JvrRobotHardware.PIN_SWEEP_SERVO)
-        self.sensor = SweepSensorUltrasone()
+        self.servo = jvr_robot.JvrRobotHardware.SweepSensorServo(
+            jvr_robot.JvrRobotHardware.PCA_PIN_SWEEP_SERVO
+        )
+        self.sensor = jvr_robot.JvrRobotHardware.UltrasoneSensor(
+            jvr_robot.JvrRobotHardware.GPIO_ULTRASONE_TRIGGER,
+            jvr_robot.JvrRobotHardware.GPIO_ULTRASONE_ECHO
+        )
         # TODO find out what 10 means.
         self.pub = self.create_publisher(
             jvr_interfaces.msg.ObjectDetection, object_detected_topic, 10)
@@ -100,12 +78,12 @@ class distance_sweep_sensor_node(rclpy.node.Node):
             if value > max:
                 return max
             return value
-        
+
         left_angle = jvr_robot.JvrRobotHardware.SweepSensorServo.LEFT_ANGLE
         right_angle = jvr_robot.JvrRobotHardware.SweepSensorServo.RIGHT_ANGLE
-        left = min( left_angle, right_angle)
+        left = min(left_angle, right_angle)
         right = max(left_angle, right_angle)
-        
+
         while True:
             direction = left
             while direction <= right:
