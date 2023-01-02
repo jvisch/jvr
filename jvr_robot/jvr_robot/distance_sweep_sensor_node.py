@@ -8,16 +8,15 @@ from rclpy.executors import ExternalShutdownException
 
 import sensor_msgs.msg
 
-
 import jvr_helpers.utils
 import jvr_interfaces.msg
 import jvr_robot.IObjectDetector
 
+import adafruit_pca9685
+import board
+import busio
+import RPi
 
-# https://github.com/adafruit/Adafruit_Python_PCA9685/
-# sudo pip install adafruit-pca9685
-import Adafruit_PCA9685
-import RPi.GPIO as GPIO
 import math
 import time
 
@@ -32,16 +31,19 @@ ULTRASONE_GPIO_TRIGGER = 20
 ULTRASONE_GPIO_ECHO = 21
 ULTRASONE_SENSOR_FRAME_ID = 'ultrasone_sensor'
 
-# Implementation based on tutorial https://osoyoo.com/2020/08/01/osoyoo-raspberry-pi-v2-0-car-lesson-3-obstacle-avoidance/
-
-
 class SweepSensorServo:
 
     def __init__(self):
         # initialize servo
+        i2c = busio.I2C(board.SCL, board.SDA)
+
         self.pin = SERVO_PIN
-        self.servo = Adafruit_PCA9685.PCA9685()
-        self.servo.set_pwm_freq(60)
+        self.servo = adafruit_pca9685.PCA9685(i2c)
+        self.servo.frequency = 60
+
+        RPi.GPIO.setmode(RPi.GPIO.BCM)
+        RPi.GPIO.setwarnings(False)
+
         # set servo to middle
         self.current_position = SERVO_LEFT_ANGLE  # most extreme position
         self.move_to_radians(0)
@@ -52,8 +54,8 @@ class SweepSensorServo:
             raise ValueError('new_position less then minimum angle')
         if new_position > max(SERVO_LEFT_ANGLE, SERVO_RIGHT_ANGLE):
             raise ValueError('new_position greater then maximum angle')
+        
         # map function
-
         def map(value, in_min, in_max, out_min, out_max):
             return (value - in_min) * (out_max - out_min) / (in_max - in_min) + out_min
         # move servo
@@ -61,7 +63,8 @@ class SweepSensorServo:
                   SERVO_LEFT_PWM, SERVO_RIGHT_PWM)
         pwm = math.trunc(pwm)  # make float to integer
 
-        self.servo.set_pwm(self.pin, 0, pwm)
+        # self.servo.set_pwm(self.pin, 0, pwm)
+        self.servo.channels[self.pin].duty_cycle = (pwm << 4) + 0xf
         # calculate wait time (servo has no feedback capability)
         wait_time = abs(self.current_position - new_position) * \
             SERVO_ROTATION_SPEED_PER_SEC
@@ -85,20 +88,20 @@ class SweepSensorServo:
 class SweepSensorUltrasone:
 
     def __init__(self):
-        GPIO.setmode(GPIO.BCM)
-        GPIO.setwarnings(False)
-        GPIO.setup(ULTRASONE_GPIO_TRIGGER, GPIO.OUT)  # Trigger
-        GPIO.setup(ULTRASONE_GPIO_ECHO, GPIO.IN)      # Echo
+        RPi.GPIO.setmode(RPi.GPIO.BCM)
+        RPi.GPIO.setwarnings(False)
+        RPi.GPIO.setup(ULTRASONE_GPIO_TRIGGER, RPi.GPIO.OUT)  # Trigger
+        RPi.GPIO.setup(ULTRASONE_GPIO_ECHO, RPi.GPIO.IN)      # Echo
 
     def measure(self):
         # This function measures a distance
-        GPIO.output(ULTRASONE_GPIO_TRIGGER, True)
+        RPi.GPIO.output(ULTRASONE_GPIO_TRIGGER, True)
         time.sleep(0.00001)
-        GPIO.output(ULTRASONE_GPIO_TRIGGER, False)
+        RPi.GPIO.output(ULTRASONE_GPIO_TRIGGER, False)
         start = time.time()
-        while GPIO.input(ULTRASONE_GPIO_ECHO) == 0:
+        while RPi.GPIO.input(ULTRASONE_GPIO_ECHO) == 0:
             start = time.time()
-        while GPIO.input(ULTRASONE_GPIO_ECHO) == 1:
+        while RPi.GPIO.input(ULTRASONE_GPIO_ECHO) == 1:
             stop = time.time()
         elapsed = stop-start
         # snelheid van het geluid +/- 343m/s
