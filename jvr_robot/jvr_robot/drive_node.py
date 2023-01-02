@@ -6,6 +6,9 @@ import jvr_interfaces.msg
 
 import jvr_robot.IDrive
 
+class Motor:
+    pass
+
 
 class drive_node(rclpy.node.Node):
 

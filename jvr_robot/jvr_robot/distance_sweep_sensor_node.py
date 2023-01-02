@@ -20,69 +20,12 @@ import RPi
 import math
 import time
 
-SERVO_PIN = 15
-SERVO_LEFT_PWM = 420
-SERVO_RIGHT_PWM = 180
-SERVO_LEFT_ANGLE = math.radians(45)
-SERVO_RIGHT_ANGLE = math.radians(-45)
-SERVO_ROTATION_SPEED_PER_SEC = 0.3 / math.radians(60)  # see datasheet of servo
+import jvr_robot.JvrRobotHardware
 
 ULTRASONE_GPIO_TRIGGER = 20
 ULTRASONE_GPIO_ECHO = 21
 ULTRASONE_SENSOR_FRAME_ID = 'ultrasone_sensor'
 
-class SweepSensorServo:
-
-    def __init__(self):
-        # initialize servo
-        i2c = busio.I2C(board.SCL, board.SDA)
-
-        self.pin = SERVO_PIN
-        self.servo = adafruit_pca9685.PCA9685(i2c)
-        self.servo.frequency = 60
-
-        RPi.GPIO.setmode(RPi.GPIO.BCM)
-        RPi.GPIO.setwarnings(False)
-
-        # set servo to middle
-        self.current_position = SERVO_LEFT_ANGLE  # most extreme position
-        self.move_to_radians(0)
-        time.sleep(1)  # just wait 1 sec.
-
-    def move_to_radians(self, new_position):
-        if new_position < min(SERVO_LEFT_ANGLE, SERVO_RIGHT_ANGLE):
-            raise ValueError('new_position less then minimum angle')
-        if new_position > max(SERVO_LEFT_ANGLE, SERVO_RIGHT_ANGLE):
-            raise ValueError('new_position greater then maximum angle')
-        
-        # map function
-        def map(value, in_min, in_max, out_min, out_max):
-            return (value - in_min) * (out_max - out_min) / (in_max - in_min) + out_min
-        # move servo
-        pwm = map(new_position, SERVO_LEFT_ANGLE, SERVO_RIGHT_ANGLE,
-                  SERVO_LEFT_PWM, SERVO_RIGHT_PWM)
-        pwm = math.trunc(pwm)  # make float to integer
-
-        # self.servo.set_pwm(self.pin, 0, pwm)
-        self.servo.channels[self.pin].duty_cycle = (pwm << 4) + 0xf
-        # calculate wait time (servo has no feedback capability)
-        wait_time = abs(self.current_position - new_position) * \
-            SERVO_ROTATION_SPEED_PER_SEC
-        wait_time = wait_time + .1  # add a small amount to be sure the servo is stopped
-        time.sleep(wait_time)
-        # calculate current position on pwm, because the real pwm was trunctated
-        self.current_position = map(
-            pwm, SERVO_LEFT_PWM, SERVO_RIGHT_PWM, SERVO_LEFT_ANGLE, SERVO_RIGHT_ANGLE)
-
-    def move_to_degrees(self, new_position):
-        pos = math.degrees(new_position)
-        self.move_to_radian(pos)
-
-    def get_current_position_radians(self):
-        return self.current_position
-
-    def get_current_position_degrees(self):
-        return math.degrees(self.current_position)
 
 
 class SweepSensorUltrasone:
@@ -120,7 +63,7 @@ class distance_sweep_sensor_node(rclpy.node.Node):
             jvr_robot.IObjectDetector.IObjectDetector.object_detected)
         
         # Measure distance
-        self.servo = SweepSensorServo()
+        self.servo = jvr_robot.JvrRobotHardware.SweepSensorServo(jvr_robot.JvrRobotHardware.PIN_SWEEP_SERVO)
         self.sensor = SweepSensorUltrasone()
         # TODO find out what 10 means.
         self.pub = self.create_publisher(
@@ -157,8 +100,12 @@ class distance_sweep_sensor_node(rclpy.node.Node):
             if value > max:
                 return max
             return value
-        left = min(SERVO_LEFT_ANGLE, SERVO_RIGHT_ANGLE)
-        right = max(SERVO_LEFT_ANGLE, SERVO_RIGHT_ANGLE)
+        
+        left_angle = jvr_robot.JvrRobotHardware.SweepSensorServo.LEFT_ANGLE
+        right_angle = jvr_robot.JvrRobotHardware.SweepSensorServo.RIGHT_ANGLE
+        left = min( left_angle, right_angle)
+        right = max(left_angle, right_angle)
+        
         while True:
             direction = left
             while direction <= right:
