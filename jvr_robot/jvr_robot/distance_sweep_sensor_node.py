@@ -29,13 +29,8 @@ class distance_sweep_sensor_node(rclpy.node.Node):
             jvr_robot.IObjectDetector.IObjectDetector.object_detected)
 
         # Measure distance
-        self.servo = jvr_robot.JvrRobotHardware.SweepSensorServo(
-            jvr_robot.JvrRobotHardware.PCA_PIN_SWEEP_SERVO
-        )
-        self.sensor = jvr_robot.JvrRobotHardware.UltrasoneSensor(
-            jvr_robot.JvrRobotHardware.GPIO_ULTRASONE_TRIGGER,
-            jvr_robot.JvrRobotHardware.GPIO_ULTRASONE_ECHO
-        )
+        self.servo = jvr_robot.JvrRobotHardware.sweep_servo
+        self.sensor = jvr_robot.JvrRobotHardware.sweep_sensor
         # TODO find out what 10 means.
         self.pub = self.create_publisher(
             jvr_interfaces.msg.ObjectDetection, object_detected_topic, 10)
@@ -72,8 +67,8 @@ class distance_sweep_sensor_node(rclpy.node.Node):
                 return max
             return value
 
-        left_angle = jvr_robot.JvrRobotHardware.SweepSensorServo.LEFT_ANGLE
-        right_angle = jvr_robot.JvrRobotHardware.SweepSensorServo.RIGHT_ANGLE
+        left_angle = self.servo.LEFT_ANGLE
+        right_angle = self.servo.RIGHT_ANGLE
         left = min(left_angle, right_angle)
         right = max(left_angle, right_angle)
 
