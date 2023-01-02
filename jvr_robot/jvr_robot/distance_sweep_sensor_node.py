@@ -1,10 +1,8 @@
-import sys
 import threading
 
 import rclpy
 import rclpy.timer
 import rclpy.node
-from rclpy.executors import ExternalShutdownException
 
 import sensor_msgs.msg
 
@@ -12,13 +10,8 @@ import jvr_helpers.utils
 import jvr_interfaces.msg
 import jvr_robot.IObjectDetector
 
-import adafruit_pca9685
-import board
-import busio
-import RPi
 
 import math
-import time
 
 import jvr_robot.JvrRobotHardware
 
