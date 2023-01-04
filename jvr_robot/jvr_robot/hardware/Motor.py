@@ -5,7 +5,7 @@ import jvr_robot.hardware.Servo
 
 
 class Motor(jvr_robot.hardware.Servo.Servo):
-
+    MINIMAL_POWER = .3
     def __init__(self, channel, IN1, IN2):
         super().__init__(channel)
         self.IN1 = IN1
@@ -38,10 +38,11 @@ class Motor(jvr_robot.hardware.Servo.Servo):
         #  power cannot exceed 100%
         if(value > 1.0):
             self.stop()
-            raise ValueError(f"Argument 'power' must be between -1.0 and +1.0 (value: '{power}'")
-        # less than 20%, the motors don't turn
-        if value < 0.2:
-            value = 0.2
+            raise ValueError(f"Argument 'power' must be between -1.0 and +1.0 (value: '{power}')")
+        if(value < Motor.MINIMAL_POWER):
+            self.stop()
+            raise ValueError(f"Argument 'power' must be at least +/- {Motor.MINIMAL_POWER} (value: '{power}')")
+        # change percentage to pwm
         value = round(value * 0xFFF)
         # Start the engine
         self.duty_cycle(value)
