@@ -5,13 +5,22 @@ import RPi
 
 import jvr_robot.hardware.SG90Servo
 import jvr_robot.hardware.UltrasoneSensor
+import jvr_robot.hardware.Motor
 
 # ###########################################
 # Constants
 PCA_PIN_SWEEP_SERVO = 15  # Servo Ultrasone sensor
+PCA_PIN_MOTOR_LEFT = 0
+PCA_PIN_MOTOR_RIGHT = 1
 
 GPIO_ULTRASONE_TRIGGER = 20  # Ultrasone pulse (start measure)
 GPIO_ULTRASONE_ECHO = 21  # Ultrasone echo (measure complete)
+
+GPIO_LEFT_IN1 = 23  # left motor direction pin
+GPIO_LEFT_IN2 = 24  # left motor direction pin
+GPIO_RIGHT_IN1 = 27  # right motor direction pin
+GPIO_RIGHT_IN2 = 22  # right motor direction pin
+
 
 # ###########################################
 # initialize all the hardware
@@ -37,4 +46,13 @@ sweep_sensor = jvr_robot.hardware.UltrasoneSensor.UltrasoneSensor(
 )
 
 # left and right motor
-## TODO
+motor_left = jvr_robot.hardware.Motor.Motor(
+    pca.channels[PCA_PIN_MOTOR_LEFT],
+    GPIO_LEFT_IN1,
+    GPIO_LEFT_IN2
+)
+motor_right = jvr_robot.hardware.Motor.Motor(
+    pca.channels[PCA_PIN_MOTOR_RIGHT],
+    GPIO_RIGHT_IN1,
+    GPIO_RIGHT_IN2
+)
