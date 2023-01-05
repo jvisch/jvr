@@ -1,5 +1,5 @@
 # ###########################################
-# The hardware
+# The simulated hardware
 
 # Distance sweep servo and ultrasone sensor
 sweep_servo = None

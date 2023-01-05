@@ -1,10 +1,10 @@
 import RPi
 import math
 
-import jvr_robot.hardware.Servo
+import jvr_robot.hardware_real.Servo
 
 
-class Motor(jvr_robot.hardware.Servo.Servo):
+class Motor(jvr_robot.hardware_real.Servo.Servo):
     MINIMAL_POWER = .3
     def __init__(self, channel, IN1, IN2):
         super().__init__(channel)
