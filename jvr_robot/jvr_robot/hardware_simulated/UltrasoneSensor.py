@@ -1,4 +1,3 @@
-import RPi
 import time
 import random
 
