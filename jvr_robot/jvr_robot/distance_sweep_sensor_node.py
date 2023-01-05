@@ -13,7 +13,7 @@ import jvr_robot.IObjectDetector
 
 import math
 
-import jvr_robot.JvrRobotHardware
+import jvr_robot.JvrRobotHardware as JvrRobotHardware
 
 ULTRASONE_SENSOR_FRAME_ID = 'ultrasone_sensor'
 
@@ -29,8 +29,8 @@ class distance_sweep_sensor_node(rclpy.node.Node):
             jvr_robot.IObjectDetector.IObjectDetector.object_detected)
 
         # Measure distance
-        self.servo = jvr_robot.JvrRobotHardware.sweep_servo
-        self.sensor = jvr_robot.JvrRobotHardware.sweep_sensor
+        self.servo = JvrRobotHardware.sweep_servo
+        self.sensor = JvrRobotHardware.sweep_sensor
         # TODO find out what 10 means.
         self.pub = self.create_publisher(
             jvr_interfaces.msg.ObjectDetection, object_detected_topic, 10)

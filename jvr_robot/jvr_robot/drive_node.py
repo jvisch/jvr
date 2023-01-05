@@ -3,7 +3,7 @@ import rclpy.node
 import jvr_helpers.utils
 import jvr_interfaces.msg 
 import jvr_robot.IDrive
-import jvr_robot.JvrRobotHardware
+import jvr_robot.JvrRobotHardware as JvrRobotHardware
 
 class drive_node(rclpy.node.Node):
 
@@ -12,8 +12,8 @@ class drive_node(rclpy.node.Node):
         node_name = jvr_helpers.utils.node_name(self)
         super().__init__(node_name)
 
-        self.left = jvr_robot.JvrRobotHardware.motor_left
-        self.right = jvr_robot.JvrRobotHardware.motor_right
+        self.left = JvrRobotHardware.motor_left
+        self.right = JvrRobotHardware.motor_right
 
         drive_topic = jvr_helpers.utils.topic_name(
             jvr_robot.IDrive.IDrive.move)
