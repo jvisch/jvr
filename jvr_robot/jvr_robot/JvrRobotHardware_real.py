@@ -3,9 +3,11 @@ import busio
 import adafruit_pca9685
 import RPi
 
-import jvr_robot.hardware_real.SG90Servo
-import jvr_robot.hardware_real.UltrasoneSensor
-import jvr_robot.hardware_real.Motor
+import rclpy.node
+
+from jvr_robot.hardware_real.SG90Servo import SG90Servo
+from jvr_robot.hardware_real.UltrasoneSensor import UltrasoneSensor
+from jvr_robot.hardware_real.Motor import Motor
 
 # ###########################################
 # Constants
@@ -37,22 +39,29 @@ RPi.GPIO.setwarnings(False)
 # The hardware
 
 # Distance sweep servo and ultrasone sensor
-sweep_servo = jvr_robot.hardware_real.SG90Servo.SG90Servo(
-    pca.channels[PCA_PIN_SWEEP_SERVO]
-)
-sweep_sensor = jvr_robot.hardware_real.UltrasoneSensor.UltrasoneSensor(
-    GPIO_ULTRASONE_TRIGGER,
-    GPIO_ULTRASONE_ECHO
-)
+def get_distance_sweep(n : rclpy.node.Node):
+    clock = n.get_clock()
+    # Distance sweep servo and ultrasone sensor
+    servo = SG90Servo(
+        pca.channels[PCA_PIN_SWEEP_SERVO]
+    )
+    sensor = UltrasoneSensor(
+        GPIO_ULTRASONE_TRIGGER,
+        GPIO_ULTRASONE_ECHO
+    )
+
+    return servo, sensor
 
 # left and right motor
-motor_left = jvr_robot.hardware_real.Motor.Motor(
-    pca.channels[PCA_PIN_MOTOR_LEFT],
-    GPIO_LEFT_IN1,
-    GPIO_LEFT_IN2
-)
-motor_right = jvr_robot.hardware_real.Motor.Motor(
-    pca.channels[PCA_PIN_MOTOR_RIGHT],
-    GPIO_RIGHT_IN1,
-    GPIO_RIGHT_IN2
-)
+def get_motors(n : rclpy.node.Node):
+    left = Motor(
+        pca.channels[PCA_PIN_MOTOR_LEFT],
+        GPIO_LEFT_IN1,
+        GPIO_LEFT_IN2
+    )
+    right = Motor(
+        pca.channels[PCA_PIN_MOTOR_RIGHT],
+        GPIO_RIGHT_IN1,
+        GPIO_RIGHT_IN2
+    )
+    return left, right

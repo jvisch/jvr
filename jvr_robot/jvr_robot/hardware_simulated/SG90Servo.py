@@ -1,10 +1,9 @@
 import math
-import time
+import rclpy.clock
+import rclpy.duration
 
 # ###########################################
 # Simulated Servo for ultrasone sensor
-
-
 class SG90Servo():
     LEFT_PWM = 420
     RIGHT_PWM = 180
@@ -12,11 +11,14 @@ class SG90Servo():
     RIGHT_ANGLE = math.radians(-45)
     ROTATION_SPEED_PER_SEC = 0.3 / math.radians(60)  # see datasheet of servo
 
-    def __init__(self):
+    def __init__(self, clock : rclpy.clock.Clock):
+        self.clock = clock
         # set servo to middle
         self.current_position = SG90Servo.LEFT_ANGLE  # most extreme position
         self.move_to_radians(0)
-        time.sleep(1)  # just wait 1 sec.
+        # time.sleep(1)  # just wait 1 sec.
+        one_second = rclpy.duration.Duration(seconds=1, nanoseconds=0)
+        self.clock.sleep_for(one_second)
 
     def move_to_radians(self, new_position):
         if new_position < min(SG90Servo.LEFT_ANGLE, SG90Servo.RIGHT_ANGLE):
@@ -33,14 +35,13 @@ class SG90Servo():
         pwm = math.trunc(pwm)  # make float to integer
 
         # calculate wait time (servo has no feedback capability)
-        wait_time = abs(self.current_position - new_position) * \
-            SG90Servo.ROTATION_SPEED_PER_SEC
+        wait_time = abs(self.current_position - new_position) * SG90Servo.ROTATION_SPEED_PER_SEC
         wait_time = wait_time + .1  # add a small amount to be sure the servo is stopped
-        time.sleep(wait_time)
+        x = rclpy.duration.Duration(nanoseconds=wait_time*rclpy.duration.S_TO_NS)
+        self.clock.sleep_for(x)
 
         # calculate current position on pwm, because the real pwm was trunctated
-        self.current_position = map(pwm, SG90Servo.LEFT_PWM, SG90Servo.RIGHT_PWM,
-                                    SG90Servo.LEFT_ANGLE, SG90Servo.RIGHT_ANGLE)
+        self.current_position = map(pwm, SG90Servo.LEFT_PWM, SG90Servo.RIGHT_PWM, SG90Servo.LEFT_ANGLE, SG90Servo.RIGHT_ANGLE)
 
     def move_to_degrees(self, new_position):
         pos = math.degrees(new_position)

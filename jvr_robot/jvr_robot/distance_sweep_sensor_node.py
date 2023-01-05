@@ -29,8 +29,7 @@ class distance_sweep_sensor_node(rclpy.node.Node):
             jvr_robot.IObjectDetector.IObjectDetector.object_detected)
 
         # Measure distance
-        self.servo = JvrRobotHardware.sweep_servo
-        self.sensor = JvrRobotHardware.sweep_sensor
+        self.servo, self.sensor = JvrRobotHardware.get_distance_sweep(self)
         # TODO find out what 10 means.
         self.pub = self.create_publisher(
             jvr_interfaces.msg.ObjectDetection, object_detected_topic, 10)
