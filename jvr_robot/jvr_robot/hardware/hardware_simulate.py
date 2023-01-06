@@ -17,6 +17,6 @@ def get_distance_sweep(n : rclpy.node.Node):
 # left and right motor
 def get_motors(n : rclpy.node.Node):
     clock = n.get_clock()
-    motor_left = Motor(clock)
-    motor_right = Motor(clock)
+    motor_left = Motor(clock, "left")
+    motor_right = Motor(clock, "right")
     return motor_left, motor_right
