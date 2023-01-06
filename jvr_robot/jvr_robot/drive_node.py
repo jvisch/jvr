@@ -10,7 +10,7 @@ import jvr_robot.IDrive
 import jvr_robot.JvrRobotHardware
 
 
-class DriveActionServer(rclpy.node.Node):
+class drive_node(rclpy.node.Node):
 
     def __init__(self):
         # node
@@ -52,7 +52,7 @@ class DriveActionServer(rclpy.node.Node):
 
 
 def main(args=None):
-    node_type = DriveActionServer
+    node_type = drive_node
     jvr_helpers.utils.run_node(node_type, args)
 
 
