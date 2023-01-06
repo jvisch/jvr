@@ -1,8 +1,8 @@
 import rclpy.node
 
-from jvr_robot.hardware_simulated.SG90Servo import SG90Servo
-from jvr_robot.hardware_simulated.UltrasoneSensor import UltrasoneSensor
-from jvr_robot.hardware_simulated.Motor import Motor
+from jvr_robot.hardware.simulated.SG90Servo import SG90Servo
+from jvr_robot.hardware.simulated.UltrasoneSensor import UltrasoneSensor
+from jvr_robot.hardware.simulated.Motor import Motor
 
 # ###########################################
 # The simulated hardware

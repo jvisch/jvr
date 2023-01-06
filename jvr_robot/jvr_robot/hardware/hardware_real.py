@@ -5,9 +5,9 @@ import RPi
 
 import rclpy.node
 
-from jvr_robot.hardware_real.SG90Servo import SG90Servo
-from jvr_robot.hardware_real.UltrasoneSensor import UltrasoneSensor
-from jvr_robot.hardware_real.Motor import Motor
+from jvr_robot.hardware.real.SG90Servo import SG90Servo
+from jvr_robot.hardware.real.UltrasoneSensor import UltrasoneSensor
+from jvr_robot.hardware.real.Motor import Motor
 
 # ###########################################
 # Constants
