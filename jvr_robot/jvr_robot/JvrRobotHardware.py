@@ -1,7 +1,10 @@
-# TODO: select on startup by rosarg (of zoiets)
+import jvr_robot.config
 
-from jvr_robot.hardware.hardware_real import *
-# from jvr_robot.hardware.hardware_simulate import *
+if jvr_robot.config.USE_SIMULATED_HARDWARE:
+    from jvr_robot.hardware.hardware_simulate import *
+else:
+    from jvr_robot.hardware.hardware_real import *
+
 
 import rclpy.node
 import rclpy.duration

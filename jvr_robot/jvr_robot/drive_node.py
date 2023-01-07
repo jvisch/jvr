@@ -1,4 +1,5 @@
 import threading
+import argparse
 
 import rclpy
 import rclpy.action
@@ -12,7 +13,7 @@ import std_msgs.msg
 import jvr_interfaces.action
 import jvr_helpers.utils
 import jvr_robot.IDrive
-import jvr_robot.JvrRobotHardware
+import jvr_robot.config
 
 
 class drive_node(rclpy.node.Node):
@@ -21,6 +22,10 @@ class drive_node(rclpy.node.Node):
         # node
         node_name = jvr_helpers.utils.node_name(self)
         super().__init__(node_name)
+
+
+        import jvr_robot.JvrRobotHardware
+
         self._motors = jvr_robot.JvrRobotHardware.Motors(self)
         self._goal_handle = None
         self._goal_lock = threading.Lock()
@@ -115,7 +120,15 @@ class drive_node(rclpy.node.Node):
         return result
 
 
+
 def main(args=None):
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-s', '--simulated-hardware', help='use simulation of hardware',
+                        dest='simulated_hardware', required=False, default=False, action='store_true')
+    values = parser.parse_args()
+    # global use_simulated_hardware
+    jvr_robot.config.USE_SIMULATED_HARDWARE = values.simulated_hardware
+
     executor_type = rclpy.executors.MultiThreadedExecutor
     node_type = drive_node
     jvr_helpers.utils.run_node(node_type, args, executor_type=executor_type)
