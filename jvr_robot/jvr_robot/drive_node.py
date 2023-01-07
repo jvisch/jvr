@@ -39,15 +39,14 @@ class drive_node(rclpy.node.Node):
 
         # wait for the motors to stop
         end_time = self.get_clock().now()
-
-        x = end_time - start_time
+        total_duration = end_time - start_time
 
         
         # All succeeded
         self.get_logger().info("goal reached")
         goal_handle.succeed()
         result = jvr_interfaces.action.Drive.Result()
-        result.total_duration = x.to_msg()
+        result.total_duration = total_duration.to_msg()
         return result
 
 
