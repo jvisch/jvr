@@ -1,11 +1,11 @@
-import jvr_robot.hardware_real.Servo
+import jvr_robot.hardware.real.Servo
 
 import math
 import time
 
 # ###########################################
 # Servo for ultrasone sensor
-class SG90Servo(jvr_robot.hardware_real.Servo.Servo):
+class SG90Servo(jvr_robot.hardware.real.Servo.Servo):
     LEFT_PWM = 420
     RIGHT_PWM = 180
     LEFT_ANGLE = math.radians(45)
