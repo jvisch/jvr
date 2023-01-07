@@ -26,8 +26,13 @@ set(msg_files
   "msg/ObjectDetection.msg"
 )
 
+set(action_files
+  "action/Drive.action"
+)
+
 rosidl_generate_interfaces(${PROJECT_NAME}
   ${msg_files}
+  ${action_files}
   DEPENDENCIES builtin_interfaces sensor_msgs
 )
 

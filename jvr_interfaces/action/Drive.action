@@ -1,0 +1,21 @@
+# Request ###################################################
+
+# Motor power (in percentage, >0 is forwards, <0 is backwards)
+float32 left
+float32 right
+
+# Duration of the drive
+builtin_interfaces/Duration duration
+
+---
+
+# Result ####################################################
+
+# Duration of the drive
+builtin_interfaces/Duration total_duration
+bool goal_reached
+---
+
+# Feedback ##################################################
+
+builtin_interfaces/Duration remaining
