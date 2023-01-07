@@ -40,11 +40,11 @@ class drive_node(rclpy.node.Node):
         self._action_server.destroy()
         super().destroy_node()
 
-    def goal_callback(self, goal_request):
+    def goal_callback(self, goal_request: jvr_interfaces.action.Drive.Goal):
         self.get_logger().info('goal_callback')
         return rclpy.action.GoalResponse.ACCEPT
 
-    def handle_accepted_callback(self, goal_handle):
+    def handle_accepted_callback(self, goal_handle: rclpy.action.server.ServerGoalHandle):
         self.get_logger().info('handle_accepted_callback')
         with self._goal_lock:
             # This server only allows one goal at a time
