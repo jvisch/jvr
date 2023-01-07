@@ -7,6 +7,8 @@ import rclpy.duration
 import rclpy.action.server
 import rclpy.executors
 
+import std_msgs.msg
+
 import jvr_interfaces.action
 import jvr_helpers.utils
 import jvr_robot.IDrive
@@ -20,12 +22,11 @@ class drive_node(rclpy.node.Node):
         node_name = jvr_helpers.utils.node_name(self)
         super().__init__(node_name)
         self._motors = jvr_robot.JvrRobotHardware.Motors(self)
-
-        action_name = drive_topic = jvr_helpers.utils.topic_name(
-            jvr_robot.IDrive.IDrive.move)
-
         self._goal_handle = None
         self._goal_lock = threading.Lock()
+
+        # Action server Drive.move
+        action_name = drive_topic = jvr_helpers.utils.topic_name(jvr_robot.IDrive.IDrive.move)
         self._action_server = rclpy.action.ActionServer(
             self,
             jvr_interfaces.action.Drive,
@@ -36,9 +37,26 @@ class drive_node(rclpy.node.Node):
             cancel_callback=self.cancel_callback
         )
 
+        # Topic stop
+        stop_topic_name = jvr_helpers.utils.topic_name(jvr_robot.IDrive.IDrive.stop)
+        self._stop_subscription = self.create_subscription(
+            std_msgs.msg.Empty,
+            stop_topic_name,
+            self.stop_callback, 10)
+
     def destroy(self):
         self._action_server.destroy()
+        self._stop_subscription.destroy()
         super().destroy_node()
+
+    def stop_callback(self, msg: std_msgs.msg.Empty):
+        self.get_logger().info('stop_callback')
+        with self._goal_lock:
+            if self._goal_handle is not None and self._goal_handle.is_active:
+                self.get_logger().info('Aborting previous goal')
+                # Abort the existing goal
+                self._goal_handle.abort()
+            self._motors.stop()
 
     def goal_callback(self, goal_request: jvr_interfaces.action.Drive.Goal):
         self.get_logger().info('goal_callback')
