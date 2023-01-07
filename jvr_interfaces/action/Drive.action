@@ -13,7 +13,7 @@ builtin_interfaces/Duration duration
 
 # Duration of the drive
 builtin_interfaces/Duration total_duration
-
+bool goal_reached
 ---
 
 # Feedback ##################################################

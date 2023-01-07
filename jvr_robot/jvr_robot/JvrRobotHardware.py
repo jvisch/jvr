@@ -10,11 +10,9 @@ import rclpy.constants
 import threading
 
 
-
-
 class Motors():
     def __init__(self, n: rclpy.node.Node) -> None:
-        self.left , self.right = get_motors(n)
+        self.left, self.right = get_motors(n)
         self.clock = n.get_clock()
         self.c = threading.Condition()
         n.create_guard_condition
@@ -33,10 +31,15 @@ class Motors():
         # wait for timeout or external stop
         with self.c:
             wait_time = duration.nanoseconds / rclpy.constants.S_TO_NS
-            got_signal = self.c.wait(wait_time)
-        self._stop_motors()
-        return not got_signal 
-        
+            # TODO: waiting is on python timer, should be RosClock
+            if self.c.wait(wait_time):
+                # Got a signal (called from `stop()`)
+                return False
+            else:
+                # Duration passed, so stop the motors first
+                self._stop_motors()
+                return True
+
     def stop(self):
         self._stop_motors()
         with self.c:

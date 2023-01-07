@@ -51,6 +51,7 @@ class drive_node(rclpy.node.Node):
             if self._goal_handle is not None and self._goal_handle.is_active:
                 self.get_logger().info('Aborting previous goal')
                 # Abort the existing goal
+                self._motors.stop()
                 self._goal_handle.abort()
             self._goal_handle = goal_handle
 
@@ -59,6 +60,7 @@ class drive_node(rclpy.node.Node):
     def cancel_callback(self, goal):
         # self.get_logger().info('Received cancel request')
         self.get_logger().info('cancel_callback')
+        self._motors.stop()
         return rclpy.action.CancelResponse.ACCEPT
 
     def execute_callback(self, goal_handle: rclpy.action.server.ServerGoalHandle):
@@ -68,28 +70,30 @@ class drive_node(rclpy.node.Node):
         left = goal_handle.request.left
         right = goal_handle.request.right
         duration = rclpy.duration.Duration.from_msg(goal_handle.request.duration)
-        # TODO: check the incoming values (0.3 <= p <= 1.0) and retrun 'not accepted'
-        start_time = self.get_clock().now()
-        self._motors.move(left, right, duration)
 
-        # wait for the motors to stop
+        # TODO: check the incoming values (0.3 <= p <= 1.0) and retrun 'not accepted'
+
+        # start motors and wait for termination
+        start_time = self.get_clock().now()
+        goal_reached = self._motors.move(left, right, duration)
         end_time = self.get_clock().now()
         total_duration = end_time - start_time
 
-        if not goal_handle.is_active:
-            self.get_logger().info('Goal aborted')
-            return jvr_interfaces.action.Drive.Result()
-        
-        if goal_handle.is_cancel_requested:
-            goal_handle.canceled()
-            self.get_logger().info('Goal canceled')
-            return jvr_interfaces.action.Drive.Result()
-
-        # All succeeded
-        self.get_logger().info("goal reached")
-        goal_handle.succeed()
+        # Create result
         result = jvr_interfaces.action.Drive.Result()
         result.total_duration = total_duration.to_msg()
+        result.goal_reached = goal_reached
+
+        if not goal_handle.is_active:
+            self.get_logger().info('Goal aborted')
+        elif goal_handle.is_cancel_requested:
+            goal_handle.canceled()
+            self.get_logger().info('Goal canceled')
+        else: 
+            # All succeeded
+            self.get_logger().info("goal reached")
+            goal_handle.succeed()
+        
         return result
 
 
