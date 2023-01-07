@@ -15,7 +15,6 @@ class Motors():
         self.left, self.right = get_motors(n)
         self.clock = n.get_clock()
         self.c = threading.Condition()
-        n.create_guard_condition
 
     def _move_motors(self, left_power: float, right_power: float):
         self.left.move(left_power)
