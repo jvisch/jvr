@@ -1,6 +1,7 @@
 import sys
 
 import rclpy
+import rclpy.node
 import rclpy.executors
 
 
@@ -13,9 +14,12 @@ def topic_name(fn):
     return f'{TOPIC_NAME_PREFIX}/{name}'
 
 
-def node_name(obj):
+def node_name(obj, hidden_node=False):
     name = obj.__class__.__qualname__.lower()
-    return f'{NODE_NAME_PREFIX}_{name}'
+    name = f'{NODE_NAME_PREFIX}_{name}'
+    if hidden_node:
+        name = rclpy.node.HIDDEN_NODE_PREFIX + name
+    return name
 
 
 def run_node(node_type, args, executor_type = None):
