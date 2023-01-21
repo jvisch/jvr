@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+
+{% block page_header %}
+  <h1>{% block title %}Nodes{% endblock %}</h1>
+{% endblock %}
+
+{% block content %}
+<ul>
+  {% for item in nodes %}
+      <li>{{ item }}</li>
+  {% endfor %}
+  </ul>
+{% endblock %}
