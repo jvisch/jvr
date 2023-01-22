@@ -12,7 +12,6 @@ node = None
 class Web(rclpy.node.Node):
 
     def __init__(self):
-        print('gemaakt')
         node_name = jvr_helpers.utils.node_name(self, hidden_node=True)
         super().__init__(node_name)
 
@@ -22,6 +21,8 @@ def main(args=None):
     # create ros2 node for interspection
     rclpy.init()
     node = Web()
+
+    testnode = rclpy.node.Node('test_name', namespace='test_namespace')
 
     app = flask.Flask(__name__)
 
@@ -41,7 +42,7 @@ def main(args=None):
     app.register_blueprint(nodes.bp)
 
 
-    app.run()
+    app.run(debug=True)
 
 
 if __name__ == '__main__':
