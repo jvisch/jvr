@@ -1,13 +1,14 @@
 {% extends 'base.html' %}
 
 {% block page_header %}
-  <h1>{% block title %}Nodes{% endblock %}</h1>
+  {% block title %}Nodes{% endblock %}
 {% endblock %}
 
 {% block content %}
 <ul>
-  {% for item in nodes %}
-      <li><a href="./info{{item}}">{{ item }}</a>  </li>
+  {% for name, namespace in nodes %}
+    {% set href = url_for('node.info', node_name=name, namespace=namespace) %}
+    <li><a href="{{ href }}">{% if namespace %}/{{ namespace }}{% endif %}/{{ name }}</a></li>
   {% endfor %}
-  </ul>
+</ul>
 {% endblock %}

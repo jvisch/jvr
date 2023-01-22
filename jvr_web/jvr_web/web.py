@@ -24,7 +24,10 @@ def main(args=None):
 
     testnode = rclpy.node.Node('test_name', namespace='test_namespace')
 
+    # create Flask and configure it
     app = flask.Flask(__name__)
+    app.jinja_env.trim_blocks = True
+    app.jinja_env.lstrip_blocks = True
 
     # a simple page that says hello
     @app.route('/hello')
