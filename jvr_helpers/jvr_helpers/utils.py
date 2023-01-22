@@ -23,11 +23,11 @@ def node_name(obj, hidden_node=False):
 
 
 def run_node(node_type, args, executor_type = None):
-    print('Hi from ' + node_type.__qualname__)
-
+    print(f"Starting instance of '{node_type.__qualname__}'.")
+    
     rclpy.init(args=args)
-
     node = node_type()
+    print(f"Hi from  '{node.get_fully_qualified_name()}'.")
     executor = executor_type() if executor_type else None
     try:
         rclpy.spin(node,executor=executor)
