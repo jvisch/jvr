@@ -1,4 +1,5 @@
 import flask
+import argparse
 
 import rclpy
 import rclpy.node
@@ -6,7 +7,7 @@ import rclpy.node
 import jvr_helpers.utils
 
 
-node = None
+web_node = None
 
 
 class Web(rclpy.node.Node):
@@ -17,35 +18,39 @@ class Web(rclpy.node.Node):
 
 
 def main(args=None):
-    global node
+    global web_node
+    # commandline args
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-d', '--flask-debug', help='run flask in debug mode',
+                        dest='flask_debug', required=False, default=False, action='store_true')
+    args_values = parser.parse_args()
+
     # create ros2 node for interspection
     rclpy.init()
-    node = Web()
+    web_node = Web()
 
-    testnode = rclpy.node.Node('test_name', namespace='test_namespace')
+    # testnode = rclpy.node.Node('test_name', namespace='test_namespace')
 
     # create Flask and configure it
     app = flask.Flask(__name__)
     app.jinja_env.trim_blocks = True
     app.jinja_env.lstrip_blocks = True
 
-    # a simple page that says hello
-    @app.route('/hello')
-    def hello():
-        return 'Hello, World!'
+    # Import flask functions
+    from . import node
+    app.register_blueprint(node.bp)
 
-    # from . import auth
-    # app.register_blueprint(auth.bp)
+    # Hello page (for debug)
+    if args_values.flask_debug:
+        # a simple page that says hello
+        @app.route('/hello')
+        def hello():
+            return 'Hello, World!'
 
-    # from . import blog
-    # app.register_blueprint(blog.bp)
-    # app.add_url_rule('/', endpoint='index')
-
-    from . import nodes
-    app.register_blueprint(nodes.bp)
-
-
-    app.run(debug=True)
+    # Launch Flask
+    app.run(
+        debug=args_values.flask_debug
+        )
 
 
 if __name__ == '__main__':

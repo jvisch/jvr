@@ -10,7 +10,7 @@ bp = flask.blueprints.Blueprint('node', __name__, url_prefix='/node')
 @bp.route('/')
 @bp.route('/list')
 def list():
-    n = web.node
+    n = web.web_node
 
     def _ns(namespace):
         return None if namespace == '/' else namespace[1:]
@@ -24,7 +24,7 @@ def list():
 @bp.route('/info/<node_name>', defaults={'namespace': ''})
 @bp.route('/info/<namespace>/<node_name>')
 def info(node_name, namespace):
-    n = web.node
+    n = web.web_node
     # namespaces need prefix '/'
     namespace = '/' + namespace
     # 1. Subscribers
@@ -40,10 +40,10 @@ def info(node_name, namespace):
     service_clients = n.get_client_names_and_types_by_node(
         node_name, namespace)
 
-    # 5. Action Servers:  get_action_client_names_and_types_by_node (rclpy.action?)
-    action_servers = 'TODO'
-    # 6. Action Clients : get_action_client_names_and_types_by_node (rclpy.action?)
-    action_clients = 'TODO'
+    # 5. Action Servers
+    action_servers = rclpy.action.get_action_server_names_and_types_by_node(n, node_name, namespace)
+    # 6. Action Clients
+    action_clients =  rclpy.action.get_action_client_names_and_types_by_node(n, node_name, namespace)
 
     full_name = '/' + node_name
     if namespace != '/':
