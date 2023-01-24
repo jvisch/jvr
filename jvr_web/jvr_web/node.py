@@ -18,7 +18,7 @@ def list():
     all_nodes = n.get_node_names_and_namespaces()
     all_nodes = ((name, _ns(namespace)) for name, namespace in all_nodes)
     all_nodes = sorted(all_nodes)
-    return flask.render_template('node/list.html', nodes=all_nodes)
+    return flask.render_template('node/list.jinja', nodes=all_nodes)
 
 
 @bp.route('/info/<node_name>', defaults={'namespace': ''})
@@ -49,7 +49,7 @@ def info(node_name, namespace):
     if namespace != '/':
         full_name = namespace + full_name
 
-    return flask.render_template('node/info.html',
+    return flask.render_template('node/info.jinja',
                                  node_name=full_name,
                                  subscribers=subscribers,
                                  publishers=publishers,
