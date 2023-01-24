@@ -9,6 +9,8 @@
   {% for name, namespace in nodes %}
     {% set href = url_for('node.info', node_name=name, namespace=namespace) %}
     <li><a href="{{ href }}">{% if namespace %}/{{ namespace }}{% endif %}/{{ name }}</a></li>
+  {% else %}
+    No nodes found.
   {% endfor %}
 </ul>
 {% endblock %}
