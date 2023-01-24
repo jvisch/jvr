@@ -8,6 +8,9 @@ bp = flask.blueprints.Blueprint('node', __name__, url_prefix='/node')
 
 
 @bp.route('/')
+def index():
+    return flask.redirect(flask.url_for('node.list'))
+
 @bp.route('/list')
 def list():
     n = web.web_node
