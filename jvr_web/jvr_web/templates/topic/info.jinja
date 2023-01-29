@@ -1,0 +1,32 @@
+{% extends 'base.jinja' %}
+
+
+{% block page_header %}
+  {% block title %}{{ topic_name }}{% endblock %}
+{% endblock %}
+
+{% block content %}
+<h2>Publishers</h2>
+{% if publishers %}
+  <ul>
+  {% for p in publishers %}
+    <li>{{ p.node_name }}</li>
+  {% endfor %}
+  </ul>
+{% else %}
+  No publishers found.
+{% endif %}
+
+<h2>Subscriptions</h2>
+{% if subscriptions %}
+  <ul>
+  {% for p in publishers %}
+    <li>{{ p.node_name }}</li>
+  {% endfor %}
+  </ul>
+{% else %}
+  No publishers found.
+{% endif %}
+
+{% endblock %}
+ 

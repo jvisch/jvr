@@ -1,6 +1,6 @@
 {% extends 'base.jinja' %}
 
-{% macro topic_info(information, heading)%}
+{# {% macro topic_info(information, heading)%}
 <h2>{{ heading.capitalize() }}</h2>
 {% if information %}
 <ul>
@@ -18,23 +18,41 @@
 {% else %}
 No '{{ heading }}' found.
 {% endif %}
-{% endmacro%}
+{% endmacro%} #}
 
 {% block page_header %}
   {% block title %}{{ node_name }}{% endblock %}
 {% endblock %}
 
 {% block content %}
-{{ topic_info(subscribers, 'subscribers') }}
+{# subscriber topics #}
+<h2>Subscribers (topics)</h2>
+{% if subscribers %}
+<ul>
+  {% for name, types in subscribers %}
+    <li>
+      {% set href = url_for('topic.info', topic_name=name) %}
+      <a href="{{ href }}">{{ name }}</a>
+      <ul>
+      {% for type in types %}
+        <li>{{ type }}</li>
+      {% endfor %}
+      </ul>
+    </li>
+  {% endfor %}
+</ul>
+{% else %}
+No 'subscribers' found.
+{% endif %}
 
-{{ topic_info(publishers, 'publishers') }}
+{# {{ topic_info(publishers, 'publishers') }} #}
 
-{{ topic_info(service_servers, 'service servers') }}
+{# {{ topic_info(service_servers, 'service servers') }} #}
 
-{{ topic_info(service_clients, 'service clients') }}
+{# {{ topic_info(service_clients, 'service clients') }} #}
 
-{{ topic_info(action_servers, 'action servers') }}
+{# {{ topic_info(action_servers, 'action servers') }} #}
 
-{{ topic_info(action_clients, 'action clients') }}
+{# {{ topic_info(action_clients, 'action clients') }} #}
 
 {% endblock %}
