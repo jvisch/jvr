@@ -1,4 +1,5 @@
 from . import web
+from . import helpers
 
 import flask
 
@@ -22,11 +23,6 @@ def list():
 @bp.route('/info/<path:topic_name>')
 def info(topic_name):
     n = web.web_node
-
-    def _node_name(node_name, namespace):
-        if namespace == '/':
-            namespace = ''
-        return f'{namespace}/{node_name}'
 
     topic = '/' + topic_name
     publishers = n.get_publishers_info_by_topic(topic)
