@@ -1,6 +1,6 @@
 {% macro full_node_name(node_name, node_namespace) %}
 {% if node_namespace == '/' %}
-{{ node_name }}
+/{{ node_name }}
 {% else %}
 {{ node_namespace }}/{{ node_name }}
 {% endif %}

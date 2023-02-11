@@ -29,7 +29,7 @@ def main(args=None):
     rclpy.init()
     web_node = Web()
 
-    # testnode = rclpy.node.Node('test_name', namespace='test_namespace')
+    testnode = rclpy.node.Node('test_name', namespace='test_namespace')
 
     # create Flask and configure it
     app = flask.Flask(__name__)

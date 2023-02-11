@@ -31,17 +31,14 @@ def info(node_name, namespace):
     # namespaces need prefix '/'
     namespace = '/' + namespace
     # 1. Subscribers
-    subscribers = n.get_subscriber_names_and_types_by_node(
-        node_name, namespace)
+    subscribers = n.get_subscriber_names_and_types_by_node(node_name, namespace)
     # 2. Publishers
     publishers = n.get_publisher_names_and_types_by_node(node_name, namespace)
 
     # 3. Service Servers
-    service_servers = n.get_service_names_and_types_by_node(
-        node_name, namespace)
+    service_servers = n.get_service_names_and_types_by_node(node_name, namespace)
     # 4. Service Clients
-    service_clients = n.get_client_names_and_types_by_node(
-        node_name, namespace)
+    service_clients = n.get_client_names_and_types_by_node(node_name, namespace)
 
     # 5. Action Servers
     action_servers = rclpy.action.get_action_server_names_and_types_by_node(n, node_name, namespace)
