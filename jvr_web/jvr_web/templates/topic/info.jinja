@@ -12,9 +12,12 @@
 {% if publishers %}
   <ul>
   {% for p in publishers %}
-    {# <li>{{ p.node_name }}</li>
-    <li>**{{ helpers.full_node_name(p.node_name, p.node_namespace) }}</li> #}
-    {% set href = url_for('node.info', node_name=p.node_name, namespace=p.node_namespace) %}
+    {% if p.node_namespace.startswith('/') %}
+      {% set ns = p.node_namespace[1:] %}
+    {% else %}
+      {% set ns = p.node_namespace %}
+    {% endif %}
+    {% set href = url_for('node.info', node_name=p.node_name, namespace=ns) %}
     <li><a href="{{ href }}">{{ helpers.full_node_name(p.node_name, p.node_namespace) }}</a></li>
   {% endfor %}
   </ul>
@@ -30,7 +33,7 @@
   {% endfor %}
   </ul>
 {% else %}
-  No publishers found.
+  No subscriptions found.
 {% endif %}
 
 {% endblock %}
