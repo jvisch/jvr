@@ -1,0 +1,15 @@
+{% extends 'base.jinja' %}
+
+{% block page_header %}
+  {% block title %}Index{% endblock %}
+{% endblock %}
+
+{% block content %}
+<ul>
+{% for name, url in links %}
+<li>
+    <a href="{{ url }}">{{ name }}</a>
+</li>
+{% endfor %}
+</ul>
+{% endblock %}

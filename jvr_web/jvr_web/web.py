@@ -41,6 +41,8 @@ def main(args=None):
     app.register_blueprint(node.bp)
     from . import topic
     app.register_blueprint(topic.bp)
+    from . import index
+    app.register_blueprint(index.bp)
 
     # Hello page (for debug)
     if args_values.flask_debug:
