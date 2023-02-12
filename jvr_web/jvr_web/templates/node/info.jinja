@@ -1,0 +1,124 @@
+{% extends 'base.jinja' %}
+
+{% block page_header %}
+  {% block title %}Node info '{{ node_name }}'{% endblock %}
+{% endblock %}
+
+{% block content %}
+{# subscriber topics #}
+<h2>Subscribers (topics)</h2>
+{% if subscribers %}
+<ul>
+  {% for name, types in subscribers %}
+    <li>
+      {% set href = url_for('topic.info', topic_name=name) %}
+      <a href="{{ href }}">{{ name }}</a>
+      <ul>
+      {% for type in types %}
+        <li>{{ type }}</li>
+      {% endfor %}
+      </ul>
+    </li>
+  {% endfor %}
+</ul>
+{% else %}
+No 'subscribers' found.
+{% endif %}
+
+{# {{ topic_info(publishers, 'publishers') }} #}
+<h2>publishers (topics)</h2>
+{% if publishers %}
+<ul>
+  {% for name, types in publishers %}
+    <li>
+      {% set href = url_for('topic.info', topic_name=name) %}
+      <a href="{{ href }}">{{ name }}</a>
+      <ul>
+      {% for type in types %}
+        <li>{{ type }}</li>
+      {% endfor %}
+      </ul>
+    </li>
+  {% endfor %}
+</ul>
+{% else %}
+No 'publishers' found.
+{% endif %}
+
+{# {{ topic_info(service_servers, 'service servers') }} #}
+<h2>service_servers</h2>
+{% if service_servers %}
+<ul>
+  {% for name, types in service_servers %}
+    <li>
+      {{ name }}
+      <ul>
+      {% for type in types %}
+        <li>{{ type }}</li>
+      {% endfor %}
+      </ul>
+    </li>
+  {% endfor %}
+</ul>
+{% else %}
+No 'service_servers' found.
+{% endif %}
+
+{# {{ topic_info(service_clients, 'service clients') }} #}
+<h2>service_clients</h2>
+{% if service_clients %}
+<ul>
+  {% for name, types in service_clients %}
+    <li>
+      {{ name }}
+      <ul>
+      {% for type in types %}
+        <li>{{ type }}</li>
+      {% endfor %}
+      </ul>
+    </li>
+  {% endfor %}
+</ul>
+{% else %}
+No 'service_clients' found.
+{% endif %}
+
+{# {{ topic_info(action_servers, 'action servers') }} #}
+<h2>action_servers</h2>
+{% if action_servers %}
+<ul>
+  {% for name, types in action_servers %}
+    <li>
+      {{ name }}
+      <ul>
+      {% for type in types %}
+        <li>{{ type }}</li>
+      {% endfor %}
+      </ul>
+    </li>
+  {% endfor %}
+</ul>
+{% else %}
+No 'action_servers' found.
+{% endif %}
+
+{# {{ topic_info(action_clients, 'action clients') }} #}
+<h2>action_clients</h2>
+{% if action_clients %}
+<ul>
+  {% for name, types in action_clients %}
+    <li>
+      {{ name }}
+      <ul>
+      {% for type in types %}
+        <li>{{ type }}</li>
+      {% endfor %}
+      </ul>
+    </li>
+  {% endfor %}
+</ul>
+{% else %}
+No 'action_servers' found.
+{% endif %}
+
+{% endblock %}

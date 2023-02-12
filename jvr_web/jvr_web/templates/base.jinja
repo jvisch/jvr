@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>jvr - {% block title %}{% endblock %}</title>
+</head>
+<body>
+    <header>
+        <h1>{% block page_header %}{% endblock %}</h1>
+    </header>
+    <main>
+    {% for message in get_flashed_messages() %}
+        <div class="flash">{{ message }}</div>
+    {% endfor %}
+    
+    {% block content %}{% endblock %}
+    </main>
+</body>
+</html>

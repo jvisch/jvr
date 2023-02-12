@@ -1,0 +1,23 @@
+{% extends 'base.jinja' %}
+
+{% block page_header %}
+  {% block title %}Topics{% endblock %}
+{% endblock %}
+
+{% block content %}
+<ul>
+  {% for topic_name, topic_types in topics  %}
+    <li>
+    {% set href = url_for('topic.info', topic_name=topic_name) %}
+    <a href="{{ href }}">{{ topic_name }}</a>
+    <ul>
+    {% for type in topic_types %}
+    <li>{{ type }}</li>
+    {% endfor %}
+    </ul>
+    </li>
+  {% else %}
+    No topics found.
+  {% endfor %}
+</ul>
+{% endblock %}

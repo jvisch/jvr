@@ -1,6 +1,7 @@
 import sys
 
 import rclpy
+import rclpy.node
 import rclpy.executors
 
 
@@ -13,17 +14,20 @@ def topic_name(fn):
     return f'{TOPIC_NAME_PREFIX}/{name}'
 
 
-def node_name(obj):
+def node_name(obj, hidden_node=False):
     name = obj.__class__.__qualname__.lower()
-    return f'{NODE_NAME_PREFIX}_{name}'
+    name = f'{NODE_NAME_PREFIX}_{name}'
+    if hidden_node:
+        name = rclpy.node.HIDDEN_NODE_PREFIX + name
+    return name
 
 
 def run_node(node_type, args, executor_type = None):
-    print('Hi from ' + node_type.__qualname__)
-
+    print(f"Starting instance of '{node_type.__qualname__}'.")
+    
     rclpy.init(args=args)
-
     node = node_type()
+    print(f"Hi from  '{node.get_fully_qualified_name()}'.")
     executor = executor_type() if executor_type else None
     try:
         rclpy.spin(node,executor=executor)
