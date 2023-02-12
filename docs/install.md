@@ -153,6 +153,12 @@ to work consistenly.
 -   stap 1 t/m 4 zijn voor ROS (detectie op netwerk)
 -   stap 5 is voor Fast DDS Discory server
 
+## Pyton packages
+
+- `pip install adafruit-circuitpython-pca9685`
+- `pip install Flask`
+
+
 ```{=html}
 <!-- ## Notes
 
