@@ -23,10 +23,12 @@ class robot_position_publisher(rclpy.node.Node):
         # node initialization
         node_name = jvr_helpers.utils.node_name(self)
         super().__init__(node_name)
-        # init members
+        
+        # Place robot in world (todo: position is not changed (yet))
         self.br = tf2_ros.TransformBroadcaster(self)
         self.rotation = self.euler_to_quaternion(0, 0, 0)
         self.position = geometry_msgs.msg.Vector3(x=0.0, y=0.0, z=0.0)
+        self.robot_position_timer = self.create_timer(0.1, self.publish_robot_position)
 
         # Subscribe to ObjectDetector
         topic_object_detected = jvr_helpers.utils.topic_name(
@@ -60,11 +62,12 @@ class robot_position_publisher(rclpy.node.Node):
         # Detected object (Range)
         self.range_pub.publish(msg.object)
 
+    def publish_robot_position(self):
         # publish robot position and poses
         odom_trans = geometry_msgs.msg.TransformStamped()
         odom_trans.header.frame_id = 'world'
         odom_trans.child_frame_id = 'chassis'
-        odom_trans.header.stamp = msg.object.header.stamp
+        odom_trans.header.stamp = self.get_clock().now().to_msg()
         odom_trans.transform.rotation = self.rotation
         odom_trans.transform.translation = self.position
         self.br.sendTransform(odom_trans)
