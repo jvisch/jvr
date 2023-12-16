@@ -1,18 +1,3 @@
-# test
-kajsf salkfjalfkjsalkdf lkdsaf
-## kjfkajkfjdsa
-kajfk
-
-fsdf
-sf
-sdf
-sf
-sa
-fsf
-dfasf
-d
-
-```
 @startuml Component Design
 
 ' interfaces
@@ -29,4 +14,3 @@ TalkerNode -( ITalk
 ListenerNode -left- ITalk
 
 @enduml
-```
