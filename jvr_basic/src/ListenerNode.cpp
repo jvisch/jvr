@@ -13,5 +13,5 @@ ListenerNode::ListenerNode() : Node("listener_node")
 
 void ListenerNode::callback(const jvr_interfaces::msg::TalkMsg &msg)
 {
-    RCLCPP_INFO(this->get_logger(), "Received message: %s", msg.content.c_str());
+    RCLCPP_INFO(this->get_logger(), "content: '%s', id '%lu'", msg.content.c_str(), msg.id);
 }
