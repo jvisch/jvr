@@ -43,6 +43,29 @@ install(TARGETS talker_node
   DESTINATION lib/${PROJECT_NAME}
 )
 
+# executable ListenerNode
+set(listener_node_SOURCES
+  src/ListenerMain.cpp
+  src/ListenerNode.cpp
+)
+
+add_executable(listener_node ${listener_node_SOURCES})
+
+target_include_directories(listener_node PUBLIC
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+  $<INSTALL_INTERFACE:include>
+)
+
+ament_target_dependencies(
+  listener_node
+  jvr_interfaces
+  rclcpp
+)
+
+install(TARGETS listener_node
+  DESTINATION lib/${PROJECT_NAME}
+)
+
 # testing
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)
