@@ -19,9 +19,13 @@ Provides some basic functionality to test the ROS network.
 ### ListenerNode
 
 -   Provided interfaces
+
     -   `ITalk`
         -   `Talk(TalkMsg)` -\> subscriber on `/italk/talk`
--   Required interfaces *none*
+
+-   Required interfaces
+
+    *none*
 
 ### TalkerNode
 
