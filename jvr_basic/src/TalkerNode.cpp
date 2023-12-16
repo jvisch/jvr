@@ -2,7 +2,7 @@
 
 using namespace std::chrono_literals;
 
-TalkerNode::TalkerNode() : Node("Talker"), count_(0)
+TalkerNode::TalkerNode() : Node("talker_node"), count_(0)
 {
   publisher_ = this->create_publisher<jvr_interfaces::msg::TalkMsg>("italk/talk", 10);
   timer_ = this->create_wall_timer(500ms, std::bind(&TalkerNode::timer_callback, this));
