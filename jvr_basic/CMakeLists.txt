@@ -10,18 +10,21 @@ find_package(ament_cmake REQUIRED)
 find_package(jvr_interfaces REQUIRED)
 find_package(rclcpp REQUIRED)
 
-add_executable(talker src/talker.cpp)
-target_include_directories(talker PUBLIC
+add_executable(talker_node
+  src/TalkerMain.cpp
+  src/TalkerNode.cpp)
+
+target_include_directories(talker_node PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
   $<INSTALL_INTERFACE:include>)
-target_compile_features(talker PUBLIC c_std_99 cxx_std_17)  # Require C99 and C++17
+target_compile_features(talker_node PUBLIC c_std_99 cxx_std_17)  # Require C99 and C++17
 ament_target_dependencies(
-  talker
-  "jvr_interfaces"
-  "rclcpp"
+  talker_node
+  jvr_interfaces
+  rclcpp
 )
 
-install(TARGETS talker
+install(TARGETS talker_node
   DESTINATION lib/${PROJECT_NAME})
 
 if(BUILD_TESTING)

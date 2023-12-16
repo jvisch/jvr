@@ -1,20 +1,22 @@
+# abvcdkf
+ 
+etkjekje
+
+<!--
 @startuml Component Design
 
 ' interfaces
-interface IObjectDetector
-interface IObjectRangeDetector
-interface IMotorController
+interface ITalk
 
 ' components
-component MotorController
-component DistanceSweepSensor
+component TalkerNode <<ros node>>
+component ListenerNode <<ros node>>
 
-' Component MotorController
-MotorController -left- IObjectDetector
-MotorController -right- IMotorController
+' Component Talker
+TalkerNode -( ITalk
 
-' Component DistanceSweepSensor
-DistanceSweepSensor -up-( IObjectDetector
-DistanceSweepSensor -right- IObjectRangeDetector
+' Component Listener
+ListenerNode -left- ITalk
 
 @enduml
+-->
