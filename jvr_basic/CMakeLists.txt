@@ -10,8 +10,8 @@ if(NOT CMAKE_CXX_STANDARD)
   set(CMAKE_CXX_STANDARD 17)
 endif()
 
+# set compiler options
 if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
-  message("JORGJE")
   add_compile_options(-Wall -Wextra -Wpedantic)
 endif()
 
@@ -20,13 +20,18 @@ find_package(ament_cmake REQUIRED)
 find_package(jvr_interfaces REQUIRED)
 find_package(rclcpp REQUIRED)
 
-add_executable(talker_node
+# executable TalkerNode
+set(talker_node_SOURCES
   src/TalkerMain.cpp
-  src/TalkerNode.cpp)
+  src/TalkerNode.cpp
+)
+
+add_executable(talker_node ${talker_node_SOURCES})
 
 target_include_directories(talker_node PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-  $<INSTALL_INTERFACE:include>)
+  $<INSTALL_INTERFACE:include>
+)
 
 ament_target_dependencies(
   talker_node
@@ -35,8 +40,10 @@ ament_target_dependencies(
 )
 
 install(TARGETS talker_node
-  DESTINATION lib/${PROJECT_NAME})
+  DESTINATION lib/${PROJECT_NAME}
+)
 
+# testing
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)
   # the following line skips the linter which checks for copyrights
