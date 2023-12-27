@@ -1,3 +1,5 @@
 Ultrasone sensor toevoegen
 https://automaticaddison.com/how-to-add-ultrasonic-sensors-to-an-sdf-file-for-gazebo/
 
+Youtube tutorials
+https://www.youtube.com/@ArticulatedRobotics/videos
