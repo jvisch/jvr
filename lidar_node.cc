@@ -55,6 +55,8 @@ void cb(const gz::msgs::LaserScan &_msg)
 //////////////////////////////////////////////////
 int main(int argc, char **argv)
 {
+  std::cout << "lidar_node started" << std::endl;
+
   std::string topic_sub = "/lidar";   // subscribe to this topic
   // Subscribe to a topic by registering a callback.
   if (!node.Subscribe(topic_sub, cb))
