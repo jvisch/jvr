@@ -1,0 +1,66 @@
+<?xml version="1.0"?>
+<robot name="jvr">
+
+    <!-- base (in middle of the two wheels) -->
+    <link name="base_link">
+    </link>
+
+    <!-- CHASSIS (simplified body of the jvr-robot) -->
+
+    <joint name="chassis_joint" type="fixed">
+        <parent link="base_link"/>
+        <child link="chassis"/>
+        <origin xyz="-0.035 0 0"/>
+    </joint>
+
+    <link name="chassis">
+        <visual>
+            <geometry>
+                <box size="0.205 0.145 0.050" />
+            </geometry>
+        </visual>
+    </link>
+
+
+    <!-- <link name="chassis">
+        <visual name="bottom_plate">
+            <origin xyz="0.0 0.0 0.013" rpy="0.0 0.0 0.0"/>
+            <geometry>
+                <box size="0.195 0.103 0.005"/>
+            </geometry>
+            <material name="black">
+                <color rgba="0.9 0.9 0.9 1.0"/>
+            </material>
+        </visual>
+        <visual name="top_plate">
+            <origin xyz="0.0 0.0 0.060" rpy="0.0 0.0 0.0"/>
+            <geometry>
+                <box size="0.195 0.103 0.005"/>
+            </geometry>
+            <material name="black">
+                <color rgba="0.7 0.7 0.7 1.0"/>
+            </material>
+        </visual>
+    </link>
+    <link name="ultrasone_sensor">
+        <visual name="">
+            <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+            <geometry>
+                <box size="0.005 0.043 0.02"/>
+            </geometry>
+            <material name="blue">
+                <color rgba="0.0 1.0 0.0 1.0"/>
+                <texture filename=""/>
+            </material>
+        </visual>
+    </link>
+
+	<joint name="SweepSensorServo" type="revolute">
+        <origin xyz="0.0765 0.0 0.08" rpy="0.0 0.0 0.0"/>
+        <parent link="chassis"/>
+        <child link="ultrasone_sensor"/>
+        <axis xyz="0 0 1"/>
+        <limit lower="-0.785" upper="0.785" effort="0.0" velocity="0.0"/>
+    </joint> -->
+
+</robot>
