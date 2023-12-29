@@ -5,6 +5,8 @@ from launch.actions import DeclareLaunchArgument
 from launch.substitutions import LaunchConfiguration
 from launch_ros.actions import Node
 
+import xacro
+
 def generate_launch_description():
 
     use_sim_time = LaunchConfiguration('use_sim_time', default='false')
@@ -17,10 +19,12 @@ def generate_launch_description():
     rviz_config = os.path.join(directory, rviz_file_name)
 
     # urdf file (robot description)
-    urdf_file_name = 'description/jvr.urdf'
+    urdf_file_name = 'description/jvr.urdf.xacro'
     urdf = os.path.join(directory, urdf_file_name)
-    with open(urdf, 'r') as infp:
-        robot_desc = infp.read()
+    # with open(urdf, 'r') as infp:
+    #     robot_desc = infp.read()
+
+    robot_desc = xacro.process_file(urdf).toxml()
 
     return LaunchDescription([
         DeclareLaunchArgument(
@@ -32,8 +36,8 @@ def generate_launch_description():
             executable='robot_state_publisher',
             name='robot_state_publisher',
             output='screen',
-            parameters=[{'use_sim_time': use_sim_time, 'robot_description': robot_desc}],
-            arguments=[urdf]),
+            parameters=[{'use_sim_time': use_sim_time, 'robot_description': robot_desc}]
+            ),
         Node(
             package='joint_state_publisher_gui',
             executable='joint_state_publisher_gui',
@@ -46,3 +50,5 @@ def generate_launch_description():
             output='screen',
             arguments=["--display-config", rviz_config]),
     ])
+
+generate_launch_description()
