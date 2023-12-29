@@ -9,10 +9,16 @@ def generate_launch_description():
 
     use_sim_time = LaunchConfiguration('use_sim_time', default='false')
 
-    urdf_file_name = 'r2d2.urdf.xml'
-    urdf = os.path.join(
-        get_package_share_directory('urdf_tutorial_r2d2'),
-        urdf_file_name)
+    # share directory
+    directory = get_package_share_directory('gazebo-tutorial')
+
+    # rviz configuration file
+    rviz_file_name = "description/jvr.rviz"
+    rviz_config = os.path.join(directory, rviz_file_name)
+
+    # urdf file (robot description)
+    urdf_file_name = 'description/jvr.urdf'
+    urdf = os.path.join(directory, urdf_file_name)
     with open(urdf, 'r') as infp:
         robot_desc = infp.read()
 
@@ -29,8 +35,14 @@ def generate_launch_description():
             parameters=[{'use_sim_time': use_sim_time, 'robot_description': robot_desc}],
             arguments=[urdf]),
         Node(
-            package='urdf_tutorial_r2d2',
-            executable='state_publisher',
-            name='state_publisher',
+            package='joint_state_publisher_gui',
+            executable='joint_state_publisher_gui',
+            name='joint_state_publisher_gui',
             output='screen'),
+        Node(
+            package='rviz2',
+            executable='rviz2',
+            name='rviz2',
+            output='screen',
+            arguments=["--display-config", rviz_config]),
     ])
