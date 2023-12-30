@@ -115,4 +115,28 @@
             </geometry>
         </collision>
     </link>
+
+    <!-- Sweep sensor -->
+    <joint name="sweep_sensor_joint" type="revolute">
+        <parent link="chassis"/>
+        <child link="sweep_sensor"/>
+        <origin xyz="0.175 0 0.059"/>
+        <axis xyz="0 0 1"/>
+        <limit lower="-${(pi/180)*45}" upper="${(pi/180)*45}" effort="100.0" velocity="${((pi/180)*60)/0.3}"/> <!-- not sure what 'effort' means -->
+    </joint>
+
+    <link name="sweep_sensor">
+        <visual>
+            <origin xyz="0.009 0 0.018"/>
+            <geometry>
+                <box size="0.002 0.05 0.036"/>
+            </geometry>
+            <material name="blue"/>
+        </visual>
+        <collision>
+            <geometry>
+                <box size="0.002 0.05 0.036"/>
+            </geometry>
+        </collision>
+    </link>
 </robot>
