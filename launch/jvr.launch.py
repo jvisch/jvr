@@ -51,4 +51,3 @@ def generate_launch_description():
             arguments=["--display-config", rviz_config]),
     ])
 
-generate_launch_description()
