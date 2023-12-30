@@ -122,7 +122,10 @@
         <child link="sweep_sensor"/>
         <origin xyz="0.175 0 0.059"/>
         <axis xyz="0 0 1"/>
-        <limit lower="-${(pi/180)*45}" upper="${(pi/180)*45}" effort="100.0" velocity="${((pi/180)*60)/0.3}"/> <!-- not sure what 'effort' means -->
+        <!-- lower limit -45deg, upper limit 45deg-->
+        <!-- not sure what 'effort' means -->
+        <!-- speed 60 deg per 0.3 secs. see https://osoyoo.store/en-eu/products/micro-servo-sg90-blue-for-arduino-v2-0-robot-carmodel-lacc200610#tab_technical-details -->
+        <limit lower="-${(pi/180)*45}" upper="${(pi/180)*45}" effort="100.0" velocity="${((pi/180)*60)/0.3}"/> 
     </joint>
 
     <link name="sweep_sensor">
