@@ -3,3 +3,8 @@ https://automaticaddison.com/how-to-add-ultrasonic-sensors-to-an-sdf-file-for-ga
 
 Youtube tutorials
 https://www.youtube.com/@ArticulatedRobotics/videos
+
+Installeren:
+    ros-iron-ros2-control 
+    ros-iron-ros2-controllers
+
