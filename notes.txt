@@ -1,6 +1,8 @@
 Ultrasone sensor toevoegen
 https://automaticaddison.com/how-to-add-ultrasonic-sensors-to-an-sdf-file-for-gazebo/
 
+https://www.flyrobo.in/dc_3_6v_bo_gear_motor_with_plastic_tire_wheel_for_arduino/
+
 Youtube tutorials
 https://www.youtube.com/@ArticulatedRobotics/videos
 
