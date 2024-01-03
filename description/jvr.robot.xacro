@@ -250,4 +250,10 @@
             <topic>cmd_vel</topic>
         </plugin>
     </gazebo>
+
+    <gazebo reference="caster_wheel">
+        <!-- er is geen 'ball' type joint in URDF, make caster 'slippery'-->
+        <mu1 value="0.001"/>
+        <mu2 value="0.001"/>
+    </gazebo>
 </robot>
