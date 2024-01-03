@@ -17,6 +17,7 @@
     <xacro:property name="wheel_offset_x" value="0.14"/>
     <xacro:property name="wheel_offset_y" value="0.072"/>
     <xacro:property name="wheel_offset_z" value="0.014"/>
+    <xacro:property name="wheel_separation" value="${2 * wheel_offset_y}"/>
 
     <!-- Caster wheel -->
     <xacro:property name="caster_wheel_radius" value="0.008"/>
@@ -238,4 +239,15 @@
             <origin xyz="${sweep_sensor_collision_offset_x} 0 ${sweep_sensor_collision_offset_z}" rpy="0 0 0"/>
         </xacro:inertial_box>
     </link>
+    <gazebo>
+        <!--diff drive plugin-->
+        <plugin filename="gz-sim-diff-drive-system" name="gz::sim::systems::DiffDrive">
+            <left_joint>left_wheel_joint</left_joint>
+            <right_joint>right_wheel_joint</right_joint>
+            <wheel_separation>${wheel_separation}</wheel_separation>
+            <wheel_radius>${wheel_radius}</wheel_radius>
+            <odom_publish_frequency>1</odom_publish_frequency>
+            <topic>cmd_vel</topic>
+        </plugin>
+    </gazebo>
 </robot>
