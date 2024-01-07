@@ -10,3 +10,8 @@ Installeren:
     ros-iron-ros2-control 
     ros-iron-ros2-controllers
 
+let op, Gazebo Harmonic werkt alleen met ros_gz (iron) als je het 
+zelf bouwt én `export GZ_VERSION=harmonic` doet (voor het bouwen).
+
+Bij het bouwen van ros_gz volgende doen, want wsl loopt uit het geheugen.
+MAKEFLAGS="-j1" colcon build --executor sequential

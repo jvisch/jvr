@@ -7,18 +7,15 @@ endif()
 
 # find dependencies
 find_package(ament_cmake REQUIRED)
-# uncomment the following section in order to fill in
-# further dependencies manually.
-# find_package(<dependency> REQUIRED)
+# find_package(ros_gz_sim REQUIRED)
+# find_package(robot_state_publisher REQUIRED)
+
 
 # Install launch files.
 install(DIRECTORY
-  launch
-  DESTINATION share/${PROJECT_NAME}/
-)
-
-install(DIRECTORY
   description
+  launch
+  worlds
   DESTINATION share/${PROJECT_NAME}/
 )
 
