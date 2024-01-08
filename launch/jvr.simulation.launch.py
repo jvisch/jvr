@@ -114,7 +114,7 @@ def launch_simulation_callback(context, *args, **kwargs):
             gz_topic + '/odometry@nav_msgs/msg/Odometry@gz.msgs.Odometry',
         ],
         remappings=[
-            # (joint_state_gz_topic, 'joint_states'),
+            (joint_state_gz_topic, 'joint_states'),
             (link_pose_gz_topic, '/tf'),
             (link_pose_gz_topic + '_static', '/tf_static'),
         ],
