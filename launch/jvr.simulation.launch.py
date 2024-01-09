@@ -91,35 +91,18 @@ def launch_simulation_callback(context, *args, **kwargs):
         arguments=['-d', rviz2_config_file.perform(context)]
     )
 
-    # Bridge to forward tf and joint states to ros2
-    gz_topic = f'/model/{robot_name}'
-    joint_state_gz_topic = f'/world/{world}' + gz_topic + '/joint_state'
-    link_pose_gz_topic = gz_topic + '/pose'
+    # A bridge to forward tf and joint states to ros2
     node_bridge = Node(
         package='ros_gz_bridge',
         executable='parameter_bridge',
         arguments=[
-            # Clock (Gazebo -> ROS2)
-            '/clock@rosgraph_msgs/msg/Clock[gz.msgs.Clock',
-
-            # Joint states (Gazebo -> ROS2)
-            joint_state_gz_topic + '@sensor_msgs/msg/JointState[gz.msgs.Model',
-            
-            # Link poses (Gazebo -> ROS2)
-            link_pose_gz_topic + '@tf2_msgs/msg/TFMessage[gz.msgs.Pose_V',
-            link_pose_gz_topic + '_static@tf2_msgs/msg/TFMessage[gz.msgs.Pose_V',
-            
-            # Velocity and odometry (Gazebo -> ROS2)
-            gz_topic + '/cmd_vel@geometry_msgs/msg/Twist@gz.msgs.Twist',
-            gz_topic + '/odometry@nav_msgs/msg/Odometry@gz.msgs.Odometry',
+            f'/world/default/model/{robot_name}/joint_state@sensor_msgs/msg/JointState[gz.msgs.Model',
+            f'/model/{robot_name}/pose@tf2_msgs/msg/TFMessage[gz.msgs.Pose_V'
         ],
         remappings=[
-            (joint_state_gz_topic, 'joint_states'),
-            (link_pose_gz_topic, '/tf'),
-            (link_pose_gz_topic + '_static', '/tf_static'),
-        ],
-        parameters=[{'qos_overrides./tf_static.publisher.durability': 'transient_local'}],
-        output='screen'
+            (f'/model/{robot_name}/pose', '/tf'),
+            (f'/world/default/model/{robot_name}/joint_state', '/joint_states')
+        ]
     )
 
     return [

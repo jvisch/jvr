@@ -42,14 +42,11 @@
     <xacro:property name="sweep_sensor_mic_offset_z" value="0.018" />
     <xacro:property name="sweep_sensor_mic_radius" value="0.008" />
     <xacro:property name="sweep_sensor_mic_length" value="0.010" />
-    <xacro:property name="sweep_sensor_collision_length"
-        value="${sweep_sensor_backplate_length + sweep_sensor_mic_length}" />
+    <xacro:property name="sweep_sensor_collision_length" value="${sweep_sensor_backplate_length + sweep_sensor_mic_length}" />
     <xacro:property name="sweep_sensor_collision_width" value="${sweep_sensor_backplate_width}" />
     <xacro:property name="sweep_sensor_collision_height" value="${sweep_sensor_backplate_height}" />
-    <xacro:property name="sweep_sensor_collision_offset_x"
-        value="${sweep_sensor_backplate_offset_x + (sweep_sensor_collision_length/2)}" />
-    <xacro:property name="sweep_sensor_collision_offset_z"
-        value="${sweep_sensor_backplate_offset_z}" />
+    <xacro:property name="sweep_sensor_collision_offset_x" value="${sweep_sensor_backplate_offset_x + (sweep_sensor_collision_length/2)}" />
+    <xacro:property name="sweep_sensor_collision_offset_z" value="${sweep_sensor_backplate_offset_z}" />
     <!-- Materials -->
     <material name="white">
         <color rgba="1 1 1 1" />
@@ -93,8 +90,7 @@
                 <box size="${chassis_length} ${chassis_width} ${chassis_height}" />
             </geometry>
         </collision>
-        <xacro:inertial_box mass="${chassis_mass}" x="${chassis_length}" y="${chassis_width}"
-            z="${chassis_height}">
+        <xacro:inertial_box mass="${chassis_mass}" x="${chassis_length}" y="${chassis_width}" z="${chassis_height}">
             <origin xyz="${chassis_length/2} 0 ${chassis_height/2}" rpy="0 0 0" />
         </xacro:inertial_box>
     </link>
@@ -120,8 +116,7 @@
                 <cylinder radius="${wheel_radius}" length="${wheel_thickness}" />
             </geometry>
         </collision>
-        <xacro:inertial_cylinder mass="${wheel_mass}" length="${wheel_thickness}"
-            radius="${wheel_radius}">
+        <xacro:inertial_cylinder mass="${wheel_mass}" length="${wheel_thickness}" radius="${wheel_radius}">
             <origin xyz="0 0 0" rpy="0 0 0" />
         </xacro:inertial_cylinder>
     </link>
@@ -147,8 +142,7 @@
                 <cylinder radius="${wheel_radius}" length="${wheel_thickness}" />
             </geometry>
         </collision>
-        <xacro:inertial_cylinder mass="${wheel_mass}" length="${wheel_thickness}"
-            radius="${wheel_radius}">
+        <xacro:inertial_cylinder mass="${wheel_mass}" length="${wheel_thickness}" radius="${wheel_radius}">
             <origin xyz="0 0 0" rpy="0 0 0" />
         </xacro:inertial_cylinder>
     </link>
@@ -182,31 +176,25 @@
         <child link="sweep_sensor" />
         <origin xyz="${sweep_sensor_joint_offset_x} 0 ${sweep_sensor_joint_offset_z}" />
         <axis xyz="0 0 1" />
-        <limit lower="${sweep_sensor_joint_lower}" upper="${sweep_sensor_joint_upper}"
-            effort="${sweep_sensor_joint_effort}" velocity="${sweep_sensor_joint_velocity}" />
+        <limit lower="${sweep_sensor_joint_lower}" upper="${sweep_sensor_joint_upper}" effort="${sweep_sensor_joint_effort}" velocity="${sweep_sensor_joint_velocity}" />
     </joint>
     <link name="sweep_sensor">
         <visual>
             <origin xyz="${sweep_sensor_backplate_offset_x} 0 ${sweep_sensor_backplate_offset_z}" />
             <geometry>
-                <box
-                    size="${sweep_sensor_backplate_length} ${sweep_sensor_backplate_width} ${sweep_sensor_backplate_height}" />
+                <box size="${sweep_sensor_backplate_length} ${sweep_sensor_backplate_width} ${sweep_sensor_backplate_height}" />
             </geometry>
             <material name="silver" />
         </visual>
         <visual>
-            <origin
-                xyz="${sweep_sensor_mic_offset_x} ${sweep_sensor_mic_offset_z} ${sweep_sensor_mic_offset_z}"
-                rpy="0 ${pi/2} 0" />
+            <origin xyz="${sweep_sensor_mic_offset_x} ${sweep_sensor_mic_offset_z} ${sweep_sensor_mic_offset_z}" rpy="0 ${pi/2} 0" />
             <geometry>
                 <cylinder radius="${sweep_sensor_mic_radius}" length="${sweep_sensor_mic_length}" />
             </geometry>
             <material name="silver" />
         </visual>
         <visual>
-            <origin
-                xyz="${sweep_sensor_mic_offset_x} ${-sweep_sensor_mic_offset_z} ${sweep_sensor_mic_offset_z}"
-                rpy="0 ${pi/2} 0" />
+            <origin xyz="${sweep_sensor_mic_offset_x} ${-sweep_sensor_mic_offset_z} ${sweep_sensor_mic_offset_z}" rpy="0 ${pi/2} 0" />
             <geometry>
                 <cylinder radius="${sweep_sensor_mic_radius}" length="${sweep_sensor_mic_length}" />
             </geometry>
@@ -215,15 +203,12 @@
         <collision>
             <origin xyz="${sweep_sensor_collision_offset_x} 0 ${sweep_sensor_collision_offset_z}" />
             <geometry>
-                <box
-                    size="${sweep_sensor_collision_length} ${sweep_sensor_collision_width} ${sweep_sensor_collision_height}" />
+                <box size="${sweep_sensor_collision_length} ${sweep_sensor_collision_width} ${sweep_sensor_collision_height}" />
             </geometry>
         </collision>
         <!-- using collision box for inertia-->
-        <xacro:inertial_box mass="${sweep_sensor_mass}" x="${sweep_sensor_collision_length}"
-            y="${sweep_sensor_collision_width}" z="${sweep_sensor_collision_height}">
-            <origin xyz="${sweep_sensor_collision_offset_x} 0 ${sweep_sensor_collision_offset_z}"
-                rpy="0 0 0" />
+        <xacro:inertial_box mass="${sweep_sensor_mass}" x="${sweep_sensor_collision_length}" y="${sweep_sensor_collision_width}" z="${sweep_sensor_collision_height}">
+            <origin xyz="${sweep_sensor_collision_offset_x} 0 ${sweep_sensor_collision_offset_z}" rpy="0 0 0" />
         </xacro:inertial_box>
     </link>
     <gazebo>
@@ -235,6 +220,11 @@
             <wheel_radius>${wheel_radius}</wheel_radius>
             <odom_publish_frequency>1</odom_publish_frequency>
             <!-- <topic>cmd_vel</topic> -->
+        </plugin>
+        <plugin filename="ignition-gazebo-joint-state-publisher-system" name="ignition::gazebo::systems::JointStatePublisher" />
+        <plugin filename="ignition-gazebo-pose-publisher-system" name="ignition::gazebo::systems::PosePublisher">
+            <publish_link_pose>true</publish_link_pose>
+            <use_pose_vector_msg>true</use_pose_vector_msg>
         </plugin>
     </gazebo>
     <gazebo reference="caster_wheel">
