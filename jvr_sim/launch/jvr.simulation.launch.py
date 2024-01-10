@@ -22,7 +22,7 @@ def launch_simulation_callback(context, *args, **kwargs):
 
     # share directory
     pkg_jvr_simulation = get_package_share_directory(
-        'gazebo-tutorial')  # change this!!
+        'jvr_sim')  # change this!!
     pkg_ros_gz_sim = get_package_share_directory('ros_gz_sim')
 
     ## Robot State Publisher #########################
@@ -51,7 +51,7 @@ def launch_simulation_callback(context, *args, **kwargs):
     gz_sim = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(gz_sim_launch_file),
         launch_arguments={
-            'gz_args': world_file,
+            'gz_args': f'-r {world_file.perform(context)}',
             'gz_version': gazebo_version
         }.items()
     )
@@ -96,12 +96,12 @@ def launch_simulation_callback(context, *args, **kwargs):
         package='ros_gz_bridge',
         executable='parameter_bridge',
         arguments=[
-            f'/world/default/model/{robot_name}/joint_state@sensor_msgs/msg/JointState[gz.msgs.Model',
-            f'/model/{robot_name}/pose@tf2_msgs/msg/TFMessage[gz.msgs.Pose_V'
+            f'/world/{world}/model/{robot_name}/joint_state@sensor_msgs/msg/JointState[gz.msgs.Model',
+            # f'/model/{robot_name}/pose@tf2_msgs/msg/TFMessage[gz.msgs.Pose_V'
         ],
         remappings=[
-            (f'/model/{robot_name}/pose', '/tf'),
-            (f'/world/default/model/{robot_name}/joint_state', '/joint_states')
+            # (f'/model/{robot_name}/pose', '/tf'),
+            (f'/world/{world}/model/{robot_name}/joint_state', '/joint_states')
         ]
     )
 
