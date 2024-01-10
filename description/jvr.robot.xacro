@@ -1,0 +1,235 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+    <xacro:include filename="inertial_macros.xacro" />
+    <!-- Dimensions -->
+    <!-- Chassis -->
+    <xacro:property name="chassis_length" value="0.205" />
+    <xacro:property name="chassis_width" value="0.145" />
+    <xacro:property name="chassis_height" value="0.050" />
+    <xacro:property name="chassis_mass" value="0.6" />
+    <!-- Wheels -->
+    <xacro:property name="wheel_radius" value="0.033" />
+    <xacro:property name="wheel_thickness" value="0.026" />
+    <xacro:property name="wheel_mass" value="0.038" />
+    <xacro:property name="wheel_offset_x" value="0.14" />
+    <xacro:property name="wheel_offset_y" value="0.072" />
+    <xacro:property name="wheel_offset_z" value="0.014" />
+    <xacro:property name="wheel_separation" value="${2 * wheel_offset_y}" />
+    <!-- Caster wheel -->
+    <xacro:property name="caster_wheel_radius" value="0.008" />
+    <xacro:property name="caster_wheel_mass" value="0.016" />
+    <xacro:property name="caster_wheel_offset_x" value="0.016" />
+    <xacro:property name="caster_wheel_offset_z" value="-0.012" />
+    <!-- Sweep sensor -->
+    <xacro:property name="sweep_sensor_joint_offset_x" value="0.187" />
+    <xacro:property name="sweep_sensor_joint_offset_z" value="0.059" />
+    <!-- lower limit -45deg, upper limit 45deg-->
+    <!-- not sure what 'effort' means -->
+    <!-- speed 60 deg per 0.3 secs. see
+    https://osoyoo.store/en-eu/products/micro-servo-sg90-blue-for-arduino-v2-0-robot-carmodel-lacc200610#tab_technical-details -->
+    <xacro:property name="sweep_sensor_joint_lower" value="-${(pi/180)*45}" />
+    <xacro:property name="sweep_sensor_joint_upper" value="${(pi/180)*45}" />
+    <xacro:property name="sweep_sensor_joint_effort" value="100.0" />
+    <xacro:property name="sweep_sensor_joint_velocity" value="${((pi/180)*60)/0.3}" />
+    <xacro:property name="sweep_sensor_mass" value="0.015" />
+    <xacro:property name="sweep_sensor_backplate_offset_x" value="0.009" />
+    <xacro:property name="sweep_sensor_backplate_offset_z" value="0.018" />
+    <xacro:property name="sweep_sensor_backplate_length" value="0.002" />
+    <xacro:property name="sweep_sensor_backplate_width" value="0.050" />
+    <xacro:property name="sweep_sensor_backplate_height" value="0.036" />
+    <xacro:property name="sweep_sensor_mic_offset_x" value="0.015" />
+    <xacro:property name="sweep_sensor_mic_offset_y" value="0.010" />
+    <xacro:property name="sweep_sensor_mic_offset_z" value="0.018" />
+    <xacro:property name="sweep_sensor_mic_radius" value="0.008" />
+    <xacro:property name="sweep_sensor_mic_length" value="0.010" />
+    <xacro:property name="sweep_sensor_collision_length" value="${sweep_sensor_backplate_length + sweep_sensor_mic_length}" />
+    <xacro:property name="sweep_sensor_collision_width" value="${sweep_sensor_backplate_width}" />
+    <xacro:property name="sweep_sensor_collision_height" value="${sweep_sensor_backplate_height}" />
+    <xacro:property name="sweep_sensor_collision_offset_x" value="${sweep_sensor_backplate_offset_x + (sweep_sensor_collision_length/2)}" />
+    <xacro:property name="sweep_sensor_collision_offset_z" value="${sweep_sensor_backplate_offset_z}" />
+    <!-- Materials -->
+    <material name="white">
+        <color rgba="1 1 1 1" />
+    </material>
+    <material name="orange">
+        <color rgba="1 0.3 0.1 1" />
+    </material>
+    <material name="blue">
+        <color rgba="0.2 0.2 1 1" />
+    </material>
+    <material name="black">
+        <color rgba="0 0 0 1" />
+    </material>
+    <material name="yellow">
+        <color rgba="1 1 0 1" />
+    </material>
+    <material name="silver">
+        <color rgba="0.7 0.7 0.7 1" />
+    </material>
+    <!-- base (in middle of the two wheels) -->
+    <link name="base_link">
+        <origin xyz="0 0 0.033" />
+    </link>
+    <!-- CHASSIS (simplified body of the jvr-robot) -->
+    <joint name="chassis_joint" type="fixed">
+        <parent link="base_link" />
+        <child link="chassis" />
+        <origin xyz="${-wheel_offset_x} 0 ${-wheel_offset_z}" />
+    </joint>
+    <link name="chassis">
+        <visual>
+            <origin xyz="${chassis_length/2} 0 ${chassis_height/2}" />
+            <geometry>
+                <box size="${chassis_length} ${chassis_width} ${chassis_height}" />
+            </geometry>
+            <material name="black" />
+        </visual>
+        <collision>
+            <origin xyz="${chassis_length/2} 0 ${chassis_height/2}" />
+            <geometry>
+                <box size="${chassis_length} ${chassis_width} ${chassis_height}" />
+            </geometry>
+        </collision>
+        <xacro:inertial_box mass="${chassis_mass}" x="${chassis_length}" y="${chassis_width}" z="${chassis_height}">
+            <origin xyz="${chassis_length/2} 0 ${chassis_height/2}" rpy="0 0 0" />
+        </xacro:inertial_box>
+    </link>
+    <!-- Left wheel -->
+    <!-- The weels are half inside the box, because the outer edges are used as chassis -->
+    <joint name="left_wheel_joint" type="continuous">
+        <parent link="base_link" />
+        <child link="left_wheel" />
+        <origin xyz="0 ${wheel_offset_y} 0" rpy="-${pi/2} 0 0" />
+        <axis xyz="0 0 1" />
+    </joint>
+    <link name="left_wheel">
+        <visual>
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <geometry>
+                <cylinder radius="${wheel_radius}" length="${wheel_thickness}" />
+            </geometry>
+            <material name="yellow" />
+        </visual>
+        <collision>
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <geometry>
+                <cylinder radius="${wheel_radius}" length="${wheel_thickness}" />
+            </geometry>
+        </collision>
+        <xacro:inertial_cylinder mass="${wheel_mass}" length="${wheel_thickness}" radius="${wheel_radius}">
+            <origin xyz="0 0 0" rpy="0 0 0" />
+        </xacro:inertial_cylinder>
+    </link>
+    <!-- Right wheel -->
+    <!-- The weels are half inside the box, because the outer edges are used as chassis -->
+    <joint name="right_wheel_joint" type="continuous">
+        <parent link="base_link" />
+        <child link="right_wheel" />
+        <origin xyz="0 ${-wheel_offset_y} 0" rpy="${pi/2} 0 0" />
+        <axis xyz="0 0 -1" />
+    </joint>
+    <link name="right_wheel">
+        <visual>
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <geometry>
+                <cylinder radius="${wheel_radius}" length="${wheel_thickness}" />
+            </geometry>
+            <material name="yellow" />
+        </visual>
+        <collision>
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <geometry>
+                <cylinder radius="${wheel_radius}" length="${wheel_thickness}" />
+            </geometry>
+        </collision>
+        <xacro:inertial_cylinder mass="${wheel_mass}" length="${wheel_thickness}" radius="${wheel_radius}">
+            <origin xyz="0 0 0" rpy="0 0 0" />
+        </xacro:inertial_cylinder>
+    </link>
+    <!-- Caster wheel -->
+    <joint name="caster_wheel_joint" type="fixed">
+        <parent link="chassis" />
+        <child link="caster_wheel" />
+        <origin xyz="${caster_wheel_offset_x} 0 ${caster_wheel_offset_z}" />
+    </joint>
+    <link name="caster_wheel">
+        <visual>
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <geometry>
+                <sphere radius="${caster_wheel_radius}" />
+            </geometry>
+            <material name="silver" />
+        </visual>
+        <collision>
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <geometry>
+                <sphere radius="${caster_wheel_radius}" />
+            </geometry>
+        </collision>
+        <xacro:inertial_sphere mass="${caster_wheel_mass}" radius="${caster_wheel_radius}">
+            <origin xyz="0 0 0" rpy="0 0 0" />
+        </xacro:inertial_sphere>
+    </link>
+    <!-- Sweep sensor -->
+    <joint name="sweep_sensor_joint" type="revolute">
+        <parent link="chassis" />
+        <child link="sweep_sensor" />
+        <origin xyz="${sweep_sensor_joint_offset_x} 0 ${sweep_sensor_joint_offset_z}" />
+        <axis xyz="0 0 1" />
+        <limit lower="${sweep_sensor_joint_lower}" upper="${sweep_sensor_joint_upper}" effort="${sweep_sensor_joint_effort}" velocity="${sweep_sensor_joint_velocity}" />
+    </joint>
+    <link name="sweep_sensor">
+        <visual>
+            <origin xyz="${sweep_sensor_backplate_offset_x} 0 ${sweep_sensor_backplate_offset_z}" />
+            <geometry>
+                <box size="${sweep_sensor_backplate_length} ${sweep_sensor_backplate_width} ${sweep_sensor_backplate_height}" />
+            </geometry>
+            <material name="silver" />
+        </visual>
+        <visual>
+            <origin xyz="${sweep_sensor_mic_offset_x} ${sweep_sensor_mic_offset_z} ${sweep_sensor_mic_offset_z}" rpy="0 ${pi/2} 0" />
+            <geometry>
+                <cylinder radius="${sweep_sensor_mic_radius}" length="${sweep_sensor_mic_length}" />
+            </geometry>
+            <material name="silver" />
+        </visual>
+        <visual>
+            <origin xyz="${sweep_sensor_mic_offset_x} ${-sweep_sensor_mic_offset_z} ${sweep_sensor_mic_offset_z}" rpy="0 ${pi/2} 0" />
+            <geometry>
+                <cylinder radius="${sweep_sensor_mic_radius}" length="${sweep_sensor_mic_length}" />
+            </geometry>
+            <material name="silver" />
+        </visual>
+        <collision>
+            <origin xyz="${sweep_sensor_collision_offset_x} 0 ${sweep_sensor_collision_offset_z}" />
+            <geometry>
+                <box size="${sweep_sensor_collision_length} ${sweep_sensor_collision_width} ${sweep_sensor_collision_height}" />
+            </geometry>
+        </collision>
+        <!-- using collision box for inertia-->
+        <xacro:inertial_box mass="${sweep_sensor_mass}" x="${sweep_sensor_collision_length}" y="${sweep_sensor_collision_width}" z="${sweep_sensor_collision_height}">
+            <origin xyz="${sweep_sensor_collision_offset_x} 0 ${sweep_sensor_collision_offset_z}" rpy="0 0 0" />
+        </xacro:inertial_box>
+    </link>
+    <gazebo>
+        <!--diff drive plugin-->
+        <plugin filename="gz-sim-diff-drive-system" name="gz::sim::systems::DiffDrive">
+            <left_joint>left_wheel_joint</left_joint>
+            <right_joint>right_wheel_joint</right_joint>
+            <wheel_separation>${wheel_separation}</wheel_separation>
+            <wheel_radius>${wheel_radius}</wheel_radius>
+            <odom_publish_frequency>1</odom_publish_frequency>
+            <!-- <topic>cmd_vel</topic> -->
+        </plugin>
+        <plugin filename="gz-sim-joint-state-publisher-system" name="gz::sim::systems::JointStatePublisher" />
+        <plugin filename="gz-sim-pose-publisher-system" name="gz::sim::systems::PosePublisher">
+            <publish_link_pose>true</publish_link_pose>
+            <use_pose_vector_msg>true</use_pose_vector_msg>
+        </plugin>
+    </gazebo>
+    <gazebo reference="caster_wheel">
+        <!-- er is geen 'ball' type joint in URDF, make caster 'slippery'-->
+        <mu1 value="0.001" />
+        <mu2 value="0.001" />
+    </gazebo>
+</robot>

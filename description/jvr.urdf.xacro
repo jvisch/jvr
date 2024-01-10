@@ -1,0 +1,6 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro"  name="jvr">
+
+    <xacro:include filename="jvr.robot.xacro" />
+    
+</robot>
