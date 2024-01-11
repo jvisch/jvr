@@ -1,5 +1,6 @@
 #include "jvr_basic/TalkerNode.hpp"
 
+using namespace jvr::basic;
 using namespace std::chrono_literals;
 
 TalkerNode::TalkerNode() : Node("talker_node"), count_(0)

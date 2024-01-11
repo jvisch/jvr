@@ -1,5 +1,7 @@
 #include "jvr_basic/ListenerNode.hpp"
 
+using namespace jvr::basic;
+
 ListenerNode::ListenerNode() : Node("listener_node")
 {
     auto cb = [this](const jvr_interfaces::msg::TalkMsg &msg)

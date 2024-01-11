@@ -2,15 +2,21 @@
 
 #include "rclcpp/rclcpp.hpp"
 
-class TalkerNode : public rclcpp::Node
+namespace jvr
 {
-public:
-  TalkerNode();
+  namespace basic
+  {
+    class TalkerNode : public rclcpp::Node
+    {
+    public:
+      TalkerNode();
 
-private:
-  void timer_callback();
+    private:
+      void timer_callback();
 
-  rclcpp::TimerBase::SharedPtr timer_;
-  rclcpp::Publisher<jvr_interfaces::msg::TalkMsg>::SharedPtr publisher_;
-  size_t count_;
-};
+      rclcpp::TimerBase::SharedPtr timer_;
+      rclcpp::Publisher<jvr_interfaces::msg::TalkMsg>::SharedPtr publisher_;
+      size_t count_;
+    };
+  }
+}
