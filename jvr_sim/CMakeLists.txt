@@ -16,9 +16,49 @@ endif()
 
 # find dependencies
 find_package(ament_cmake REQUIRED)
-# find_package(ros_gz_sim REQUIRED)
-# find_package(robot_state_publisher REQUIRED)
+find_package(ros_gz_sim REQUIRED)
+find_package(robot_state_publisher REQUIRED)
 
+
+### full system gazebo plugin
+find_package(gz-cmake3 REQUIRED)
+find_package(gz-plugin2 REQUIRED COMPONENTS register)
+set(GZ_PLUGIN_VER ${gz-plugin2_VERSION_MAJOR})
+find_package(gz-common5 REQUIRED COMPONENTS profiler)
+set(GZ_COMMON_VER ${gz-common5_VERSION_MAJOR})
+# Harmonic
+if("$ENV{GZ_VERSION}" STREQUAL "harmonic")
+  find_package(gz-sim8 REQUIRED)
+  set(GZ_SIM_VER ${gz-sim8_VERSION_MAJOR})
+  message(STATUS "Compiling against Gazebo Harmonic")
+# Default to Garden
+else()
+  find_package(gz-sim7 REQUIRED)
+  set(GZ_SIM_VER ${gz-sim7_VERSION_MAJOR})
+  message(STATUS "Compiling against Gazebo Garden")
+endif()
+
+add_library(FullSystem
+  SHARED
+  src/FullSystem.cpp
+)
+
+target_include_directories(
+  FullSystem PRIVATE include
+)
+
+target_link_libraries(FullSystem PRIVATE
+  gz-sim${GZ_SIM_VER}::gz-sim${GZ_SIM_VER})
+
+install(
+  TARGETS FullSystem
+  DESTINATION lib/${PROJECT_NAME}
+)
+
+ament_environment_hooks("${CMAKE_CURRENT_SOURCE_DIR}/hooks/${PROJECT_NAME}.dsv.in")
+ament_environment_hooks("${CMAKE_CURRENT_SOURCE_DIR}/hooks/${PROJECT_NAME}.sh.in")
+
+#######
 
 # Install launch files.
 install(DIRECTORY

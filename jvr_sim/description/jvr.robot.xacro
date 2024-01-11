@@ -226,6 +226,9 @@
             <publish_link_pose>true</publish_link_pose>
             <use_pose_vector_msg>true</use_pose_vector_msg>
         </plugin>
+
+        <plugin filename="FullSystem" name="jvr::sim::FullSystem">
+        </plugin>
     </gazebo>
     <gazebo reference="caster_wheel">
         <!-- er is geen 'ball' type joint in URDF, make caster 'slippery'-->
