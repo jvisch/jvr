@@ -41,15 +41,15 @@ GZ_ADD_PLUGIN(
 using namespace jvr::sim;
 
 void FullSystem::Configure(const gz::sim::Entity &_entity,
-                           const std::shared_ptr<const sdf::Element> &_element,
-                           gz::sim::EntityComponentManager &_ecm,
-                           gz::sim::EventManager &_eventManager)
+                           const std::shared_ptr<const sdf::Element> &/*_element*/,
+                           gz::sim::EntityComponentManager &/*_ecm*/,
+                           gz::sim::EventManager &/*_eventManager*/)
 {
   gzdbg << "jvr_sim::FullSystem::Configure on entity: " << _entity << std::endl;
 }
 
 void FullSystem::PreUpdate(const gz::sim::UpdateInfo &_info,
-                           gz::sim::EntityComponentManager &_ecm)
+                           gz::sim::EntityComponentManager &/*_ecm*/)
 {
   if (!_info.paused && _info.iterations % 1000 == 0)
   {
@@ -58,7 +58,7 @@ void FullSystem::PreUpdate(const gz::sim::UpdateInfo &_info,
 }
 
 void FullSystem::Update(const gz::sim::UpdateInfo &_info,
-                        gz::sim::EntityComponentManager &_ecm)
+                        gz::sim::EntityComponentManager &/*_ecm*/)
 {
   if (!_info.paused && _info.iterations % 1000 == 0)
   {
@@ -67,7 +67,7 @@ void FullSystem::Update(const gz::sim::UpdateInfo &_info,
 }
 
 void FullSystem::PostUpdate(const gz::sim::UpdateInfo &_info,
-                            const gz::sim::EntityComponentManager &_ecm)
+                            const gz::sim::EntityComponentManager &/*_ecm*/)
 {
   if (!_info.paused && _info.iterations % 1000 == 0)
   {
@@ -75,8 +75,8 @@ void FullSystem::PostUpdate(const gz::sim::UpdateInfo &_info,
   }
 }
 
-void FullSystem::Reset(const gz::sim::UpdateInfo &_info,
-                       gz::sim::EntityComponentManager &_ecm)
+void FullSystem::Reset(const gz::sim::UpdateInfo &/*_info*/,
+                       gz::sim::EntityComponentManager &/*_ecm*/)
 {
   gzdbg << "jvr_sim::FullSystem::Reset" << std::endl;
 }
