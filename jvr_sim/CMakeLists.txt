@@ -20,12 +20,14 @@ find_package(ros_gz_sim REQUIRED)
 find_package(robot_state_publisher REQUIRED)
 
 
-### full system gazebo plugin
+### Gazebo plugins
+
 find_package(gz-cmake3 REQUIRED)
 find_package(gz-plugin2 REQUIRED COMPONENTS register)
 set(GZ_PLUGIN_VER ${gz-plugin2_VERSION_MAJOR})
 find_package(gz-common5 REQUIRED COMPONENTS profiler)
 set(GZ_COMMON_VER ${gz-common5_VERSION_MAJOR})
+
 # Harmonic
 if("$ENV{GZ_VERSION}" STREQUAL "harmonic")
   find_package(gz-sim8 REQUIRED)
@@ -38,6 +40,7 @@ else()
   message(STATUS "Compiling against Gazebo Garden")
 endif()
 
+# FullSystem plugin (from example)
 add_library(FullSystem
   SHARED
   src/FullSystem.cpp
@@ -50,9 +53,24 @@ target_include_directories(
 target_link_libraries(FullSystem PRIVATE
   gz-sim${GZ_SIM_VER}::gz-sim${GZ_SIM_VER})
 
+# SweepSensor plugin
+add_library(SweepSensor
+  SHARED
+  src/SweepSensor.cpp
+)
+
+target_include_directories(
+  SweepSensor PRIVATE include
+)
+
+target_link_libraries(SweepSensor PRIVATE
+  gz-sim${GZ_SIM_VER}::gz-sim${GZ_SIM_VER})
+
+
+# Install plugins to 'lib' dir
 install(
-  TARGETS FullSystem
-  DESTINATION lib/${PROJECT_NAME}
+  TARGETS FullSystem SweepSensor
+  DESTINATION lib/${PROJECT_NAME}/
 )
 
 ament_environment_hooks("${CMAKE_CURRENT_SOURCE_DIR}/hooks/${PROJECT_NAME}.dsv.in")

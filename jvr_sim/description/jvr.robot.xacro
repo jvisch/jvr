@@ -229,6 +229,8 @@
 
         <plugin filename="FullSystem" name="jvr::sim::FullSystem">
         </plugin>
+        <plugin filename="SweepSensor" name="jvr::sim::SweepSensor">
+        </plugin>
     </gazebo>
     <gazebo reference="caster_wheel">
         <!-- er is geen 'ball' type joint in URDF, make caster 'slippery'-->
