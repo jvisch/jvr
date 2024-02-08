@@ -79,7 +79,7 @@ namespace jvr
     {
       if (!_info.paused)
       {
-        gzdbg << "jvr_sim::SweepSensor::PreUpdate" << std::endl;
+        // gzdbg << "jvr_sim::SweepSensor::PreUpdate" << std::endl;
         // gzdbg << "--- realtime  : " << _info.realTime.count() << " -----" << std::endl;
         // gzdbg << "--- simtime   : " << _info.simTime.count() << " -----" << std::endl;
         // gzdbg << "--- delta     : " << _info.dt.count() << " -----" << std::endl;
@@ -124,7 +124,7 @@ namespace jvr
     {
       if (!_info.paused)
       {
-        gzdbg << "jvr_sim::SweepSensor::Update" << std::endl;
+        // gzdbg << "jvr_sim::SweepSensor::Update" << std::endl;
         // gzdbg << "--- realtime  : " << _info.realTime.count() << " -----" << std::endl;
         // gzdbg << "--- simtime   : " << _info.simTime.count() << " -----" << std::endl;
         // gzdbg << "--- delta     : " << _info.dt.count() << " -----" << std::endl;
@@ -137,7 +137,7 @@ namespace jvr
     {
       if (!_info.paused)
       {
-        gzdbg << "jvr_sim::SweepSensor::PostUpdate" << std::endl;
+        // gzdbg << "jvr_sim::SweepSensor::PostUpdate" << std::endl;
         // gzdbg << "--- realtime  : " << _info.realTime.count() << " -----" << std::endl;
         // gzdbg << "--- simtime   : " << _info.simTime.count() << " -----" << std::endl;
         // gzdbg << "--- delta     : " << _info.dt.count() << " -----" << std::endl;
@@ -148,7 +148,7 @@ namespace jvr
     void SweepSensor::Reset(const gz::sim::UpdateInfo & /*_info*/,
                             gz::sim::EntityComponentManager & /*_ecm*/)
     {
-      gzdbg << "jvr_sim::SweepSensor::Reset" << std::endl;
+      // gzdbg << "jvr_sim::SweepSensor::Reset" << std::endl;
     }
   } // namespace sim
 } // namespace jvr
