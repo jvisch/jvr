@@ -6,7 +6,7 @@
 // ---
 #include "gz/sim/Model.hh"
 #include "gz/sim/Joint.hh"
-// #include "gz/math/Angle.hh"
+#include "gz/math/Angle.hh"
 // #include "gz/math/Rand.hh"
 // #include "gz/math/Helpers.hh"
 
@@ -27,6 +27,7 @@ GZ_ADD_PLUGIN(
     jvr::sim::SweepSensor::ISystemPostUpdate,
     jvr::sim::SweepSensor::ISystemReset)
 
+
 namespace jvr
 {
 
@@ -38,6 +39,7 @@ namespace jvr
       // some defaults (make configurable later)
       static const std::string default_joint_name;
       static const double default_start_angle;
+      static const double max_velocity;
       // Data
       gz::sim::Model model;
       gz::sim::Joint servo;
@@ -45,8 +47,16 @@ namespace jvr
       double upper;
       double velocity;
     };
+    // Default joint name
     /*static*/ const std::string SweepSensorData::default_joint_name = "sweep_sensor_joint";
+
+    // Default start angle
     /*static*/ const double SweepSensorData::default_start_angle = 0;
+
+    // Default maximum speed of servo
+    /* speed 60 deg per 0.3 secs. see
+    https://osoyoo.store/en-eu/products/micro-servo-sg90-blue-for-arduino-v2-0-robot-carmodel-lacc200610#tab_technical-details */
+    /*static*/ const double SweepSensorData::max_velocity = GZ_DTOR(60) / 0.3;
 
     SweepSensor::SweepSensor() : data(std::make_unique<SweepSensorData>())
     {
@@ -70,10 +80,8 @@ namespace jvr
       this->data->upper = this->data->servo.Axis(_ecm).value()[0].Upper();
       gzdbg << "--- lower: " << this->data->lower << std::endl;
       gzdbg << "--- upper: " << this->data->upper << std::endl;
-      
       // Velocity
-  
-      this->data->velocity = 0.1;
+      this->data->velocity = SweepSensorData::max_velocity;
     }
 
     void SweepSensor::PreUpdate(const gz::sim::UpdateInfo &_info,
@@ -81,70 +89,47 @@ namespace jvr
     {
       if (!_info.paused)
       {
-        // gzdbg << "jvr_sim::SweepSensor::PreUpdate" << std::endl;
-        // gzdbg << "--- realtime  : " << _info.realTime.count() << " -----" << std::endl;
-        // gzdbg << "--- simtime   : " << _info.simTime.count() << " -----" << std::endl;
-        // gzdbg << "--- delta     : " << _info.dt.count() << " -----" << std::endl;
-        // gzdbg << "--- iterations: " << _info.iterations << " -----" << std::endl;
+        if (_info.dt < std::chrono::steady_clock::duration::zero())
+        {
+          gzwarn << "Detected jump back in time ["
+                 << std::chrono::duration_cast<std::chrono::seconds>(_info.dt).count()
+                 << "s]. System may not work properly." << std::endl;
+        }
 
-        auto current_angle = this->data->servo.Position(_ecm).value()[0];
-        // gzdbg << "--- angle: " << current_angle << std::endl;
-        if((current_angle <= this->data->lower) || (current_angle >= this->data->upper)) {
+        const auto current_angle = this->data->servo.Position(_ecm).value()[0];
+        if (((current_angle <= this->data->lower) && (this->data->velocity < 0)) || ((current_angle >= this->data->upper) && (this->data->velocity > 0)))
+        {
           this->data->velocity *= -1;
         }
 
         this->data->servo.SetVelocity(_ecm, {this->data->velocity});
-        // auto servo = model.JointByName(_ecm, "sweep_sensor_joint");
-
-        // auto vel = _ecm.Component<gz::sim::components::JointVelocityCmd>(servo);
-
-        // if(!vel) {
-        //   gzdbg << "--- NO vel -----------------------" << std::endl;
-        //    _ecm.CreateComponent(servo, gz::sim::components::JointVelocityCmd({.1}));
-        // } else {
-        //   gzdbg << "---  vel FOUND WHOHOOO -----------------------" << std::endl;
-        //   *vel = gz::sim::components::JointVelocityCmd({100});
-        // }
-
-        // auto pos = _ecm.Component<gz::sim::components::JointPosition>(servo);
-
-        // if(!pos) {
-        //   gzdbg << "--- NO pos -----------------------" << std::endl;
-        //    _ecm.CreateComponent(servo, gz::sim::components::JointPosition({1}));
-        // } else {
-        //   gzdbg << "---  pos FOUND WHOHOOO -----------------------" << std::endl;
-        //   *pos = gz::sim::components::JointPosition({1});
-        // }
-
-        // auto pos = gz::math::Rand::DblUniform(0,  GZ_PI);
-        // _ecm.SetComponentData<gz::sim::components::JointPositionReset>(servo, {pos});
       }
     }
 
-    void SweepSensor::Update(const gz::sim::UpdateInfo &_info,
+    void SweepSensor::Update(const gz::sim::UpdateInfo & /*_info*/,
                              gz::sim::EntityComponentManager & /*_ecm*/)
     {
-      if (!_info.paused)
-      {
-        // gzdbg << "jvr_sim::SweepSensor::Update" << std::endl;
-        // gzdbg << "--- realtime  : " << _info.realTime.count() << " -----" << std::endl;
-        // gzdbg << "--- simtime   : " << _info.simTime.count() << " -----" << std::endl;
-        // gzdbg << "--- delta     : " << _info.dt.count() << " -----" << std::endl;
-        // gzdbg << "--- iterations: " << _info.iterations << " -----" << std::endl;
-      }
+      // if (!_info.paused)
+      // {
+      //   // gzdbg << "jvr_sim::SweepSensor::Update" << std::endl;
+      //   // gzdbg << "--- realtime  : " << _info.realTime.count() << " -----" << std::endl;
+      //   // gzdbg << "--- simtime   : " << _info.simTime.count() << " -----" << std::endl;
+      //   // gzdbg << "--- delta     : " << _info.dt.count() << " -----" << std::endl;
+      //   // gzdbg << "--- iterations: " << _info.iterations << " -----" << std::endl;
+      // }
     }
 
-    void SweepSensor::PostUpdate(const gz::sim::UpdateInfo &_info,
+    void SweepSensor::PostUpdate(const gz::sim::UpdateInfo & /*_info*/,
                                  const gz::sim::EntityComponentManager & /*_ecm*/)
     {
-      if (!_info.paused)
-      {
-        // gzdbg << "jvr_sim::SweepSensor::PostUpdate" << std::endl;
-        // gzdbg << "--- realtime  : " << _info.realTime.count() << " -----" << std::endl;
-        // gzdbg << "--- simtime   : " << _info.simTime.count() << " -----" << std::endl;
-        // gzdbg << "--- delta     : " << _info.dt.count() << " -----" << std::endl;
-        // gzdbg << "--- iterations: " << _info.iterations << " -----" << std::endl;
-      }
+      // if (!_info.paused)
+      // {
+      //   // gzdbg << "jvr_sim::SweepSensor::PostUpdate" << std::endl;
+      //   // gzdbg << "--- realtime  : " << _info.realTime.count() << " -----" << std::endl;
+      //   // gzdbg << "--- simtime   : " << _info.simTime.count() << " -----" << std::endl;
+      //   // gzdbg << "--- delta     : " << _info.dt.count() << " -----" << std::endl;
+      //   // gzdbg << "--- iterations: " << _info.iterations << " -----" << std::endl;
+      // }
     }
 
     void SweepSensor::Reset(const gz::sim::UpdateInfo & /*_info*/,
