@@ -43,7 +43,7 @@ namespace jvr
       gz::sim::Joint servo;
       double lower;
       double upper;
-      double speed;
+      double velocity;
     };
     /*static*/ const std::string SweepSensorData::default_joint_name = "sweep_sensor_joint";
     /*static*/ const double SweepSensorData::default_start_angle = 0;
@@ -71,7 +71,9 @@ namespace jvr
       gzdbg << "--- lower: " << this->data->lower << std::endl;
       gzdbg << "--- upper: " << this->data->upper << std::endl;
       
-      this->data->speed = 0.1;
+      // Velocity
+  
+      this->data->velocity = 0.1;
     }
 
     void SweepSensor::PreUpdate(const gz::sim::UpdateInfo &_info,
@@ -88,10 +90,10 @@ namespace jvr
         auto current_angle = this->data->servo.Position(_ecm).value()[0];
         // gzdbg << "--- angle: " << current_angle << std::endl;
         if((current_angle <= this->data->lower) || (current_angle >= this->data->upper)) {
-          this->data->speed *= -1;
+          this->data->velocity *= -1;
         }
 
-        this->data->servo.SetVelocity(_ecm, {this->data->speed});
+        this->data->servo.SetVelocity(_ecm, {this->data->velocity});
         // auto servo = model.JointByName(_ecm, "sweep_sensor_joint");
 
         // auto vel = _ecm.Component<gz::sim::components::JointVelocityCmd>(servo);
