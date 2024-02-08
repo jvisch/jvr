@@ -27,7 +27,6 @@ GZ_ADD_PLUGIN(
     jvr::sim::SweepSensor::ISystemPostUpdate,
     jvr::sim::SweepSensor::ISystemReset)
 
-
 namespace jvr
 {
 
@@ -97,9 +96,21 @@ namespace jvr
         }
 
         const auto current_angle = this->data->servo.Position(_ecm).value()[0];
-        if (((current_angle <= this->data->lower) && (this->data->velocity < 0)) || ((current_angle >= this->data->upper) && (this->data->velocity > 0)))
+        if (this->data->velocity > 0)
         {
-          this->data->velocity *= -1;
+          // Moving left
+          if (current_angle >= this->data->upper)
+          {
+            this->data->velocity *= -1;
+          }
+        }
+        else if (this->data->velocity < 0)
+        {
+          // Moving right
+          if (current_angle <= this->data->lower)
+          {
+            this->data->velocity *= -1;
+          }
         }
 
         this->data->servo.SetVelocity(_ecm, {this->data->velocity});
