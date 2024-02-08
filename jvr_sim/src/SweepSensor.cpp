@@ -86,7 +86,7 @@ namespace jvr
         // gzdbg << "--- iterations: " << _info.iterations << " -----" << std::endl;
 
         auto current_angle = this->data->servo.Position(_ecm).value()[0];
-        gzdbg << "--- angle: " << current_angle << std::endl;
+        // gzdbg << "--- angle: " << current_angle << std::endl;
         if((current_angle <= this->data->lower) || (current_angle >= this->data->upper)) {
           this->data->speed *= -1;
         }
