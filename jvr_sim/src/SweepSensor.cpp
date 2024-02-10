@@ -35,29 +35,72 @@ namespace jvr
     class SweepSensorData
     {
     public:
-      // some defaults (make configurable later)
-      static const std::string default_joint_name;
-      static const double default_start_angle;
-      static const double max_velocity;
+      // Defaults
+      // Set velocity to the max (60 deg per 0.3 secs)
+      const double DefaultVelocity = GZ_DTOR(60) / 0.3;
+
+      // States
+      enum class States
+      {
+        moving,
+        measuring
+      };
+
+      SweepSensorData(const gz::sim::Entity &_entity, gz::sim::EntityComponentManager &_ecm)
+          : servo(), velocity(DefaultVelocity)
+      {
+        // get the joint
+        auto model = gz::sim::Model(_entity);
+        auto joint = model.JointByName(_ecm, "sweep_sensor_joint");
+        servo = gz::sim::Joint(joint);
+        // set start position (facing front)
+        servo.ResetPosition(_ecm, {0});
+        // log data
+        // gzdbg << "--- velocity: " << getVelocity(_ecm) << std::endl;
+        // gzdbg << "--- position: " << getPosition(_ecm) << std::endl;
+        gzdbg << "--- lower: " << getLower(_ecm) << std::endl;
+        gzdbg << "--- upper: " << getUpper(_ecm) << std::endl;
+      }
+
+      SweepSensorData(const SweepSensorData&) = delete;
+      SweepSensorData& operator=(const SweepSensorData&) = delete; 
+      virtual ~SweepSensorData() = default;
+
+      double getVelocity() const
+      {
+        return this->velocity;
+      }
+
+      void setVelocity(gz::sim::EntityComponentManager &_ecm, double value)
+      {
+        this->velocity = value;
+        this->servo.SetVelocity(_ecm, {this->velocity});
+      }
+
+      double getPosition(gz::sim::EntityComponentManager &_ecm) const
+      {
+        return this->servo.Position(_ecm).value()[0];
+      }
+
+      double getLower(gz::sim::EntityComponentManager &_ecm) const
+      {
+        return servo.Axis(_ecm).value()[0].Lower();
+      }
+
+      double getUpper(gz::sim::EntityComponentManager &_ecm) const
+      {
+        return servo.Axis(_ecm).value()[0].Upper();
+      }
+
+    private:
       // Data
-      gz::sim::Model model;
       gz::sim::Joint servo;
-      double lower;
-      double upper;
       double velocity;
+      // States state;
+      // double moveTo;
     };
-    // Default joint name
-    /*static*/ const std::string SweepSensorData::default_joint_name = "sweep_sensor_joint";
 
-    // Default start angle
-    /*static*/ const double SweepSensorData::default_start_angle = 0;
-
-    // Default maximum speed of servo
-    /* speed 60 deg per 0.3 secs. see
-    https://osoyoo.store/en-eu/products/micro-servo-sg90-blue-for-arduino-v2-0-robot-carmodel-lacc200610#tab_technical-details */
-    /*static*/ const double SweepSensorData::max_velocity = GZ_DTOR(60) / 0.3;
-
-    SweepSensor::SweepSensor() : data(std::make_unique<SweepSensorData>())
+    SweepSensor::SweepSensor()
     {
     }
 
@@ -67,20 +110,7 @@ namespace jvr
                                 gz::sim::EventManager & /*_eventManager*/)
     {
       gzdbg << "jvr_sim::SweepSensor::Configure on entity: " << _entity << std::endl;
-      gzdbg << "--- compiled at: " << __TIMESTAMP__ << std::endl;
-
-      this->data->model = gz::sim::Model(_entity);
-      auto joint = this->data->model.JointByName(_ecm, SweepSensorData::default_joint_name);
-      this->data->servo = gz::sim::Joint(joint);
-      // set start position (facing front)
-      this->data->servo.ResetPosition(_ecm, {SweepSensorData::default_start_angle});
-      // angle limits (lower and upper)
-      this->data->lower = this->data->servo.Axis(_ecm).value()[0].Lower();
-      this->data->upper = this->data->servo.Axis(_ecm).value()[0].Upper();
-      gzdbg << "--- lower: " << this->data->lower << std::endl;
-      gzdbg << "--- upper: " << this->data->upper << std::endl;
-      // Velocity
-      this->data->velocity = SweepSensorData::max_velocity;
+      data = std::make_unique<SweepSensorData>(_entity, _ecm);
     }
 
     void SweepSensor::PreUpdate(const gz::sim::UpdateInfo &_info,
@@ -95,25 +125,28 @@ namespace jvr
                  << "s]. System may not work properly." << std::endl;
         }
 
-        const auto current_angle = this->data->servo.Position(_ecm).value()[0];
-        if (this->data->velocity > 0)
+        const auto position = this->data->getPosition(_ecm);
+        auto velocity = this->data->getVelocity();
+        const auto lower = this->data->getLower(_ecm);
+        const auto upper = this->data->getUpper(_ecm);
+        if (velocity > 0)
         {
           // Moving left
-          if (current_angle >= this->data->upper)
+          if (position >= upper)
           {
-            this->data->velocity *= -1;
+            velocity *= -1;
           }
         }
-        else if (this->data->velocity < 0)
+        else if (velocity < 0)
         {
           // Moving right
-          if (current_angle <= this->data->lower)
+          if (position <= lower)
           {
-            this->data->velocity *= -1;
+            velocity *= -1;
           }
         }
 
-        this->data->servo.SetVelocity(_ecm, {this->data->velocity});
+        this->data->setVelocity(_ecm, velocity);
       }
     }
 
