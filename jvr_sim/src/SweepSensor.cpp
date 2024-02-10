@@ -52,14 +52,12 @@ namespace jvr
         // get the joint
         auto model = gz::sim::Model(_entity);
         auto joint = model.JointByName(_ecm, "sweep_sensor_joint");
-        servo = gz::sim::Joint(joint);
+        this->servo = gz::sim::Joint(joint);
         // set start position (facing front)
-        servo.ResetPosition(_ecm, {0});
-        // log data
-        // gzdbg << "--- velocity: " << getVelocity(_ecm) << std::endl;
-        // gzdbg << "--- position: " << getPosition(_ecm) << std::endl;
-        gzdbg << "--- lower: " << getLower(_ecm) << std::endl;
-        gzdbg << "--- upper: " << getUpper(_ecm) << std::endl;
+        this->servo.ResetPosition(_ecm, {0});
+        // Get angle limits
+        this->lower = this->servo.Axis(_ecm).value()[0].Lower();
+        this->upper = this->servo.Axis(_ecm).value()[0].Upper();
       }
 
       SweepSensorData(const SweepSensorData&) = delete;
@@ -77,25 +75,27 @@ namespace jvr
         this->servo.SetVelocity(_ecm, {this->velocity});
       }
 
-      double getPosition(gz::sim::EntityComponentManager &_ecm) const
+      double getPosition(const gz::sim::EntityComponentManager &_ecm) const
       {
         return this->servo.Position(_ecm).value()[0];
       }
 
-      double getLower(gz::sim::EntityComponentManager &_ecm) const
+      double getLower() const
       {
-        return servo.Axis(_ecm).value()[0].Lower();
+        return this->lower;
       }
 
-      double getUpper(gz::sim::EntityComponentManager &_ecm) const
+      double getUpper() const
       {
-        return servo.Axis(_ecm).value()[0].Upper();
+        return this->upper;
       }
 
     private:
       // Data
       gz::sim::Joint servo;
       double velocity;
+      double lower;
+      double upper;
       // States state;
       // double moveTo;
     };
@@ -127,8 +127,8 @@ namespace jvr
 
         const auto position = this->data->getPosition(_ecm);
         auto velocity = this->data->getVelocity();
-        const auto lower = this->data->getLower(_ecm);
-        const auto upper = this->data->getUpper(_ecm);
+        const auto lower = this->data->getLower();
+        const auto upper = this->data->getUpper();
         if (velocity > 0)
         {
           // Moving left
