@@ -1,0 +1,31 @@
+@startuml SweepSensor state machine
+
+state STARTING
+STARTING : entry: <nothing>\n
+STARTING : do: <nothing>\n
+STARTING : exit: set initial target position\n
+
+state MOVING
+MOVING : entry: <nothing>\n
+MOVING : do: set velocity\n
+MOVING : exit: <nothing>\n
+
+state MEASURING
+MEASURING : entry: <nothing>\n
+MEASURING : do: measure distance\n
+MEASURING : exit: send measure message\n\
+         set new target position\n
+
+
+[*] -> STARTING
+STARTING --> MOVING
+MOVING --> MEASURING : target position reached
+MEASURING --> MOVING : measurement done
+
+note left of MEASURING
+  setting new target position sets
+  also new velocity if direction
+  must be changed
+end note
+
+@enduml

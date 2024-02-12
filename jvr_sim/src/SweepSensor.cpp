@@ -37,17 +37,20 @@ namespace jvr
     public:
       // Defaults
       // Set velocity to the max (60 deg per 0.3 secs)
-      const double DefaultVelocity = GZ_DTOR(60) / 0.3;
+      constexpr static double DEFAULT_VELOCITY{GZ_DTOR(60) / 0.3};
+      // constexpr static double DEFAULT_VELOCITY{2.0 /*GZ_DTOR(60) / 0.3*/};
+      // Every 5 degree a meausurement
+      constexpr static double STEP_MOVE{GZ_DTOR(5)};
 
       // States
       enum class States
       {
+        starting,
         moving,
         measuring
       };
 
       SweepSensorData(const gz::sim::Entity &_entity, gz::sim::EntityComponentManager &_ecm)
-          : servo(), velocity(DefaultVelocity)
       {
         // get the joint
         auto model = gz::sim::Model(_entity);
@@ -60,8 +63,8 @@ namespace jvr
         this->upper = this->servo.Axis(_ecm).value()[0].Upper();
       }
 
-      SweepSensorData(const SweepSensorData&) = delete;
-      SweepSensorData& operator=(const SweepSensorData&) = delete; 
+      SweepSensorData(const SweepSensorData &) = delete;
+      SweepSensorData &operator=(const SweepSensorData &) = delete;
       virtual ~SweepSensorData() = default;
 
       double getVelocity() const
@@ -90,14 +93,50 @@ namespace jvr
         return this->upper;
       }
 
+      States getState() const
+      {
+        return this->state;
+      }
+
+      void setState(States new_state)
+      {
+        this->state = new_state;
+      }
+
+      double getTargetPosition() const
+      {
+        return this->target_position;
+      }
+
+      void setTargetPosition(double new_position)
+      {
+        auto lower = getLower();
+        if (new_position < lower)
+        {
+          this->target_position = lower;
+        }
+        else
+        {
+          upper = getUpper();
+          if (new_position > upper)
+          {
+            this->target_position = new_position;
+          }
+          else
+          {
+            this->target_position = new_position;
+          }
+        }
+      }
+
     private:
       // Data
-      gz::sim::Joint servo;
-      double velocity;
-      double lower;
-      double upper;
-      // States state;
-      // double moveTo;
+      gz::sim::Joint servo{gz::sim::kNullEntity};
+      double velocity{DEFAULT_VELOCITY};
+      double lower{0};
+      double upper{0};
+      States state{States::starting};
+      double target_position{0};
     };
 
     SweepSensor::SweepSensor()
@@ -125,28 +164,138 @@ namespace jvr
                  << "s]. System may not work properly." << std::endl;
         }
 
-        const auto position = this->data->getPosition(_ecm);
-        auto velocity = this->data->getVelocity();
-        const auto lower = this->data->getLower();
-        const auto upper = this->data->getUpper();
-        if (velocity > 0)
+        auto state = this->data->getState();
+        gzdbg << "Active state: " << static_cast<int>(state) << std::endl;
+        switch (state)
         {
-          // Moving left
-          if (position >= upper)
+        case SweepSensorData::States::starting:
+        {
+          const bool event = true;
+          if (event)
           {
-            velocity *= -1;
+            // starting exit
+            this->data->setTargetPosition(0); // set initial target position
+            // state change
+            this->data->setState(SweepSensorData::States::moving);
+            // moving entry
+            // <nothing>
+          }
+          else
+          {
+            // starting do
+            // <nothing>
           }
         }
-        else if (velocity < 0)
+        break;
+        case SweepSensorData::States::moving:
         {
-          // Moving right
-          if (position <= lower)
+          const auto velocity = this->data->getVelocity();
+          const auto position = this->data->getPosition(_ecm);
+          const auto target_position = this->data->getTargetPosition();
+          bool event =
+              ((velocity > 0) && (position >= target_position)) ||
+              ((velocity < 0) && (position <= target_position));
+          if (event)
           {
-            velocity *= -1;
+            // moving exit
+            // <nothing>
+            // switch state
+            this->data->setState(SweepSensorData::States::measuring);
+            // measuring entry
+            // <nothing>
           }
+          else
+          {
+            // moving do
+            this->data->setVelocity(_ecm, velocity);
+            gzdbg << "Vel: " << velocity << std::endl;
+          }
+        }
+        break;
+        case SweepSensorData::States::measuring:
+        {
+          bool event = true;
+          if (event)
+          {
+            // measuring exit
+            // send measure message
+            // TODO
+            // Set new target position
+            const auto velocity = this->data->getVelocity();
+            const auto position = this->data->getPosition(_ecm);
+            if (velocity > 0)
+            {
+              // moving left
+              const auto upper = this->data->getUpper();
+              const auto new_position = position + SweepSensorData::STEP_MOVE;
+              if (new_position >= upper)
+              {
+                // change direction
+                this->data->setVelocity(_ecm, -1 * velocity);
+                // new target
+                this->data->setTargetPosition(position - SweepSensorData::STEP_MOVE);
+              }
+              else
+              {
+                this->data->setTargetPosition(new_position);
+              }
+            }
+            else
+            {
+              // moving right
+              const auto lower = this->data->getLower();
+              const auto new_position = position - SweepSensorData::STEP_MOVE;
+              if (new_position <= lower)
+              {
+                // change direction
+                this->data->setVelocity(_ecm, -1 * velocity);
+                // new target
+                this->data->setTargetPosition(position + SweepSensorData::STEP_MOVE);
+              }
+              else
+              {
+                this->data->setTargetPosition(new_position);
+              }
+            }
+            // switch state
+            this->data->setState(SweepSensorData::States::moving);
+            // moving entry
+            // <nothing>
+          }
+          else
+          {
+            // measuring do
+            // TODO MEASURE
+          }
+        }
+        break;
+
+        default:
+          gzerr << "Unknown state '" << static_cast<int>(state) << "'" << std::endl;
         }
 
-        this->data->setVelocity(_ecm, velocity);
+        // const auto position = this->data->getPosition(_ecm);
+        // auto velocity = this->data->getVelocity();
+        // const auto lower = this->data->getLower();
+        // const auto upper = this->data->getUpper();
+        // if (velocity > 0)
+        // {
+        //   // Moving left
+        //   if (position >= upper)
+        //   {
+        //     velocity *= -1;
+        //   }
+        // }
+        // else if (velocity < 0)
+        // {
+        //   // Moving right
+        //   if (position <= lower)
+        //   {
+        //     velocity *= -1;
+        //   }
+        // }
+
+        // this->data->setVelocity(_ecm, velocity);
       }
     }
 
