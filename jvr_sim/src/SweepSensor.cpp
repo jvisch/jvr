@@ -120,14 +120,16 @@ namespace jvr
           upper = getUpper();
           if (new_position > upper)
           {
-            this->target_position = new_position;
+            this->target_position = upper;
           }
           else
           {
             this->target_position = new_position;
           }
         }
+        gzdbg << "new pos: " << new_position << " - " << this->target_position << std::endl;
       }
+      std::chrono::steady_clock::duration timer;
 
     private:
       // Data
@@ -157,6 +159,7 @@ namespace jvr
     {
       if (!_info.paused)
       {
+        gzdbg << "pos: " << this->data->getPosition(_ecm) << " targ : " << this->data->getTargetPosition() << " vel: " << this->data->getVelocity() << std::endl;
         if (_info.dt < std::chrono::steady_clock::duration::zero())
         {
           gzwarn << "Detected jump back in time ["
@@ -203,6 +206,7 @@ namespace jvr
             this->data->setState(SweepSensorData::States::measuring);
             // measuring entry
             // <nothing>
+            this->data->timer = _info.simTime;
           }
           else
           {
@@ -214,7 +218,10 @@ namespace jvr
         break;
         case SweepSensorData::States::measuring:
         {
-          bool event = true;
+          const auto past_time = (_info.simTime - this->data->timer);
+          using namespace std::literals::chrono_literals;
+          const auto interval = 1s; 
+          bool event = (past_time >= interval);
           if (event)
           {
             // measuring exit
@@ -233,10 +240,12 @@ namespace jvr
                 // change direction
                 this->data->setVelocity(_ecm, -1 * velocity);
                 // new target
+                gzdbg << "change " << position << " " << SweepSensorData::STEP_MOVE << " " << (position - SweepSensorData::STEP_MOVE) << std::endl;
                 this->data->setTargetPosition(position - SweepSensorData::STEP_MOVE);
               }
               else
               {
+                gzdbg << "change not" << new_position << std::endl;
                 this->data->setTargetPosition(new_position);
               }
             }
