@@ -127,7 +127,6 @@ namespace jvr
             this->target_position = new_position;
           }
         }
-        gzdbg << "new pos: " << new_position << " - " << this->target_position << std::endl;
       }
       std::chrono::steady_clock::duration timer;
 
@@ -150,7 +149,6 @@ namespace jvr
                                 gz::sim::EntityComponentManager &_ecm,
                                 gz::sim::EventManager & /*_eventManager*/)
     {
-      gzdbg << "jvr_sim::SweepSensor::Configure on entity: " << _entity << std::endl;
       data = std::make_unique<SweepSensorData>(_entity, _ecm);
     }
 
@@ -159,7 +157,6 @@ namespace jvr
     {
       if (!_info.paused)
       {
-        gzdbg << "pos: " << this->data->getPosition(_ecm) << " targ : " << this->data->getTargetPosition() << " vel: " << this->data->getVelocity() << std::endl;
         if (_info.dt < std::chrono::steady_clock::duration::zero())
         {
           gzwarn << "Detected jump back in time ["
@@ -168,7 +165,9 @@ namespace jvr
         }
 
         auto state = this->data->getState();
-        gzdbg << "Active state: " << static_cast<int>(state) << std::endl;
+        const auto p = this->data->getPosition(_ecm);
+        const gz::math::Angle a{p};
+
         switch (state)
         {
         case SweepSensorData::States::starting:
@@ -212,7 +211,6 @@ namespace jvr
           {
             // moving do
             this->data->setVelocity(_ecm, velocity);
-            gzdbg << "Vel: " << velocity << std::endl;
           }
         }
         break;
@@ -240,12 +238,10 @@ namespace jvr
                 // change direction
                 this->data->setVelocity(_ecm, -1 * velocity);
                 // new target
-                gzdbg << "change " << position << " " << SweepSensorData::STEP_MOVE << " " << (position - SweepSensorData::STEP_MOVE) << std::endl;
                 this->data->setTargetPosition(position - SweepSensorData::STEP_MOVE);
               }
               else
               {
-                gzdbg << "change not" << new_position << std::endl;
                 this->data->setTargetPosition(new_position);
               }
             }
