@@ -165,9 +165,7 @@ namespace jvr
         }
 
         auto state = this->data->getState();
-        const auto p = this->data->getPosition(_ecm);
-        const gz::math::Angle a{p};
-
+ 
         switch (state)
         {
         case SweepSensorData::States::starting:
