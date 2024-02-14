@@ -63,6 +63,10 @@ namespace jvr
         // Get angle limits
         this->lower = this->servo.Axis(_ecm).value()[0].Lower();
         this->upper = this->servo.Axis(_ecm).value()[0].Upper();
+        gzdbg << "lower : " << this->lower << std::endl
+              << "upper : " << this->upper << std::endl
+              << "default velocity : " << DEFAULT_VELOCITY << std::endl
+              << "step size : " << STEP_MOVE << std::endl;
       }
 
       SweepSensorData(const SweepSensorData &) = delete;
@@ -74,10 +78,15 @@ namespace jvr
         return this->velocity;
       }
 
-      void setVelocity(gz::sim::EntityComponentManager &_ecm, double value)
+      void setVelocity(gz::sim::EntityComponentManager &_ecm)
       {
-        this->velocity = value;
-                this->servo.SetVelocity(_ecm, {this->velocity});
+        // this->velocity = value;
+        this->servo.SetVelocity(_ecm, {this->velocity});
+      }
+
+      void reverse()
+      {
+        this->velocity *= -1;
       }
 
       double getPosition(const gz::sim::EntityComponentManager &_ecm) const
@@ -150,7 +159,7 @@ namespace jvr
     private:
       // Data
       gz::sim::Joint servo{gz::sim::kNullEntity};
-      double velocity{DEFAULT_VELOCITY};
+      double velocity{DEFAULT_VELOCITY * 0.99};
       double lower{0};
       double upper{0};
       States state{States::starting};
@@ -174,7 +183,9 @@ namespace jvr
     {
       if (!_info.paused)
       {
-                if (_info.dt < std::chrono::steady_clock::duration::zero())
+        DEBUG_MSG
+
+        if (_info.dt < std::chrono::steady_clock::duration::zero())
         {
           gzwarn << "Detected jump back in time ["
                  << std::chrono::duration_cast<std::chrono::seconds>(_info.dt).count()
@@ -196,12 +207,12 @@ namespace jvr
             this->data->setState(SweepSensorData::States::moving);
             // moving entry
             // <nothing>
-                      }
+          }
           else
           {
             // starting do
             // <nothing>
-                      }
+          }
         }
         break;
         case SweepSensorData::States::moving:
@@ -225,8 +236,8 @@ namespace jvr
           else
           {
             // moving do
-            this->data->setVelocity(_ecm, velocity);
-                      }
+            this->data->setVelocity(_ecm);
+          }
         }
         break;
         case SweepSensorData::States::measuring:
@@ -241,40 +252,46 @@ namespace jvr
             // send measure message
             // TODO
             // Set new target position
-                        const auto velocity = this->data->getVelocity();
+            const auto velocity = this->data->getVelocity();
             const auto position = this->data->getPosition(_ecm);
             if (velocity > 0)
             {
-                            // moving left
+              gzdbg << "moving left" << std::endl;
+              // moving left
               const auto upper = this->data->getUpper();
               const auto new_position = position + SweepSensorData::STEP_MOVE;
               if (new_position >= upper)
               {
-                                // change direction
-                this->data->setVelocity(_ecm, -1 * velocity);
+                gzdbg << "reverse direction, to right" << std::endl;
+                // change direction
+                this->data->reverse();
                 // new target
                 this->data->setTargetPosition(position - SweepSensorData::STEP_MOVE);
               }
               else
               {
-                                this->data->setTargetPosition(new_position);
+                gzdbg << "keep moving left" << std::endl;
+                this->data->setTargetPosition(new_position);
               }
             }
             else
             {
-                            // moving right
+              gzdbg << "moving right" << std::endl;
+              // moving right
               const auto lower = this->data->getLower();
               const auto new_position = position - SweepSensorData::STEP_MOVE;
               if (new_position <= lower)
               {
-                                // change direction
-                this->data->setVelocity(_ecm, -1 * velocity);
+                gzdbg << "reverse direction, to right" << std::endl;
+                // change direction
+                this->data->reverse();
                 // new target
                 this->data->setTargetPosition(position + SweepSensorData::STEP_MOVE);
               }
               else
               {
-                                this->data->setTargetPosition(new_position);
+                gzdbg << "keep moving right" << std::endl;
+                this->data->setTargetPosition(new_position);
               }
             }
             // switch state
@@ -286,7 +303,7 @@ namespace jvr
           {
             // measuring do
             // TODO MEASURE
-                      }
+          }
         }
         break;
 
