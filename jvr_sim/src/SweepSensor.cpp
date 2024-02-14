@@ -1,5 +1,3 @@
-#define DEBUG_MSG this->data->debug(__LINE__, _ecm, _info);
-
 #include <string>
 #include <gz/common/Console.hh>
 
@@ -9,11 +7,8 @@
 #include "gz/sim/Model.hh"
 #include "gz/sim/Joint.hh"
 #include "gz/math/Angle.hh"
-// #include "gz/math/Rand.hh"
-// #include "gz/math/Helpers.hh"
 
 #include "gz/sim/components/JointVelocityCmd.hh"
-// #include "gz/sim/components/JointPosition.hh"
 #include "gz/sim/components/JointPositionReset.hh"
 // ---
 
@@ -42,7 +37,7 @@ namespace jvr
       constexpr static double DEFAULT_VELOCITY{GZ_DTOR(60) / 0.3};
       // constexpr static double DEFAULT_VELOCITY{2.0 /*GZ_DTOR(60) / 0.3*/};
       // Every 5 degree a meausurement
-      constexpr static double STEP_MOVE{GZ_DTOR(20)};
+      constexpr static double STEP_MOVE{GZ_DTOR(5)};
 
       // States
       enum class States
@@ -63,10 +58,10 @@ namespace jvr
         // Get angle limits
         this->lower = this->servo.Axis(_ecm).value()[0].Lower();
         this->upper = this->servo.Axis(_ecm).value()[0].Upper();
-        gzdbg << "lower : " << this->lower << std::endl
-              << "upper : " << this->upper << std::endl
-              << "default velocity : " << DEFAULT_VELOCITY << std::endl
-              << "step size : " << STEP_MOVE << std::endl;
+        gzdbg << "lower : " << this->lower << std::endl;
+        gzdbg << "upper : " << this->upper << std::endl;
+        gzdbg << "default velocity : " << DEFAULT_VELOCITY << std::endl;
+        gzdbg << "step size : " << STEP_MOVE << std::endl;
       }
 
       SweepSensorData(const SweepSensorData &) = delete;
@@ -78,15 +73,10 @@ namespace jvr
         return this->velocity;
       }
 
-      void setVelocity(gz::sim::EntityComponentManager &_ecm)
+      void setVelocity(gz::sim::EntityComponentManager &_ecm, const double value)
       {
-        // this->velocity = value;
+        this->velocity = value;
         this->servo.SetVelocity(_ecm, {this->velocity});
-      }
-
-      void reverse()
-      {
-        this->velocity *= -1;
       }
 
       double getPosition(const gz::sim::EntityComponentManager &_ecm) const
@@ -109,7 +99,7 @@ namespace jvr
         return this->state;
       }
 
-      void setState(States new_state)
+      void setState(const States new_state)
       {
         this->state = new_state;
       }
@@ -119,7 +109,7 @@ namespace jvr
         return this->target_position;
       }
 
-      void setTargetPosition(double new_position)
+      void setTargetPosition(const double new_position)
       {
         auto lower = getLower();
         if (new_position < lower)
@@ -140,26 +130,12 @@ namespace jvr
         }
       }
 
-      void debug(int line, const gz::sim::EntityComponentManager &_ecm, const gz::sim::UpdateInfo &_info) const
-      {
-        gzdbg
-            << line << ":"
-            << " itr " << _info.iterations
-            << " sta " << (static_cast<int>(getState()))
-            << " pos " << getPosition(_ecm)
-            << " tar " << getTargetPosition()
-            << " vel " << getVelocity()
-            << " low " << getLower()
-            << " upp " << getUpper()
-            << std::endl;
-      }
-
       std::chrono::steady_clock::duration timer;
 
     private:
       // Data
       gz::sim::Joint servo{gz::sim::kNullEntity};
-      double velocity{DEFAULT_VELOCITY * 0.99};
+      double velocity{DEFAULT_VELOCITY * 0.99}; // after many debug session, this seems the solution for moving correctly.
       double lower{0};
       double upper{0};
       States state{States::starting};
@@ -183,8 +159,6 @@ namespace jvr
     {
       if (!_info.paused)
       {
-        DEBUG_MSG
-
         if (_info.dt < std::chrono::steady_clock::duration::zero())
         {
           gzwarn << "Detected jump back in time ["
@@ -236,7 +210,7 @@ namespace jvr
           else
           {
             // moving do
-            this->data->setVelocity(_ecm);
+            this->data->setVelocity(_ecm, velocity);
           }
         }
         break;
@@ -264,7 +238,7 @@ namespace jvr
               {
                 gzdbg << "reverse direction, to right" << std::endl;
                 // change direction
-                this->data->reverse();
+                this->data->setVelocity(_ecm, -1 * velocity);
                 // new target
                 this->data->setTargetPosition(position - SweepSensorData::STEP_MOVE);
               }
@@ -284,7 +258,7 @@ namespace jvr
               {
                 gzdbg << "reverse direction, to right" << std::endl;
                 // change direction
-                this->data->reverse();
+                this->data->setVelocity(_ecm, -1 * velocity);
                 // new target
                 this->data->setTargetPosition(position + SweepSensorData::STEP_MOVE);
               }
@@ -306,33 +280,9 @@ namespace jvr
           }
         }
         break;
-
         default:
           gzerr << "Unknown state '" << static_cast<int>(state) << "'" << std::endl;
         }
-
-        // const auto position = this->data->getPosition(_ecm);
-        // auto velocity = this->data->getVelocity();
-        // const auto lower = this->data->getLower();
-        // const auto upper = this->data->getUpper();
-        // if (velocity > 0)
-        // {
-        //   // Moving left
-        //   if (position >= upper)
-        //   {
-        //     velocity *= -1;
-        //   }
-        // }
-        // else if (velocity < 0)
-        // {
-        //   // Moving right
-        //   if (position <= lower)
-        //   {
-        //     velocity *= -1;
-        //   }
-        // }
-
-        // this->data->setVelocity(_ecm, velocity);
       }
     }
 
