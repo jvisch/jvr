@@ -1,3 +1,5 @@
+#define DEBUG_MSG this->data->debug(__LINE__, _ecm, _info);
+
 #include <string>
 #include <gz/common/Console.hh>
 
@@ -40,7 +42,7 @@ namespace jvr
       constexpr static double DEFAULT_VELOCITY{GZ_DTOR(60) / 0.3};
       // constexpr static double DEFAULT_VELOCITY{2.0 /*GZ_DTOR(60) / 0.3*/};
       // Every 5 degree a meausurement
-      constexpr static double STEP_MOVE{GZ_DTOR(5)};
+      constexpr static double STEP_MOVE{GZ_DTOR(20)};
 
       // States
       enum class States
@@ -75,7 +77,7 @@ namespace jvr
       void setVelocity(gz::sim::EntityComponentManager &_ecm, double value)
       {
         this->velocity = value;
-        this->servo.SetVelocity(_ecm, {this->velocity});
+                this->servo.SetVelocity(_ecm, {this->velocity});
       }
 
       double getPosition(const gz::sim::EntityComponentManager &_ecm) const
@@ -128,6 +130,21 @@ namespace jvr
           }
         }
       }
+
+      void debug(int line, const gz::sim::EntityComponentManager &_ecm, const gz::sim::UpdateInfo &_info) const
+      {
+        gzdbg
+            << line << ":"
+            << " itr " << _info.iterations
+            << " sta " << (static_cast<int>(getState()))
+            << " pos " << getPosition(_ecm)
+            << " tar " << getTargetPosition()
+            << " vel " << getVelocity()
+            << " low " << getLower()
+            << " upp " << getUpper()
+            << std::endl;
+      }
+
       std::chrono::steady_clock::duration timer;
 
     private:
@@ -157,7 +174,7 @@ namespace jvr
     {
       if (!_info.paused)
       {
-        if (_info.dt < std::chrono::steady_clock::duration::zero())
+                if (_info.dt < std::chrono::steady_clock::duration::zero())
         {
           gzwarn << "Detected jump back in time ["
                  << std::chrono::duration_cast<std::chrono::seconds>(_info.dt).count()
@@ -165,7 +182,7 @@ namespace jvr
         }
 
         auto state = this->data->getState();
- 
+
         switch (state)
         {
         case SweepSensorData::States::starting:
@@ -179,12 +196,12 @@ namespace jvr
             this->data->setState(SweepSensorData::States::moving);
             // moving entry
             // <nothing>
-          }
+                      }
           else
           {
             // starting do
             // <nothing>
-          }
+                      }
         }
         break;
         case SweepSensorData::States::moving:
@@ -209,14 +226,14 @@ namespace jvr
           {
             // moving do
             this->data->setVelocity(_ecm, velocity);
-          }
+                      }
         }
         break;
         case SweepSensorData::States::measuring:
         {
           const auto past_time = (_info.simTime - this->data->timer);
           using namespace std::literals::chrono_literals;
-          const auto interval = 1s; 
+          const auto interval = 1s;
           bool event = (past_time >= interval);
           if (event)
           {
@@ -224,40 +241,40 @@ namespace jvr
             // send measure message
             // TODO
             // Set new target position
-            const auto velocity = this->data->getVelocity();
+                        const auto velocity = this->data->getVelocity();
             const auto position = this->data->getPosition(_ecm);
             if (velocity > 0)
             {
-              // moving left
+                            // moving left
               const auto upper = this->data->getUpper();
               const auto new_position = position + SweepSensorData::STEP_MOVE;
               if (new_position >= upper)
               {
-                // change direction
+                                // change direction
                 this->data->setVelocity(_ecm, -1 * velocity);
                 // new target
                 this->data->setTargetPosition(position - SweepSensorData::STEP_MOVE);
               }
               else
               {
-                this->data->setTargetPosition(new_position);
+                                this->data->setTargetPosition(new_position);
               }
             }
             else
             {
-              // moving right
+                            // moving right
               const auto lower = this->data->getLower();
               const auto new_position = position - SweepSensorData::STEP_MOVE;
               if (new_position <= lower)
               {
-                // change direction
+                                // change direction
                 this->data->setVelocity(_ecm, -1 * velocity);
                 // new target
                 this->data->setTargetPosition(position + SweepSensorData::STEP_MOVE);
               }
               else
               {
-                this->data->setTargetPosition(new_position);
+                                this->data->setTargetPosition(new_position);
               }
             }
             // switch state
@@ -269,7 +286,7 @@ namespace jvr
           {
             // measuring do
             // TODO MEASURE
-          }
+                      }
         }
         break;
 
