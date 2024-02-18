@@ -230,13 +230,11 @@ namespace jvr
             const auto position = this->data->getPosition(_ecm);
             if (velocity > 0)
             {
-              gzdbg << "moving left" << std::endl;
               // moving left
               const auto upper = this->data->getUpper();
               const auto new_position = position + SweepSensorData::STEP_MOVE;
               if (new_position >= upper)
               {
-                gzdbg << "reverse direction, to right" << std::endl;
                 // change direction
                 this->data->setVelocity(_ecm, -1 * velocity);
                 // new target
@@ -244,19 +242,16 @@ namespace jvr
               }
               else
               {
-                gzdbg << "keep moving left" << std::endl;
                 this->data->setTargetPosition(new_position);
               }
             }
             else
             {
-              gzdbg << "moving right" << std::endl;
               // moving right
               const auto lower = this->data->getLower();
               const auto new_position = position - SweepSensorData::STEP_MOVE;
               if (new_position <= lower)
               {
-                gzdbg << "reverse direction, to right" << std::endl;
                 // change direction
                 this->data->setVelocity(_ecm, -1 * velocity);
                 // new target
@@ -264,7 +259,6 @@ namespace jvr
               }
               else
               {
-                gzdbg << "keep moving right" << std::endl;
                 this->data->setTargetPosition(new_position);
               }
             }
