@@ -13,6 +13,9 @@ namespace jvr
             UltrasonicSensor(/* args */);
             virtual ~UltrasonicSensor();
 
+        public:
+            virtual bool Update(const std::chrono::steady_clock::duration &_now) override;
+
         private:
             /* data */
         };

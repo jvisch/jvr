@@ -95,7 +95,7 @@ target_include_directories(
 )
 target_link_libraries(
   UltrasonicSensorSystem
-  PRIVATE 
+  PUBLIC 
     gz-plugin${GZ_PLUGIN_VER}::gz-plugin${GZ_PLUGIN_VER}
     gz-sim${GZ_SIM_VER}::gz-sim${GZ_SIM_VER}
     gz-sensors${GZ_SENSORS_VER}::gz-sensors${GZ_SENSORS_VER}

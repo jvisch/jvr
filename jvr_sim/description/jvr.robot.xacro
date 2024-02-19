@@ -244,8 +244,15 @@
             </plugin> -->
     </gazebo>
     <gazebo reference= "sweep_sensor">
-        <sensor name="ultrasonic_jvr" type="custom" gz::type="UltrasonicSensor" >
-        </sensor>
+
+        <!-- <plugin
+      filename="UltrasonicSensor"
+      name="jvr::sim::UltrasonicSensor"> 
+    </plugin> -->
+
+        <!-- <sensor name="ultrasonic_jvr" type="custom" gz:type="UltrasonicSensor" >
+        </sensor> -->
+        
         <!-- <sensor name="ultrasonic_1" type="gpu_lidar">
             <always_on>true</always_on>
             <visualize>false</visualize>

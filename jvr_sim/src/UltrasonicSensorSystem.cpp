@@ -107,9 +107,10 @@ void UltrasonicSensorSystem::RemoveSensorEntities(
       });
 }
 
-GZ_ADD_PLUGIN(UltrasonicSensorSystem, gz::sim::System,
+GZ_ADD_PLUGIN(UltrasonicSensorSystem, 
+  gz::sim::System,
   UltrasonicSensorSystem::ISystemPreUpdate,
   UltrasonicSensorSystem::ISystemPostUpdate
 )
 
-GZ_ADD_PLUGIN_ALIAS(UltrasonicSensorSystem, "custom::UltrasonicSensorSystem")
+GZ_ADD_PLUGIN_ALIAS(UltrasonicSensorSystem, "jvr::sim::UltrasonicSensorSystem")
