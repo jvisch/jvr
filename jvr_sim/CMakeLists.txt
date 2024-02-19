@@ -2,13 +2,9 @@ cmake_minimum_required(VERSION 3.8)
 project(jvr_sim)
 
 # C standard set to C99
-if(NOT CMAKE_C_STANDARD)
-  set(CMAKE_C_STANDARD 99)
-endif()
+set(CMAKE_C_STANDARD 99)
 # C++ standards set to 17
-if(NOT CMAKE_CXX_STANDARD)
-  set(CMAKE_CXX_STANDARD 17)
-endif()
+set(CMAKE_CXX_STANDARD 17)
 
 if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   add_compile_options(-Wall -Wextra -Wpedantic)
@@ -19,26 +15,24 @@ find_package(ament_cmake REQUIRED)
 find_package(ros_gz_sim REQUIRED)
 find_package(robot_state_publisher REQUIRED)
 
-
 ### Gazebo plugins
 
 find_package(gz-cmake3 REQUIRED)
+
 find_package(gz-plugin2 REQUIRED COMPONENTS register)
 set(GZ_PLUGIN_VER ${gz-plugin2_VERSION_MAJOR})
+
+find_package(gz-sim8 REQUIRED) # Only harmonic is supported!
+set(GZ_SIM_VER ${gz-sim8_VERSION_MAJOR})
+
 find_package(gz-common5 REQUIRED COMPONENTS profiler)
 set(GZ_COMMON_VER ${gz-common5_VERSION_MAJOR})
 
-# Harmonic
-if("$ENV{GZ_VERSION}" STREQUAL "harmonic")
-  find_package(gz-sim8 REQUIRED)
-  set(GZ_SIM_VER ${gz-sim8_VERSION_MAJOR})
-  message(STATUS "Compiling against Gazebo Harmonic")
-# Default to Garden
-else()
-  find_package(gz-sim7 REQUIRED)
-  set(GZ_SIM_VER ${gz-sim7_VERSION_MAJOR})
-  message(STATUS "Compiling against Gazebo Garden")
-endif()
+find_package(gz-sensors8 REQUIRED)
+set(GZ_SENSORS_VER ${gz-sensors8_VERSION_MAJOR})
+
+find_package(gz-rendering8 REQUIRED OPTIONAL_COMPONENTS ogre ogre2)
+set(GZ_RENDERING_VER ${gz-rendering8_VERSION_MAJOR})
 
 # FullSystem plugin (from example)
 add_library(FullSystem
@@ -67,10 +61,57 @@ target_link_libraries(SweepSensor PRIVATE
   gz-sim${GZ_SIM_VER}::gz-sim${GZ_SIM_VER})
 
 
+# Ultrasonic Sensor
+# sensor
+add_library(
+  UltrasonicSensor
+  SHARED 
+    src/UltrasonicSensor.cpp
+)
+
+target_include_directories(
+  UltrasonicSensor 
+  PRIVATE
+    include
+)
+
+target_link_libraries(
+  UltrasonicSensor
+  PUBLIC 
+    gz-sensors${GZ_SENSORS_VER}::gz-sensors${GZ_SENSORS_VER}
+    gz-rendering${GZ_RENDERING_VER}::gz-rendering${GZ_RENDERING_VER}
+)
+
+# system
+add_library(
+  UltrasonicSensorSystem
+  SHARED
+    src/UltrasonicSensorSystem.cpp)
+
+target_include_directories(
+  UltrasonicSensorSystem 
+  PUBLIC
+    include
+)
+target_link_libraries(
+  UltrasonicSensorSystem
+  PRIVATE 
+    gz-plugin${GZ_PLUGIN_VER}::gz-plugin${GZ_PLUGIN_VER}
+    gz-sim${GZ_SIM_VER}::gz-sim${GZ_SIM_VER}
+    gz-sensors${GZ_SENSORS_VER}::gz-sensors${GZ_SENSORS_VER}
+    gz-rendering${GZ_RENDERING_VER}::gz-rendering${GZ_RENDERING_VER}
+    UltrasonicSensor
+  )
+
 # Install plugins to 'lib' dir
 install(
-  TARGETS FullSystem SweepSensor
-  DESTINATION lib/${PROJECT_NAME}/
+  TARGETS 
+    FullSystem
+    SweepSensor
+    UltrasonicSensor
+    UltrasonicSensorSystem
+  DESTINATION 
+    lib/${PROJECT_NAME}/
 )
 
 ament_environment_hooks("${CMAKE_CURRENT_SOURCE_DIR}/hooks/${PROJECT_NAME}.dsv.in")
