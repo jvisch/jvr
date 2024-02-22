@@ -24,10 +24,13 @@
 
 using namespace jvr::sim;
 
+#define PRINT_FUNCTION (gzdbg << __PRETTY_FUNCTION__ << std::endl)
+
 //////////////////////////////////////////////////
 void UltrasonicSensorSystem::PreUpdate(const gz::sim::UpdateInfo &,
     gz::sim::EntityComponentManager &_ecm)
 {
+  PRINT_FUNCTION;
   _ecm.EachNew<gz::sim::components::CustomSensor,
                gz::sim::components::ParentEntity>(
     [&](const gz::sim::Entity &_entity,
@@ -54,6 +57,8 @@ void UltrasonicSensorSystem::PreUpdate(const gz::sim::UpdateInfo &,
           gzerr << "Failed to create UltrasonicSensor [" << sensorScopedName << "]"
                  << std::endl;
           return false;
+        } else {
+          gzdbg << "Created UltrasonicSensor [" << sensorScopedName << "]" << std::endl;
         }
 
         // Set sensor parent
@@ -80,11 +85,13 @@ void UltrasonicSensorSystem::PostUpdate(const gz::sim::UpdateInfo &_info,
   // Only update and publish if not paused.
   if (!_info.paused)
   {
-    // for (auto &[entity, sensor] : this->entitySensorMap)
-    // {
-    //   sensor->NewPosition(gz::sim::worldPose(entity, _ecm).Pos());
-    //   sensor->Update(_info.simTime);
-    // }
+    PRINT_FUNCTION;
+
+    for (auto &[entity, sensor] : this->entitySensorMap)
+    {
+      // sensor->NewPosition(gz::sim::worldPose(entity, _ecm).Pos());
+      sensor->Update(_info.simTime);
+    }
   }
 
   this->RemoveSensorEntities(_ecm);
@@ -94,6 +101,7 @@ void UltrasonicSensorSystem::PostUpdate(const gz::sim::UpdateInfo &_info,
 void UltrasonicSensorSystem::RemoveSensorEntities(
     const gz::sim::EntityComponentManager &_ecm)
 {
+  PRINT_FUNCTION;
   _ecm.EachRemoved<gz::sim::components::CustomSensor>(
     [&](const gz::sim::Entity &_entity,
         const gz::sim::components::CustomSensor *)->bool

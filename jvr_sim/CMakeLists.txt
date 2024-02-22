@@ -63,30 +63,32 @@ target_link_libraries(SweepSensor PRIVATE
 
 # Ultrasonic Sensor
 # sensor
-add_library(
-  UltrasonicSensor
-  SHARED 
-    src/UltrasonicSensor.cpp
-)
+# add_library(
+#   UltrasonicSensor
+#   SHARED 
+#     src/UltrasonicSensor.cpp
+# )
 
-target_include_directories(
-  UltrasonicSensor 
-  PRIVATE
-    include
-)
+# target_include_directories(
+#   UltrasonicSensor 
+#   PRIVATE
+#     include
+# )
 
-target_link_libraries(
-  UltrasonicSensor
-  PUBLIC 
-    gz-sensors${GZ_SENSORS_VER}::gz-sensors${GZ_SENSORS_VER}
-    gz-rendering${GZ_RENDERING_VER}::gz-rendering${GZ_RENDERING_VER}
-)
+# target_link_libraries(
+#   UltrasonicSensor
+#   PUBLIC 
+#     gz-sensors${GZ_SENSORS_VER}::gz-sensors${GZ_SENSORS_VER}
+#     gz-rendering${GZ_RENDERING_VER}::gz-rendering${GZ_RENDERING_VER}
+# )
 
 # system
 add_library(
   UltrasonicSensorSystem
   SHARED
-    src/UltrasonicSensorSystem.cpp)
+    src/UltrasonicSensorSystem.cpp
+    src/UltrasonicSensor.cpp
+    )
 
 target_include_directories(
   UltrasonicSensorSystem 
@@ -100,7 +102,7 @@ target_link_libraries(
     gz-sim${GZ_SIM_VER}::gz-sim${GZ_SIM_VER}
     gz-sensors${GZ_SENSORS_VER}::gz-sensors${GZ_SENSORS_VER}
     gz-rendering${GZ_RENDERING_VER}::gz-rendering${GZ_RENDERING_VER}
-    UltrasonicSensor
+    # UltrasonicSensor
   )
 
 # Install plugins to 'lib' dir
@@ -108,7 +110,7 @@ install(
   TARGETS 
     FullSystem
     SweepSensor
-    UltrasonicSensor
+    # UltrasonicSensor
     UltrasonicSensorSystem
   DESTINATION 
     lib/${PROJECT_NAME}/

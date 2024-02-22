@@ -7,7 +7,7 @@ namespace jvr
 {
     namespace sim
     {
-        class UltrasonicSensor : public gz::sensors::RenderingSensor
+        class UltrasonicSensor : public gz::sensors::Sensor
         {
         public:
             UltrasonicSensor(/* args */);
