@@ -10,7 +10,7 @@ import xacro
 
 use_sim_time = True
 gazebo_version = '8'  # harmonic == 8
-world = 'empty'
+world = 'jvr_empty_world'
 
 robot_name = 'jvr'
 robot_desc_topic = '/robot_description'
