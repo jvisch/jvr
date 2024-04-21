@@ -53,7 +53,8 @@ def main(args=None):
 
     # Launch Flask
     app.run(
-        debug=args_values.flask_debug
+        debug=args_values.flask_debug,
+        host="0.0.0.0"
         )
 
 
