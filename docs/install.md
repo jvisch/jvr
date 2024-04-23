@@ -10,7 +10,7 @@ For the install the Raspberry Pi Imager is used
 ![Raspberry Pi Imager](./img/rpi-imager.png)
 
 This install is based on [ROS2
-Humble](https://docs.ros.org/en/humble/index.html) and [Raspberry Pi \#
+Iron](https://docs.ros.org/en/iron/index.html) and [Raspberry Pi \#
 model
 B+](https://www.raspberrypi.com/products/raspberry-pi-3-model-b-plus/)
 
@@ -127,12 +127,12 @@ to work consistenly.
 2.  `sudo ufw allow samba`
 3.  `sudo service smbd restart` or reboot the RPi
 
-## Install ROS (ROS2 Humble) on Robot
+## Install ROS (ROS2 Iron) on Robot
 
 1.  Follow instructions [Installation Ubuntu
-    (Debian)](https://docs.ros.org/en/humble/Installation/Ubuntu-Install-Debians.html).
+    (Debian)](https://docs.ros.org/en/iron/Installation/Ubuntu-Install-Debians.html).
 
-2.  Install `ros-humble-ros-base` on the RPi (not the *desktop*) on the
+2.  Install `ros-iron-ros-base` on the RPi (not the *desktop*) on the
     RPi.
 
 3.  Install also `sudo apt install ros-dev-tools` for building the
@@ -140,7 +140,7 @@ to work consistenly.
 
 4.  Add ROS source to shell startup script
 
-    `echo "source /opt/ros/humble/setup.bash" >> ~/.bashrc`
+    `echo "source /opt/ros/iron/setup.bash" >> ~/.bashrc`
 
 ## Configure firewall on Robot
 
