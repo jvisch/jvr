@@ -254,7 +254,8 @@
                     <vertical>
                         <samples>5</samples>
                         <!-- 30 degree angle -->
-                        <min_angle>-0.261799</min_angle>
+                        <!-- <min_angle>-0.261799</min_angle> -->
+                        <min_angle>0.0</min_angle>
                         <max_angle>0.261799</max_angle>
                         <resolution>1</resolution>
                     </vertical>
