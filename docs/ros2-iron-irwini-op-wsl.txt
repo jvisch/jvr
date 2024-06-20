@@ -1,0 +1,120 @@
+Ros2 op Windows Subsystem Linux (wslg)
+
+COM port beschikbaar maken op Windows voor WSL
+https://learn.microsoft.com/en-us/windows/wsl/connect-usb
+
+Rviz werkt niet goed (geen map)
+-------------------------------
+RViz lijkt niet te werken (Ros2 Iron Irwini, ubuntu 22.04).
+Eerst testen met Foxy (op ubuntu 20.04)
+-> Foxy werkt goed op ubuntu 20.04
+
+Nu checken op ubuntu 22.04 Foxy
+-> foxy kan niet op 22.04
+
+dan maar met Iron Irwini
+-> Zou het met opengl misgaan? Foxy/ubuntu20.04 gebruikt opengl3.1. Iron/ubuntu22.04 gebruikt opengl3.1
+
+Dit lijkt te werken
+https://forums.developer.nvidia.com/t/wsl2-libcuda-so-and-libcuda-so-1-should-be-symlink/236301
+
+cd /usr/lib/wsl/lib
+sudo rm libcuda.so libcuda.so.1
+sudo ln -s libcuda.so.1.1 libcuda.so.1
+sudo ln -s libcuda.so.1 libcuda.so
+sudo ldconfig
+
+-> nope, ldconfig-foutmelding is wel weg, maar rviz toont nog steeds geen inhoud
+
+Joepie, het werkt. De verkeerde grafische kaart werd geselecteerd door WSL
+Oplossing
+
+	glxinfo -B # informatie opvragen over grafische kaart (wel mesa-utils installeren)
+	export MESA_D3D12_DEFAULT_ADAPTER_NAME=NVIDIA # maak nvidia actief
+	
+zie: https://github.com/microsoft/wslg/wiki/GPU-selection-in-WSLg
+
+
+Stappen om Iron Irwini te installeren op WSLg (win11)
+-----------------------------------------------------
+
+1.	Installeer Ubuntu 22.04 op WSLg (zie help van WSL)
+
+2.	Open Ubuntu 22.04 op WSL
+
+3.	Eerst alles updaten:
+	
+		sudo apt update
+		sudo apt upgrade
+	
+4.	check of er geen fouten uit ldconfig komen, voer uit:
+
+		sudo ldconfig
+	
+	bij een foutmelding als '/sbin/ldconfig.real: /usr/lib/wsl/lib/libcuda.so.1 is not a symbolic link' doe het volgende
+	
+		cd /usr/lib/wsl/lib
+		sudo rm libcuda.so libcuda.so.1
+		sudo ln -s libcuda.so.1.1 libcuda.so.1
+		sudo ln -s libcuda.so.1 libcuda.so
+		sudo ldconfig
+		
+	(bron: https://forums.developer.nvidia.com/t/wsl2-libcuda-so-and-libcuda-so-1-should-be-symlink/236301)
+	Nu mag er geen fout meer zijn
+	
+5.	Volg de installatiehandleiding van Ros2 Iron Irwini
+	(bron: https://docs.ros.org/en/iron/Installation/Ubuntu-Install-Debians.html)
+	
+	* Set locale
+	
+		locale  # check for UTF-8
+
+		sudo apt update && sudo apt install locales
+		sudo locale-gen en_US en_US.UTF-8
+		sudo update-locale LC_ALL=en_US.UTF-8 LANG=en_US.UTF-8
+		export LANG=en_US.UTF-8
+
+		locale  # verify settings
+		
+	* Enable required repositories
+	
+		sudo apt install software-properties-common
+		sudo add-apt-repository universe
+		
+		sudo apt update && sudo apt install curl -y
+		sudo curl -sSL https://raw.githubusercontent.com/ros/rosdistro/master/ros.key -o /usr/share/keyrings/ros-archive-keyring.gpg
+	
+		echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/ros-archive-keyring.gpg] http://packages.ros.org/ros2/ubuntu $(. /etc/os-release && echo $UBUNTU_CODENAME) main" | sudo tee /etc/apt/sources.list.d/ros2.list > /dev/null
+	
+	* Install development tools
+	
+		sudo apt update && sudo apt install ros-dev-tools
+		
+		sudo apt update
+		sudo apt upgrade
+		
+		sudo apt install ros-iron-desktop
+		
+6.	Check RViz2 of die goed werkt.
+
+		source /opt/ros/iron/setup.bash
+		ros2 run rviz2 rviz2
+
+	Als er geen raster of inhoud getoond wordt, kan het zijn dat de verkeerde grafische kaart gebruikt wordt. 
+	(bron: https://github.com/microsoft/wslg/wiki/GPU-selection-in-WSLg)
+	
+		sudo apt install mesa-utils
+		glxinfo -B
+		
+	Bij 'Extended renderer info (GLX_MESA_query_renderer)' moet de juiste 'device' staan. Bijv. iets met NVIDIA.
+	
+	Als dit niet correct is check in windows device manager welke grafische kaart het moet zijn en maak die actief binnen WSL. Op mijn computer is dat de NVIDIA-kaart, die kan ik op deze manier selecteren:
+	
+		export MESA_D3D12_DEFAULT_ADAPTER_NAME=NVIDIA # maak nvidia actief
+		
+	Zie de bron voor toelichting.
+	
+7.	RViz2 geeft 'segmentation fault' bij afsluiten.
+	
+	--> dat moet ik nog uitzoeken hoe te fiksen. MAAK EERST EEN BACKUP!
+		
