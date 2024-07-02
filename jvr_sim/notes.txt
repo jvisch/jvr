@@ -1,6 +1,3 @@
-Ultrasone sensor toevoegen
-https://automaticaddison.com/how-to-add-ultrasonic-sensors-to-an-sdf-file-for-gazebo/
-
 https://www.flyrobo.in/dc_3_6v_bo_gear_motor_with_plastic_tire_wheel_for_arduino/
 
 Youtube tutorials
@@ -10,5 +7,10 @@ https://www.youtube.com/@ArticulatedRobotics/videos
 let op, Gazebo Harmonic werkt alleen met ros_gz (iron) als je het 
 zelf bouwt én `export GZ_VERSION=harmonic` doet (voor het bouwen).
 
+
 Bij het bouwen van ros_gz volgende doen, want wsl loopt uit het geheugen.
 MAKEFLAGS="-j1" colcon build --executor sequential
+
+
+Move robot in gazebo
+gz topic -t /model/jvr/cmd_vel -m gz.msgs.Twist -p "linear: {x: 0.1}, angular: {z: 0.1}"
