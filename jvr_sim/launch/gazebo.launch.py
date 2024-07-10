@@ -10,6 +10,7 @@ import xacro
 use_sim_time = True
 gazebo_version = '8'  # harmonic == 8
 world = 'jvr_empty_world'
+gui_config = 'gui.config'
 
 robot_name = 'jvr'
 robot_desc_topic = '/robot_description'
@@ -54,6 +55,13 @@ def launch_simulation_callback(context, *args, **kwargs):
             'worlds',
             f'{world}.sdf'
         ]).perform(context)
+    # gui config file
+    gui_config_file = PathJoinSubstitution(
+        [
+            pkg_jvr_simulation,
+            'worlds',
+            gui_config
+        ]).perform(context)
     # Simulation launchfile
     gz_sim_launch_file = PathJoinSubstitution(
         [
@@ -65,7 +73,7 @@ def launch_simulation_callback(context, *args, **kwargs):
     gz_sim = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(gz_sim_launch_file),
         launch_arguments={
-            'gz_args': world_file,
+            'gz_args': f'{world_file} --gui-config {gui_config_file}',
             'gz_version': gazebo_version
         }.items()
     )
