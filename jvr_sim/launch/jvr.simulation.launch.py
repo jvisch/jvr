@@ -1,3 +1,4 @@
+import os
 from ament_index_python.packages import get_package_share_directory
 from launch import LaunchDescription
 from launch.actions import OpaqueFunction, IncludeLaunchDescription
@@ -14,7 +15,6 @@ pkg_jvr_simulation = get_package_share_directory('jvr_sim')
 
 
 def launch_simulation_callback(context, *args, **kwargs):
-
     # RViz2
     # rviz configuration file
     rviz2_config_file = PathJoinSubstitution(
@@ -50,15 +50,15 @@ def launch_simulation_callback(context, *args, **kwargs):
 
 
 def generate_launch_description():
-    import os
-    p = PythonLaunchDescriptionSource(
+    launch_file = PythonLaunchDescriptionSource(
         os.path.join(
             pkg_jvr_simulation,
-            "launch/gazebo.launch.py")
+            "launch/gazebo.launch.py"
+        )
     )
-    x = IncludeLaunchDescription(p)
+    gazebo_lanch_description = IncludeLaunchDescription(launch_file)
 
     return LaunchDescription([
         OpaqueFunction(function=launch_simulation_callback),
-        x
+        gazebo_lanch_description
     ])
