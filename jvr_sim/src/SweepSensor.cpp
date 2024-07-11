@@ -4,12 +4,12 @@
 #include <gz/plugin/Register.hh>
 
 // ---
-#include "gz/sim/Model.hh"
-#include "gz/sim/Joint.hh"
-#include "gz/math/Angle.hh"
+#include <gz/sim/Model.hh>
+#include <gz/sim/Joint.hh>
+#include <gz/math/Angle.hh>
 
-#include "gz/sim/components/JointVelocityCmd.hh"
-#include "gz/sim/components/JointPositionReset.hh"
+#include <gz/sim/components/JointVelocityCmd.hh>
+#include <gz/sim/components/JointPositionReset.hh>
 // ---
 
 // Don't forget to include the plugin's header.
