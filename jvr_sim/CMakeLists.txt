@@ -23,6 +23,8 @@ find_package(robot_state_publisher REQUIRED)
 ### Gazebo plugins
 
 find_package(gz-cmake3 REQUIRED)
+find_package(gz-sensors8 REQUIRED)
+set(GZ_SENSORS_VER ${gz-sensors8_VERSION_MAJOR})
 find_package(gz-plugin2 REQUIRED COMPONENTS register)
 set(GZ_PLUGIN_VER ${gz-plugin2_VERSION_MAJOR})
 find_package(gz-common5 REQUIRED COMPONENTS profiler)
@@ -66,10 +68,48 @@ target_include_directories(
 target_link_libraries(SweepSensor PRIVATE
   gz-sim${GZ_SIM_VER}::gz-sim${GZ_SIM_VER})
 
+# Odometer
+add_library(Odometer
+  SHARED 
+    src/Odometer.cc
+)
+
+target_include_directories(Odometer
+  PRIVATE
+    include
+)
+
+target_link_libraries(Odometer
+  PUBLIC 
+    gz-sensors8::gz-sensors8
+)
+
+# OdometerSystem (plugin)
+add_library(OdometerSystem 
+  SHARED 
+    src/OdometerSystem.cc
+)
+
+target_include_directories(OdometerSystem
+  PRIVATE
+    include
+)
+
+target_link_libraries(OdometerSystem
+  PRIVATE
+    gz-plugin${GZ_PLUGIN_VER}::gz-plugin${GZ_PLUGIN_VER}
+    gz-sim${GZ_SIM_VER}::gz-sim${GZ_SIM_VER}
+    gz-sensors${GZ_SENSORS_VER}::gz-sensors${GZ_SENSORS_VER}
+    Odometer
+)
 
 # Install plugins to 'lib' dir
 install(
-  TARGETS FullSystem SweepSensor
+  TARGETS 
+    FullSystem 
+    SweepSensor
+    Odometer
+    OdometerSystem
   DESTINATION lib/${PROJECT_NAME}/
 )
 
