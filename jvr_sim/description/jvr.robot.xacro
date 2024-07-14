@@ -1,5 +1,7 @@
 <?xml version="1.0"?>
-<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+<!-- 'xmlns:gz' is to supress errors on namespacing custum gazebo plugins/sensors -->
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro"
+    xmlns:gz="http://gazebosim.org/schema">
     <xacro:include filename="inertial_macros.xacro" />
     <!-- Dimensions -->
     <!-- Chassis -->
@@ -42,11 +44,14 @@
     <xacro:property name="sweep_sensor_mic_offset_z" value="0.018" />
     <xacro:property name="sweep_sensor_mic_radius" value="0.008" />
     <xacro:property name="sweep_sensor_mic_length" value="0.010" />
-    <xacro:property name="sweep_sensor_collision_length" value="${sweep_sensor_backplate_length + sweep_sensor_mic_length}" />
+    <xacro:property name="sweep_sensor_collision_length"
+        value="${sweep_sensor_backplate_length + sweep_sensor_mic_length}" />
     <xacro:property name="sweep_sensor_collision_width" value="${sweep_sensor_backplate_width}" />
     <xacro:property name="sweep_sensor_collision_height" value="${sweep_sensor_backplate_height}" />
-    <xacro:property name="sweep_sensor_collision_offset_x" value="${sweep_sensor_backplate_offset_x + (sweep_sensor_collision_length/2)}" />
-    <xacro:property name="sweep_sensor_collision_offset_z" value="${sweep_sensor_backplate_offset_z}" />
+    <xacro:property name="sweep_sensor_collision_offset_x"
+        value="${sweep_sensor_backplate_offset_x + (sweep_sensor_collision_length/2)}" />
+    <xacro:property name="sweep_sensor_collision_offset_z"
+        value="${sweep_sensor_backplate_offset_z}" />
     <!-- Materials -->
     <material name="white">
         <color rgba="1 1 1 1" />
@@ -90,7 +95,8 @@
                 <box size="${chassis_length} ${chassis_width} ${chassis_height}" />
             </geometry>
         </collision>
-        <xacro:inertial_box mass="${chassis_mass}" x="${chassis_length}" y="${chassis_width}" z="${chassis_height}">
+        <xacro:inertial_box mass="${chassis_mass}" x="${chassis_length}" y="${chassis_width}"
+            z="${chassis_height}">
             <origin xyz="${chassis_length/2} 0 ${chassis_height/2}" rpy="0 0 0" />
         </xacro:inertial_box>
     </link>
@@ -116,7 +122,8 @@
                 <cylinder radius="${wheel_radius}" length="${wheel_thickness}" />
             </geometry>
         </collision>
-        <xacro:inertial_cylinder mass="${wheel_mass}" length="${wheel_thickness}" radius="${wheel_radius}">
+        <xacro:inertial_cylinder mass="${wheel_mass}" length="${wheel_thickness}"
+            radius="${wheel_radius}">
             <origin xyz="0 0 0" rpy="0 0 0" />
         </xacro:inertial_cylinder>
     </link>
@@ -142,7 +149,8 @@
                 <cylinder radius="${wheel_radius}" length="${wheel_thickness}" />
             </geometry>
         </collision>
-        <xacro:inertial_cylinder mass="${wheel_mass}" length="${wheel_thickness}" radius="${wheel_radius}">
+        <xacro:inertial_cylinder mass="${wheel_mass}" length="${wheel_thickness}"
+            radius="${wheel_radius}">
             <origin xyz="0 0 0" rpy="0 0 0" />
         </xacro:inertial_cylinder>
     </link>
@@ -176,25 +184,31 @@
         <child link="sweep_sensor" />
         <origin xyz="${sweep_sensor_joint_offset_x} 0 ${sweep_sensor_joint_offset_z}" />
         <axis xyz="0 0 1" />
-        <limit lower="${sweep_sensor_joint_lower}" upper="${sweep_sensor_joint_upper}" effort="${sweep_sensor_joint_effort}" velocity="${sweep_sensor_joint_velocity}" />
+        <limit lower="${sweep_sensor_joint_lower}" upper="${sweep_sensor_joint_upper}"
+            effort="${sweep_sensor_joint_effort}" velocity="${sweep_sensor_joint_velocity}" />
     </joint>
     <link name="sweep_sensor">
         <visual>
             <origin xyz="${sweep_sensor_backplate_offset_x} 0 ${sweep_sensor_backplate_offset_z}" />
             <geometry>
-                <box size="${sweep_sensor_backplate_length} ${sweep_sensor_backplate_width} ${sweep_sensor_backplate_height}" />
+                <box
+                    size="${sweep_sensor_backplate_length} ${sweep_sensor_backplate_width} ${sweep_sensor_backplate_height}" />
             </geometry>
             <material name="silver" />
         </visual>
         <visual>
-            <origin xyz="${sweep_sensor_mic_offset_x} ${sweep_sensor_mic_offset_z} ${sweep_sensor_mic_offset_z}" rpy="0 ${pi/2} 0" />
+            <origin
+                xyz="${sweep_sensor_mic_offset_x} ${sweep_sensor_mic_offset_z} ${sweep_sensor_mic_offset_z}"
+                rpy="0 ${pi/2} 0" />
             <geometry>
                 <cylinder radius="${sweep_sensor_mic_radius}" length="${sweep_sensor_mic_length}" />
             </geometry>
             <material name="silver" />
         </visual>
         <visual>
-            <origin xyz="${sweep_sensor_mic_offset_x} ${-sweep_sensor_mic_offset_z} ${sweep_sensor_mic_offset_z}" rpy="0 ${pi/2} 0" />
+            <origin
+                xyz="${sweep_sensor_mic_offset_x} ${-sweep_sensor_mic_offset_z} ${sweep_sensor_mic_offset_z}"
+                rpy="0 ${pi/2} 0" />
             <geometry>
                 <cylinder radius="${sweep_sensor_mic_radius}" length="${sweep_sensor_mic_length}" />
             </geometry>
@@ -203,16 +217,20 @@
         <collision>
             <origin xyz="${sweep_sensor_collision_offset_x} 0 ${sweep_sensor_collision_offset_z}" />
             <geometry>
-                <box size="${sweep_sensor_collision_length} ${sweep_sensor_collision_width} ${sweep_sensor_collision_height}" />
+                <box
+                    size="${sweep_sensor_collision_length} ${sweep_sensor_collision_width} ${sweep_sensor_collision_height}" />
             </geometry>
         </collision>
         <!-- using collision box for inertia-->
-        <xacro:inertial_box mass="${sweep_sensor_mass}" x="${sweep_sensor_collision_length}" y="${sweep_sensor_collision_width}" z="${sweep_sensor_collision_height}">
-            <origin xyz="${sweep_sensor_collision_offset_x} 0 ${sweep_sensor_collision_offset_z}" rpy="0 0 0" />
+        <xacro:inertial_box mass="${sweep_sensor_mass}" x="${sweep_sensor_collision_length}"
+            y="${sweep_sensor_collision_width}" z="${sweep_sensor_collision_height}">
+            <origin xyz="${sweep_sensor_collision_offset_x} 0 ${sweep_sensor_collision_offset_z}"
+                rpy="0 0 0" />
         </xacro:inertial_box>
     </link>
     <gazebo>
-        <!--diff drive plugin-->
+        <!--diff
+        drive plugin-->
         <plugin filename="gz-sim-diff-drive-system" name="gz::sim::systems::DiffDrive">
             <left_joint>left_wheel_joint</left_joint>
             <right_joint>right_wheel_joint</right_joint>
@@ -221,7 +239,8 @@
             <odom_publish_frequency>1</odom_publish_frequency>
             <!-- <topic>cmd_vel</topic> -->
         </plugin>
-        <plugin filename="gz-sim-joint-state-publisher-system" name="gz::sim::systems::JointStatePublisher" />
+        <plugin filename="gz-sim-joint-state-publisher-system"
+            name="gz::sim::systems::JointStatePublisher" />
         <plugin filename="gz-sim-pose-publisher-system" name="gz::sim::systems::PosePublisher">
             <publish_link_pose>true</publish_link_pose>
             <use_pose_vector_msg>true</use_pose_vector_msg>
@@ -237,6 +256,20 @@
         <mu2 value="0.001" />
     </gazebo>
     <gazebo reference="sweep_sensor">
+
+        <!-- Here's our custom sensor -->
+        <sensor name="an_odometer" type="custom" gz:type="odometer">
+            <always_on>1</always_on>
+            <update_rate>30</update_rate>
+            <visualize>true</visualize>
+            <gz:odometer>
+                <noise type="gaussian">
+                    <mean>0.00001</mean>
+                    <stddev>0.00001</stddev>
+                </noise>
+            </gz:odometer>
+        </sensor>
+
         <sensor name="gpu_lidar" type="gpu_lidar">
             <pose>${sweep_sensor_backplate_offset_x} 0 ${sweep_sensor_backplate_height/2} 0 0 0</pose>
             <topic>ultrasone_lidar</topic>
