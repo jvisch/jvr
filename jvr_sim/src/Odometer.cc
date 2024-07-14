@@ -76,7 +76,6 @@ bool Odometer::Load(const sdf::Sensor &_sdf)
 //////////////////////////////////////////////////
 bool Odometer::Update(const std::chrono::steady_clock::duration &_now)
 {
-  std::cout << "JORG " << std::endl;
   gz::msgs::Double msg;
   *msg.mutable_header()->mutable_stamp() = gz::msgs::Convert(_now);
   auto frame = msg.mutable_header()->add_data();
