@@ -246,9 +246,6 @@
             <use_pose_vector_msg>true</use_pose_vector_msg>
         </plugin>
 
-        <!-- <plugin filename="FullSystem" name="jvr::sim::FullSystem" /> -->
-        <plugin filename="SweepSensor" name="jvr::sim::SweepSensor">
-        </plugin>
     </gazebo>
     <gazebo reference="caster_wheel">
         <!-- er is geen "ball" type joint in URDF, make caster "slippery"-->
@@ -262,6 +259,19 @@
             <always_on>1</always_on>
             <update_rate>30</update_rate>
             <visualize>true</visualize>
+            <gz:odometer>
+                <noise type="gaussian">
+                    <mean>0.00001</mean>
+                    <stddev>0.00001</stddev>
+                </noise>
+            </gz:odometer>
+        </sensor>
+
+        <sensor name="the_sweep_sensor" type="custom" gz:type="sweepsensor">
+            <always_on>1</always_on>
+            <update_rate>30</update_rate>
+            <visualize>true</visualize>
+            <topic>jorg_topic</topic>
             <gz:odometer>
                 <noise type="gaussian">
                     <mean>0.00001</mean>

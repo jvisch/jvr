@@ -55,19 +55,6 @@ target_include_directories(
 target_link_libraries(FullSystem PRIVATE
   gz-sim${GZ_SIM_VER}::gz-sim${GZ_SIM_VER})
 
-# SweepSensor plugin
-add_library(SweepSensor
-  SHARED
-  src/SweepSensor.cpp
-)
-
-target_include_directories(
-  SweepSensor PRIVATE include
-)
-
-target_link_libraries(SweepSensor PRIVATE
-  gz-sim${GZ_SIM_VER}::gz-sim${GZ_SIM_VER})
-
 # Odometer
 add_library(Odometer
   SHARED 
@@ -103,13 +90,50 @@ target_link_libraries(OdometerSystem
     Odometer
 )
 
+# SweepSensor
+add_library(SweepSensor
+  SHARED 
+    src/SweepSensor.cpp
+)
+
+target_include_directories(SweepSensor
+  PRIVATE
+    include
+)
+
+target_link_libraries(SweepSensor
+  PUBLIC 
+    gz-sensors8::gz-sensors8
+)
+
+# SweepSensorSystem (plugin)
+add_library(SweepSensorSystem 
+  SHARED 
+    src/SweepSensorSystem.cpp
+)
+
+target_include_directories(SweepSensorSystem
+  PRIVATE
+    include
+)
+
+target_link_libraries(SweepSensorSystem
+  PRIVATE
+    gz-plugin${GZ_PLUGIN_VER}::gz-plugin${GZ_PLUGIN_VER}
+    gz-sim${GZ_SIM_VER}::gz-sim${GZ_SIM_VER}
+    gz-sensors${GZ_SENSORS_VER}::gz-sensors${GZ_SENSORS_VER}
+    SweepSensor
+)
+
+
 # Install plugins to 'lib' dir
 install(
   TARGETS 
     FullSystem 
-    SweepSensor
     Odometer
     OdometerSystem
+    SweepSensorSystem
+    SweepSensor
   DESTINATION lib/${PROJECT_NAME}/
 )
 

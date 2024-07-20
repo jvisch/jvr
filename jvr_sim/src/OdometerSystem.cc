@@ -25,6 +25,7 @@
 #include <gz/plugin/Register.hh>
 #include <gz/sensors/Noise.hh>
 #include <gz/sensors/SensorFactory.hh>
+#include <gz/sensors/Util.hh>
 
 #include <sdf/Sensor.hh>
 
@@ -43,18 +44,29 @@ using namespace jvr::sim;
 
 //////////////////////////////////////////////////
 void OdometerSystem::PreUpdate(const gz::sim::UpdateInfo &,
-    gz::sim::EntityComponentManager &_ecm)
+                               gz::sim::EntityComponentManager &_ecm)
 {
   _ecm.EachNew<gz::sim::components::CustomSensor,
                gz::sim::components::ParentEntity>(
-    [&](const gz::sim::Entity &_entity,
-        const gz::sim::components::CustomSensor *_custom,
-        const gz::sim::components::ParentEntity *_parent)->bool
+      [&](const gz::sim::Entity &_entity,
+          const gz::sim::components::CustomSensor *_custom,
+          const gz::sim::components::ParentEntity *_parent) -> bool
       {
+        gzdbg << "loading custom sensor (entity: " << _entity << ")" << std::endl;
+        auto data = _custom->Data();
+        auto typeName = gz::sensors::customType(data);
+        if ("odometer" != typeName)
+        {
+          gzdbg << "Trying to load [odometer] sensor, but got type [" << typeName << "] instead, exiting load." << std::endl;
+          return true;
+        }
+        else
+        {
+          gzdbg << "Loading custom sensor [" << typeName << "]" << std::endl;
+        }
+
         // Get sensor's scoped name without the world
-        auto sensorScopedName = gz::sim::removeParentScope(
-            gz::sim::scopedName(_entity, _ecm, "::", false), "::");
-        sdf::Sensor data = _custom->Data();
+        auto sensorScopedName = gz::sim::removeParentScope(gz::sim::scopedName(_entity, _ecm, "::", false), "::");
         data.SetName(sensorScopedName);
 
         // Default to scoped name as topic
@@ -68,23 +80,21 @@ void OdometerSystem::PreUpdate(const gz::sim::UpdateInfo &,
         auto sensor = sensorFactory.CreateSensor<jvr::sim::Odometer>(data);
         if (nullptr == sensor)
         {
-          gzerr << "Failed to create odometer [" << sensorScopedName << "]"
-                 << std::endl;
+          gzerr << "Failed to create odometer [" << sensorScopedName << "]" << std::endl;
           return false;
         }
 
         // Set sensor parent
-        auto parentName = _ecm.Component<gz::sim::components::Name>(
-            _parent->Data())->Data();
+        auto parentName = _ecm.Component<gz::sim::components::Name>(_parent->Data())
+                              ->Data();
         sensor->SetParent(parentName);
 
         // Set topic on Gazebo
         _ecm.CreateComponent(_entity,
-            gz::sim::components::SensorTopic(sensor->Topic()));
+                             gz::sim::components::SensorTopic(sensor->Topic()));
 
         // Keep track of this sensor
-        this->entitySensorMap.insert(std::make_pair(_entity,
-            std::move(sensor)));
+        this->entitySensorMap.insert(std::make_pair(_entity, std::move(sensor)));
 
         return true;
       });
@@ -92,7 +102,7 @@ void OdometerSystem::PreUpdate(const gz::sim::UpdateInfo &,
 
 //////////////////////////////////////////////////
 void OdometerSystem::PostUpdate(const gz::sim::UpdateInfo &_info,
-    const gz::sim::EntityComponentManager &_ecm)
+                                const gz::sim::EntityComponentManager &_ecm)
 {
   // Only update and publish if not paused.
   if (!_info.paused)
@@ -112,21 +122,22 @@ void OdometerSystem::RemoveSensorEntities(
     const gz::sim::EntityComponentManager &_ecm)
 {
   _ecm.EachRemoved<gz::sim::components::CustomSensor>(
-    [&](const gz::sim::Entity &_entity,
-        const gz::sim::components::CustomSensor *)->bool
+      [&](const gz::sim::Entity &_entity,
+          const gz::sim::components::CustomSensor *) -> bool
       {
         if (this->entitySensorMap.erase(_entity) == 0)
         {
           gzerr << "Internal error, missing odometer for entity ["
-                         << _entity << "]" << std::endl;
+                << _entity << "]" << std::endl;
         }
         return true;
       });
 }
 
-GZ_ADD_PLUGIN(jvr::sim::OdometerSystem, gz::sim::System,
-  OdometerSystem::ISystemPreUpdate,
-  OdometerSystem::ISystemPostUpdate
-)
+GZ_ADD_PLUGIN(
+    jvr::sim::OdometerSystem,
+    gz::sim::System,
+    OdometerSystem::ISystemPreUpdate,
+    OdometerSystem::ISystemPostUpdate)
 
 GZ_ADD_PLUGIN_ALIAS(OdometerSystem, "jvr::sim::OdometerSystem")

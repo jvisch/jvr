@@ -73,7 +73,7 @@ def launch_simulation_callback(context, *args, **kwargs):
     gz_sim = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(gz_sim_launch_file),
         launch_arguments={
-            'gz_args': f'{world_file} --gui-config {gui_config_file}',
+            'gz_args': f'{world_file} --gui-config {gui_config_file} -r',
             'gz_version': gazebo_version
         }.items()
     )
