@@ -21,7 +21,7 @@ using namespace jvr::sim;
 
 void SweepSensorSystem::PreUpdate(const gz::sim::UpdateInfo &_info, gz::sim::EntityComponentManager &_ecm)
 {
-  //   gzdbg << "jvr_sim::SweepSensorSystem::PreUpdate" << std::endl;
+    gzdbg << "jvr_sim::SweepSensorSystem::PreUpdate" << std::endl;
 
   _ecm.EachNew<gz::sim::components::CustomSensor,
                gz::sim::components::ParentEntity>(
@@ -90,7 +90,7 @@ void SweepSensorSystem::PostUpdate(const gz::sim::UpdateInfo &_info, const gz::s
 {
   // if (!_info.paused && _info.iterations % 1000 == 0)
   {
-    gzdbg << "jvr_sim::FullSystem::PostUpdate" << std::endl;
+    gzdbg << "jvr_sim::SweepSensorSystem::PostUpdate" << std::endl;
   }
 }
 
@@ -101,4 +101,4 @@ GZ_ADD_PLUGIN(
     gz::sim::System,
     SweepSensorSystem::ISystemPreUpdate,
     SweepSensorSystem::ISystemPostUpdate)
-GZ_ADD_PLUGIN_ALIAS(SweepSensorSystem, "jvr::sim::OdometerSystem")
+GZ_ADD_PLUGIN_ALIAS(SweepSensorSystem, "jvr::sim::SweepSensorSystem")
