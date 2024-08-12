@@ -21,7 +21,7 @@ using namespace jvr::sim;
 
 void SweepSensorSystem::PreUpdate(const gz::sim::UpdateInfo &_info, gz::sim::EntityComponentManager &_ecm)
 {
-    gzdbg << "jvr_sim::SweepSensorSystem::PreUpdate" << std::endl;
+  gzdbg << "jvr_sim::SweepSensorSystem::PreUpdate" << std::endl;
 
   _ecm.EachNew<gz::sim::components::CustomSensor,
                gz::sim::components::ParentEntity>(
@@ -54,7 +54,7 @@ void SweepSensorSystem::PreUpdate(const gz::sim::UpdateInfo &_info, gz::sim::Ent
         {
           gzdbg << "Topic is empty, set to default" << std::endl;
           auto topic = scopedName(_entity, _ecm) + "/sweepsensor";
-          
+
           data.SetTopic(topic);
         }
         gzdbg << "topic " << data.Topic() << std::endl;
@@ -99,6 +99,11 @@ void SweepSensorSystem::PostUpdate(const gz::sim::UpdateInfo &_info, const gz::s
 GZ_ADD_PLUGIN(
     SweepSensorSystem,
     gz::sim::System,
+    // SweepSensorSystem::ISystemConfigure,
     SweepSensorSystem::ISystemPreUpdate,
-    SweepSensorSystem::ISystemPostUpdate)
+    // SweepSensorSystem::ISystemUpdate,
+    SweepSensorSystem::ISystemPostUpdate
+    // SweepSensorSystem::ISystemReset
+    )
+    
 GZ_ADD_PLUGIN_ALIAS(SweepSensorSystem, "jvr::sim::SweepSensorSystem")
